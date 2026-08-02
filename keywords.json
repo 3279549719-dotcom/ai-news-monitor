@@ -1,0 +1,30 @@
+[
+  {
+    "id": "claude-blog",
+    "name": "Anthropic Claude Blog",
+    "type": "blog",
+    "url": "https://claude.com/blog",
+    "enabled": true
+  },
+  {
+    "id": "anthropic",
+    "name": "Anthropic",
+    "type": "search",
+    "query": "anthropic AI",
+    "enabled": true
+  },
+  {
+    "id": "dallas-mavericks",
+    "name": "Dallas Mavericks",
+    "type": "search",
+    "query": "dallas mavericks",
+    "enabled": true
+  },
+  {
+    "id": "manchester-united",
+    "name": "Manchester United",
+    "type": "search",
+    "query": "manchester united trade",
+    "enabled": true
+  }
+]

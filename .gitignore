@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.local
+client/.env
+client/.env.local
+client/node_modules/
+client/dist/
+data/seen.json
+reports/
+*.log
+.DS_Store
