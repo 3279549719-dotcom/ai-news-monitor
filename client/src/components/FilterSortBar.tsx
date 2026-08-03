@@ -1,12 +1,9 @@
 import { ArrowDownUp, RotateCcw } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { SOURCE_OPTIONS } from '../lib/sources';
 import type { FilterState } from '../types';
 
-const SOURCES = [
-  { value: '', label: '全部来源' },
-  { value: 'blog', label: 'Blog' },
-  { value: 'hackernews', label: 'HackerNews' },
-];
+const SOURCES = [{ value: '', label: '全部来源' }, ...SOURCE_OPTIONS];
 
 const TIERS = [
   { value: null, label: '全部层级' },

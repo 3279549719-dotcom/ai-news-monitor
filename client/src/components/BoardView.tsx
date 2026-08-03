@@ -1,6 +1,8 @@
 import { ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { relativeTime } from '../utils/relativeTime';
+import { TierBadge, ConfidenceBadge } from './badges';
+import { MU_KEYWORD_ID } from '../lib/constants';
 import type { Article } from '../types';
 
 // 曼联板块定义（顺序即展示顺序）
@@ -20,44 +22,12 @@ export const GENERIC_BOARDS: { key: string; label: string; emoji: string; offici
   { key: 'other', label: '其他', emoji: '📄' },
 ];
 
-// 置信度徽章
-function ConfidenceBadge({ confidence }: { confidence?: string | null }) {
-  if (!confidence) return null;
-  const map: Record<string, { label: string; cls: string }> = {
-    high: { label: '高置信', cls: 'bg-green-50 text-green-700 border-green-200' },
-    medium: { label: '待核实', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-    low: { label: '存疑', cls: 'bg-red-50 text-red-600 border-red-200' },
-  };
-  const cfg = map[confidence] ?? null;
-  if (!cfg) return null;
-  return (
-    <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-semibold border', cfg.cls)}>
-      {cfg.label}
-    </span>
-  );
-}
-
-function TierBadge({ tier }: { tier?: number | null }) {
-  if (tier == null) return null;
-  const colors: Record<number, string> = {
-    0: 'bg-red-100 text-red-700',
-    1: 'bg-amber-100 text-amber-700',
-    2: 'bg-blue-100 text-blue-700',
-    3: 'bg-slate-200 text-slate-600',
-  };
-  return (
-    <span className={cn('rounded px-1.5 py-0.5 font-bold text-[10px] text-white', colors[tier] ?? 'bg-slate-300')}>
-      T{tier}
-    </span>
-  );
-}
-
 function ArticleCard({ article }: { article: Article }) {
   return (
     <div className="border border-slate-100 bg-[#fafbfc] rounded-lg p-3 mb-2 hover:shadow-sm transition-shadow">
       <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
         <span className="font-medium text-slate-500">{article.source}</span>
-        <TierBadge tier={article.source_tier} />
+        <TierBadge tier={article.source_tier} className="font-bold text-[10px] text-white" />
         <ConfidenceBadge confidence={article.confidence} />
         {article.corroboration_count != null && article.corroboration_count > 1 && (
           <span className="text-blue-500 font-medium">{article.corroboration_count}源印证</span>
@@ -95,7 +65,7 @@ interface BoardViewProps {
 }
 
 export default function BoardView({ articles, keywordId, keywordName }: BoardViewProps) {
-  const isMU = keywordId === 'manchester-united';
+  const isMU = keywordId === MU_KEYWORD_ID;
   const boards = isMU ? MU_BOARDS : GENERIC_BOARDS;
 
   const byCategory = (key: string) => articles.filter(a => a.category === key);

@@ -132,8 +132,8 @@
 | 1 | 需求分析（docs/PRD.md） | 已完成 |
 | 2 | 方案设计 + 开发 + 测试（F-001~F-004） | 已完成 |
 | 3 | 优化前端页面 | 已完成（F-004） |
-| 4 | 优化信息获取来源（per-keyword 定向 RSS + 来源可信度） | **代码完成** → specs/001（信源 URL 待修复） |
-| 4b | Firecrawl 直抓替代 Google News，前端 Tier 展示 | **代码完成** → specs/002 |
+| 4 | 优化信息获取来源（per-keyword 定向 RSS + 来源可信度） | **代码完成** → docs/archive/specs/001（已归档） |
+| 4b | Firecrawl 直抓替代 Google News，前端 Tier 展示 | **代码完成** → docs/archive/specs/002（已归档） |
 | 5 | 信息流筛选和排序 | 已完成（Tier 筛选 + 排序，F-004） |
 | 6 | 优化热点信息展示 | 部分完成（方案C 板块视图 + 交叉验证置信度，见 F-006/F-007） |
 | 7 | 优化 AI 分析准确度 + 扩展思路 | 待开发 |
@@ -152,3 +152,5 @@
 - [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）
 - [x] 四板块分类报告（方案C）— 2026-08-03 板块视图 + 日报按板块分组完成
 - [x] crawl4ai 接入生产管线（Phase E）— 2026-08-03 落地并回归，见 F-008
+- [x] 文档体系整合（2026-08-04）— 两份 REQ 合并为一份（信源资产 + 实测备注）；历史 PLAN/CHECKLIST/spec 归档至 `docs/archive/`；PRD 更新至 crawl4ai 架构 + 方案BC 数据模型；`src/firecrawl.js` 删除；CLAUDE.md / DOCUMENT_MAP.md 索引同步
+- [x] 代码化简重构（2026-08-04）— 新增 `src/config.js`（配置集中）、`src/items.js`（item 规整）、`src/report.js`（日报）；ai.js 收敛 OpenAI 单例 + 共享 `selectArticleLinks`/`parseAnalyzeResult`；删 scraper-direct 死代码 `fetchDirectSources`；crosscheck 冲突检测去死循环；前端抽 `useSupabaseQuery` 通用 hook（统一错误处理+取消）、共享 `TierBadge/ConfidenceBadge` 与 `constants/sources`；`KeywordsTab` 惰性拉取关键词；新增 node:test 单元测试（tiers/crosscheck/ai/search，22 例全过）

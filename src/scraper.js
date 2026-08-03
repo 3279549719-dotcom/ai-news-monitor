@@ -1,12 +1,13 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const { HTTP_USER_AGENT, HTTP_TIMEOUT_MS } = require('./config');
 
 const DEFAULT_BLOG_URL = 'https://claude.com/blog';
 
 async function fetchArticleList(blogUrl = DEFAULT_BLOG_URL) {
   const { data } = await axios.get(blogUrl, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
-    timeout: 15000,
+    headers: { 'User-Agent': HTTP_USER_AGENT },
+    timeout: HTTP_TIMEOUT_MS,
   });
 
   const $ = cheerio.load(data);

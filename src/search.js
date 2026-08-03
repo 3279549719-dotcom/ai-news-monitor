@@ -63,7 +63,10 @@ async function fetchSourceWithFallback(source) {
       return [];
     }
     console.log(`  [Crawl4ai] ${source.source_name} → 降级 Direct: ${err.message}`);
-    try { return await fetchSource(source); } catch (e) { return []; }
+    try { return await fetchSource(source); } catch (e) {
+      console.error(`  [Direct] ${source.source_name} 降级也失败: ${e.message}`);
+      return [];
+    }
   }
 }
 
@@ -84,4 +87,4 @@ async function searchAll(query, keywordSources = []) {
   return deduplicateByUrl(combined);
 }
 
-module.exports = { searchAll, searchHackerNews };
+module.exports = { searchAll, deduplicateByUrl };

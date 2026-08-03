@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import ArticleFeed from './ArticleFeed';
 import EmptyState from './EmptyState';
-import type { FilterState } from '../types';
-
-const DEFAULT_FILTERS: FilterState = { keywordId: '', source: '', sortBy: 'created_at', search: '', tier: null };
+import { DEFAULT_FILTERS } from '../lib/constants';
 
 export default function SearchTab() {
   const [input, setInput] = useState('');

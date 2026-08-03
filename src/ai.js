@@ -1,21 +1,22 @@
+'use strict';
+
 const OpenAI = require('openai');
+const { DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, MIN_SCORE } = require('./config');
 
-let client;
+let _openai = null;
 
-function getClient() {
-  if (!client) {
-    client = new OpenAI({
-      apiKey: process.env.DEEPSEEK_API_KEY,
-      baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
-    });
+// DeepSeek（openai 兼容）客户端唯一单例，全库共用
+function getOpenAI() {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: DEEPSEEK_API_KEY, baseURL: DEEPSEEK_BASE_URL });
   }
-  return client;
+  return _openai;
 }
 
 // For blog sources: full article content → Chinese summary
 async function summarizeArticle(title, content) {
-  const response = await getClient().chat.completions.create({
-    model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+  const response = await getOpenAI().chat.completions.create({
+    model: DEEPSEEK_MODEL,
     messages: [
       {
         role: 'system',
@@ -55,8 +56,8 @@ async function analyzeResult(query, title, snippet, tier = null, categorySchema 
       `如果都不合适，选最接近的。`;
   }
 
-  const response = await getClient().chat.completions.create({
-    model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+  const response = await getOpenAI().chat.completions.create({
+    model: DEEPSEEK_MODEL,
     messages: [
       {
         role: 'system',
@@ -84,13 +85,17 @@ async function analyzeResult(query, title, snippet, tier = null, categorySchema 
     temperature: 0.1,
   });
 
-  const text = response.choices[0].message.content.trim();
+  return parseAnalyzeResult(response.choices[0].message.content.trim());
+}
+
+// 纯函数：解析 analyzeResult 的 AI 返回文本（markdown 围栏/脏前缀/score 越界都容错）
+function parseAnalyzeResult(text) {
   try {
     const match = text.match(/\{[\s\S]*\}/);
     const result = JSON.parse(match ? match[0] : text);
     const score = Math.max(0, Math.min(100, Number(result.score) || 0));
     return {
-      relevant: score >= 60,
+      relevant: score >= MIN_SCORE,
       score,
       summary: typeof result.summary === 'string' ? result.summary.trim() : '',
       event: typeof result.event === 'string' ? result.event.trim() : '',
@@ -101,4 +106,43 @@ async function analyzeResult(query, title, snippet, tier = null, categorySchema 
   }
 }
 
-module.exports = { summarizeArticle, analyzeResult };
+// 共享：从链接列表让 AI 挑文章（crawl4ai 与 scraper-direct 两通道共用）。
+// links: [{title|text, url}]；返回 [{title, url}]。logPrefix 提供时输出失败诊断日志。
+async function selectArticleLinks(links, sourceName, pageUrl, logPrefix = '') {
+  const list = links.map((l, i) => `[${i}] ${l.title || l.text || ''}\n  URL: ${l.url}`).join('\n');
+
+  const response = await getOpenAI().chat.completions.create({
+    model: DEEPSEEK_MODEL,
+    messages: [
+      {
+        role: 'system',
+        content: `You are a web scraping assistant. From a list of links extracted from "${sourceName}" (page: ${pageUrl}), identify which are NEWS ARTICLES. Ignore navigation/menu/footer/social/homepage/trending-topic links. Return ONLY a JSON array: [{"index": number, "title": "clean title"}, ...]. Index refers to [N] number. Return [] if no articles found. No markdown, no explanation.`
+      },
+      { role: 'user', content: list },
+    ],
+    temperature: 0,
+    max_tokens: 2000,
+  });
+
+  const raw = (response.choices[0].message.content || '').trim();
+  if (!raw) {
+    if (logPrefix) console.log(`  [${logPrefix}] ${sourceName}: AI 返回空内容`);
+    return [];
+  }
+
+  const jsonStr = raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
+  let articles;
+  try {
+    articles = JSON.parse(jsonStr);
+  } catch {
+    if (logPrefix) console.log(`  [${logPrefix}] ${sourceName}: AI 返回非 JSON: ${raw.substring(0, 80)}`);
+    return [];
+  }
+  if (!Array.isArray(articles)) return [];
+
+  return articles
+    .map(a => ({ title: a.title || '', url: links[a.index]?.url || '' }))
+    .filter(a => a.url);
+}
+
+module.exports = { getOpenAI, summarizeArticle, analyzeResult, parseAnalyzeResult, selectArticleLinks };

@@ -82,25 +82,18 @@ function clusterByEvent(articles) {
  * - 组内来源数 == 1 → medium（单源，待核实）
  * - 与 Tier0 冲突 → low + conflict_flag
  */
+// 置信度中文标签（日报 buildReport 使用；前端 ConfidenceBadge 有对应映射）
+const CONFIDENCE_LABEL = { high: '高置信', medium: '待核实', low: '存疑' };
+
 function computeConfidence(cluster) {
   const sources = new Set(cluster.items.map(a => a.source || ''));
   const sourceCount = sources.size;
   const hasTier0 = cluster.items.some(a => a.tier === 0);
 
-  // 冲突检测：同组内有 T0 且其他源描述的语义与 T0 冲突 —— 轻量版用标题关键词否定检测
-  let conflict = false;
-  if (hasTier0) {
-    const t0Items = cluster.items.filter(a => a.tier === 0);
-    const otherItems = cluster.items.filter(a => a.tier !== 0);
-    for (const t0 of t0Items) {
-      for (const other of otherItems) {
-        // 简化：如果 T0 标题含"否认/辟谣/未"等词，且其他源标题不含 → 视为冲突
-        if (/否认|辟谣|没有|未|不会|否定/i.test(t0.title)) {
-          conflict = true;
-        }
-      }
-    }
-  }
+  // 冲突检测（轻量版）：T0 官方标题含"否认/辟谣/未"等否定词 → 视为与爆料冲突
+  const conflict = hasTier0 && cluster.items.some(
+    a => a.tier === 0 && /否认|辟谣|没有|未|不会|否定/i.test(a.title || '')
+  );
 
   let confidence = 'medium';
   if (sourceCount >= 2) confidence = 'high';
@@ -138,4 +131,4 @@ function crosscheck(articles) {
   return result;
 }
 
-module.exports = { crosscheck, clusterByEvent, computeConfidence };
+module.exports = { crosscheck, clusterByEvent, computeConfidence, CONFIDENCE_LABEL };

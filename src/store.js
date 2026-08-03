@@ -12,7 +12,7 @@ async function loadKeywords() {
   });
 }
 
-// Use RPC to avoid PostgREST URL length limit with long URLs (e.g. Google News)
+// 用 RPC 查重，规避 URL 数组过大触发 PostgREST 请求 URL 长度限制
 async function filterNewItems(items, keywordId) {
   if (items.length === 0) return [];
   const urls = items.map(i => i.url);

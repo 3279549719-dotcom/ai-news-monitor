@@ -1,7 +1,14 @@
-export function relativeTime(dateStr: string | null | undefined): string {
-  if (!dateStr) return '';
+// 解析日期字符串，非法/空输入返回 null（两个格式化函数共用）
+function parseDate(dateStr: string | null | undefined): Date | null {
+  if (!dateStr) return null;
   const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return '';
+  return isNaN(date.getTime()) ? null : date;
+}
+
+// 注：client 已引入 date-fns，如需替换请先对齐输出文案（如 '5 分钟前'/'刚刚'），避免 UI 文本漂移。
+export function relativeTime(dateStr: string | null | undefined): string {
+  const date = parseDate(dateStr);
+  if (!date) return '';
   const diffMs = Date.now() - date.getTime();
   if (diffMs < 0) return '刚刚';
   const seconds = Math.floor(diffMs / 1000);
@@ -19,9 +26,8 @@ export function relativeTime(dateStr: string | null | undefined): string {
 }
 
 export function formatDateTime(dateStr: string | null | undefined): string {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  if (isNaN(date.getTime())) return '';
+  const date = parseDate(dateStr);
+  if (!date) return '';
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',

@@ -16,28 +16,19 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const OpenAI = require('openai');
+const { selectArticleLinks } = require('./ai');
+const { CRAWL4AI_URL, CRAWL4AI_API_TOKEN } = require('./config');
+const { toItem } = require('./items');
 
-const BASE_URL = process.env.CRAWL4AI_URL || 'http://localhost:11235';
+const BASE_URL = CRAWL4AI_URL;
 const TOKEN_FILE = path.join(__dirname, '../.crawl4ai-token');
 
 let _token = null;
 function getToken() {
   if (_token) return _token;
-  if (process.env.CRAWL4AI_API_TOKEN) { _token = process.env.CRAWL4AI_API_TOKEN; return _token; }
+  if (CRAWL4AI_API_TOKEN) { _token = CRAWL4AI_API_TOKEN; return _token; }
   try { _token = fs.readFileSync(TOKEN_FILE, 'utf8').trim(); } catch (err) { _token = ''; }
   return _token;
-}
-
-let _openai = null;
-function getAI() {
-  if (!_openai) {
-    _openai = new OpenAI({
-      apiKey: process.env.DEEPSEEK_API_KEY,
-      baseURL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
-    });
-  }
-  return _openai;
 }
 
 // 健康检查缓存 30s，避免每次信源都探活
@@ -119,43 +110,8 @@ function titleFromSlug(url) {
   return slug ? slug.replace(/\b\w/g, c => c.toUpperCase()).slice(0, 100) : '';
 }
 
-// DeepSeek 从链接列表筛选文章（与 scraper-direct 相同策略）
-async function selectArticlesByAI(links, sourceName, pageUrl) {
-  const list = links.map((l, i) => `[${i}] ${l.title || l.text}\n  URL: ${l.url}`).join('\n');
-  const ai = getAI();
-  const response = await ai.chat.completions.create({
-    model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
-    messages: [
-      {
-        role: 'system',
-        content: `You are a web scraping assistant. From a list of links extracted from "${sourceName}" (page: ${pageUrl}), identify which are NEWS ARTICLES. Ignore navigation/menu/footer/social/homepage/trending-topic links. Return ONLY a JSON array: [{"index": number, "title": "clean title"}, ...]. Index refers to [N] number. Return [] if no articles found. No markdown, no explanation.`
-      },
-      { role: 'user', content: list },
-    ],
-    temperature: 0,
-    max_tokens: 2000,
-  });
-
-  const raw = (response.choices[0].message.content || '').trim();
-  if (!raw) {
-    console.log(`  [Crawl4ai] ${sourceName}: AI 返回空内容`);
-    return [];
-  }
-  const jsonStr = raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '');
-  let articles;
-  try { articles = JSON.parse(jsonStr); } catch {
-    console.log(`  [Crawl4ai] ${sourceName}: AI 返回非 JSON: ${raw.substring(0, 80)}`);
-    return [];
-  }
-  if (!Array.isArray(articles)) return [];
-
-  return articles
-    .map(a => ({ title: a.title || '', url: links[a.index]?.url || '' }))
-    .filter(a => a.url);
-}
-
 /**
- * 抓取单个信源，返回 items 数组（与 scraper-direct.fetchDirectSources 相同形状）。
+ * 抓取单个信源，返回 items 数组（与 scraper-direct.fetchSource 相同形状）。
  * 容器不可用 / 请求失败时抛错（上层降级）；页面无结果时返回 []。
  */
 async function fetchSourceArticles(source) {
@@ -166,8 +122,6 @@ async function fetchSourceArticles(source) {
   if (!r || r.success === false) return [];
 
   const links = r.links || {};
-  const sourceSlug = (source.source_name || '').toLowerCase().replace(/\s+/g, '-');
-  const base = { source_name: source.source_name, source: sourceSlug, tier: source.tier };
 
   // X 账号：external 链接即文章（t.co 短链 + 帖子标题）
   if (isXUrl(source.scrape_url)) {
@@ -175,12 +129,10 @@ async function fetchSourceArticles(source) {
       .filter(l => l.href && /t\.co\//.test(l.href))
       .filter(l => (l.title || l.text || '').trim().length >= 15)
       .slice(0, 15);
-    return exts.map(l => ({
+    return exts.map(l => toItem(source, {
       title: (l.title || l.text || '').trim().substring(0, 200),
       url: l.href,
-      snippet: '',
       publishedAt: new Date(),
-      ...base,
     }));
   }
 
@@ -216,20 +168,14 @@ async function fetchSourceArticles(source) {
     const list = [...candidates.values()].slice(0, 60);
     if (list.length === 0) return [];
     try {
-      selected = await selectArticlesByAI(list, source.source_name, source.scrape_url);
+      selected = await selectArticleLinks(list, source.source_name, source.scrape_url, 'Crawl4ai');
     } catch (err) {
       console.log(`  [Crawl4ai] ${source.source_name} AI 筛选失败: ${err.message}`);
       return [];
     }
   }
 
-  return selected.map(a => ({
-    title: a.title,
-    url: a.url,
-    snippet: '',
-    publishedAt: new Date(),
-    ...base,
-  }));
+  return selected.map(a => toItem(source, { title: a.title, url: a.url, publishedAt: new Date() }));
 }
 
-module.exports = { fetchSourceArticles, isAvailable, isXUrl };
+module.exports = { fetchSourceArticles, isXUrl };

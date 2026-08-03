@@ -1,13 +1,12 @@
 const { createClient } = require('@supabase/supabase-js');
+const { SUPABASE_URL, SUPABASE_KEY } = require('./config');
 
 let _client;
 
 function getClient() {
   if (!_client) {
-    const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_KEY;
-    if (!url || !key) throw new Error('SUPABASE_URL and SUPABASE_KEY must be set in .env');
-    _client = createClient(url, key, {
+    if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error('SUPABASE_URL and SUPABASE_KEY must be set in .env');
+    _client = createClient(SUPABASE_URL, SUPABASE_KEY, {
       db: { schema: 'public' },
       global: { headers: { 'X-Client': 'ai-news-monitor' } },
     });

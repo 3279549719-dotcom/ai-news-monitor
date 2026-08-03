@@ -3,14 +3,10 @@ import { Newspaper, Tag, Search as SearchIcon } from 'lucide-react';
 import { cn } from './lib/utils';
 import FilterSortBar from './components/FilterSortBar';
 import ArticleFeed from './components/ArticleFeed';
-import LoadingSkeleton from './components/LoadingSkeleton';
-import EmptyState from './components/EmptyState';
 import KeywordsTab from './components/KeywordsTab';
 import SearchTab from './components/SearchTab';
-import { useKeywords } from './hooks/useKeywords';
+import { DEFAULT_FILTERS } from './lib/constants';
 import type { FilterState } from './types';
-
-const DEFAULT_FILTERS: FilterState = { keywordId: '', source: '', sortBy: 'created_at', search: '', tier: null };
 
 type Tab = 'all' | 'keywords' | 'search';
 
@@ -24,7 +20,6 @@ export default function App() {
   const [tab, setTab] = useState<Tab>('all');
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-  const { keywords, loading: kwLoading } = useKeywords();
 
   const handleTabChange = (t: Tab) => { setTab(t); setPage(1); setFilters(DEFAULT_FILTERS); };
   const handleFilterChange = (f: FilterState) => { setFilters(f); setPage(1); };
@@ -65,11 +60,7 @@ export default function App() {
             <ArticleFeed filters={filters} page={page} onPageChange={setPage} />
           </>
         )}
-        {tab === 'keywords' && (
-          kwLoading ? <LoadingSkeleton count={3} /> :
-          keywords.length === 0 ? <EmptyState message="暂无已启用的关键词" /> :
-          <KeywordsTab keywords={keywords} />
-        )}
+        {tab === 'keywords' && <KeywordsTab />}
         {tab === 'search' && <SearchTab />}
       </main>
     </div>

@@ -5,18 +5,25 @@ import BoardView from './BoardView';
 import EmptyState from './EmptyState';
 import LoadingSkeleton from './LoadingSkeleton';
 import { useBoardArticles } from '../hooks/useArticles';
-import type { FilterState, Keyword } from '../types';
+import { useKeywords } from '../hooks/useKeywords';
+import { DEFAULT_FILTERS, MU_KEYWORD_ID } from '../lib/constants';
 
-const DEFAULT_FILTERS: FilterState = { keywordId: '', source: '', sortBy: 'created_at', search: '', tier: null };
-
-export default function KeywordsTab({ keywords }: { keywords: Keyword[] }) {
+export default function KeywordsTab() {
   const [selectedId, setSelectedId] = useState('');
   const [page, setPage] = useState(1);
+  // 关键词在本组件内拉取（仅在切到「按关键词」tab 时才请求）
+  const { keywords, loading, error } = useKeywords();
 
   const select = (id: string) => { setSelectedId(id); setPage(1); };
 
   const selected = keywords.find(k => k.id === selectedId) ?? null;
-  const { articles: boardArticles, loading: boardLoading } = useBoardArticles(selectedId || null);
+  // 仅 MU 用板块视图；其余关键词直接走 ArticleFeed，避免无谓的板块查询
+  const showBoard = selected?.id === MU_KEYWORD_ID;
+  const { articles: boardArticles, loading: boardLoading } = useBoardArticles(showBoard ? selectedId : null);
+
+  if (loading) return <LoadingSkeleton count={3} />;
+  if (error) return <EmptyState message={`加载关键词失败：${error}`} />;
+  if (keywords.length === 0) return <EmptyState message="暂无已启用的关键词" />;
 
   return (
     <div>
@@ -43,7 +50,7 @@ export default function KeywordsTab({ keywords }: { keywords: Keyword[] }) {
         ))}
       </div>
       {selectedId ? (
-        selected?.id === 'manchester-united' ? (
+        showBoard ? (
           boardLoading ? <LoadingSkeleton count={3} /> : (
             <BoardView articles={boardArticles} keywordId={selected.id} keywordName={selected.name} />
           )

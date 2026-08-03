@@ -8,7 +8,9 @@ const { fetchArticleContent } = require('./reader');
 const { summarizeArticle, analyzeResult } = require('./ai');
 const { searchAll } = require('./search');
 const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources } = require('./store');
-const { crosscheck } = require('./crosscheck');
+const { crosscheck, CONFIDENCE_LABEL } = require('./crosscheck');
+const { buildReport } = require('./report');
+const { RESULT_LIMIT } = require('./config');
 
 const PIPELINES = {
   blog: {
@@ -25,7 +27,7 @@ const PIPELINES = {
   },
 };
 
-async function analyzeItems(keyword, items, limit = 15) {
+async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
   const { analyze } = PIPELINES[keyword.type];
   const toProcess = items.slice(0, limit);
   const settled = await Promise.allSettled(toProcess.map(item => analyze(keyword, item)));
@@ -48,12 +50,11 @@ async function processKeyword(keyword) {
     return [];
   }
 
-  const label = keyword.type === 'blog' ? keyword.url : `"${keyword.query}"`;
-  console.log(`\n[${keyword.name}] ${keyword.type === 'blog' ? '抓取' : '搜索'} ${label}`);
+  const isBlog = keyword.type === 'blog';
+  const label = isBlog ? keyword.url : `"${keyword.query}"`;
+  console.log(`\n[${keyword.name}] ${isBlog ? '抓取' : '搜索'} ${label}`);
 
-  const keywordSources = keyword.type === 'search'
-    ? await loadKeywordSources(keyword.id)
-    : [];
+  const keywordSources = isBlog ? [] : await loadKeywordSources(keyword.id);
 
   const allItems = await pipeline.fetch(keyword, keywordSources);
   console.log(`  找到 ${allItems.length} 条`);
@@ -63,7 +64,7 @@ async function processKeyword(keyword) {
   if (newItems.length === 0) return [];
 
   const relevant = await analyzeItems(keyword, newItems);
-  console.log(`  相关: ${relevant.length}/${Math.min(newItems.length, 15)}`);
+  console.log(`  相关: ${relevant.length}/${Math.min(newItems.length, RESULT_LIMIT)}`);
 
   // 交叉验证（方案B）：事件聚类 + 置信度 + 冲突标记
   let crosschecked = relevant;
@@ -74,78 +75,30 @@ async function processKeyword(keyword) {
     console.log(`  [Crosscheck] ${crosschecked.length} 篇 → 高置信 ${high}，单源 ${crosschecked.length - high}，冲突 ${conflict}`);
   }
 
-  const relevantUrls = new Set(crosschecked.map(r => r.url));
-  const toSave = newItems.slice(0, 15).map(item => {
+  const toSave = newItems.slice(0, RESULT_LIMIT).map(item => {
     const xc = crosschecked.find(r => r.url === item.url);
     return {
-    keyword_id: keyword.id,
-    title: item.title,
-    url: item.url,
-    source: item.source || keyword.type,
-    snippet: item.snippet || null,
-    summary: relevantUrls.has(item.url)
-      ? (xc?.summary ?? null)
-      : null,
-    score: relevantUrls.has(item.url)
-      ? (xc?.score ?? 0)
-      : 0,
-    published_at: item.publishedAt
-      ? new Date(item.publishedAt).toISOString()
-      : null,
-    source_tier: item.tier ?? null,
-    category: xc?.category ?? null,
-    event: xc?.event ?? null,
-    confidence: xc?.confidence ?? null,
-    corroboration_count: xc?.corroboration_count ?? 0,
-    conflict_flag: xc?.conflict_flag ?? false,
-  };});
+      keyword_id: keyword.id,
+      title: item.title,
+      url: item.url,
+      source: item.source || keyword.type,
+      snippet: item.snippet || null,
+      summary: xc?.summary ?? null,
+      score: xc?.score ?? 0,
+      published_at: item.publishedAt
+        ? new Date(item.publishedAt).toISOString()
+        : null,
+      source_tier: item.tier ?? null,
+      category: xc?.category ?? null,
+      event: xc?.event ?? null,
+      confidence: xc?.confidence ?? null,
+      corroboration_count: xc?.corroboration_count ?? 0,
+      conflict_flag: xc?.conflict_flag ?? false,
+    };
+  });
 
   await saveArticles(toSave);
   return crosschecked;
-}
-
-const CONFIDENCE_LABEL = { high: '高置信', medium: '待核实', low: '存疑' };
-
-// 日报（方案C）：按关键词板块模板(category_schema)分组，附带置信度/印证数/冲突标记
-function buildReport(sections) {
-  const date = new Date().toLocaleString('zh-CN');
-  const total = sections.reduce((n, s) => n + s.results.length, 0);
-  const lines = [
-    '# AI信息监控日报',
-    `> 生成时间: ${date}  |  相关新内容: ${total} 条`,
-    '',
-  ];
-  for (const { keyword, results } of sections) {
-    if (results.length === 0) continue;
-    lines.push(`## ${keyword.name}`, '');
-
-    // 按板块模板分组；无 category 的文章归「未分类」
-    const schema = keyword.category_schema || {};
-    const boards = Object.entries(schema).map(([key, label]) => ({ key, label, items: [] }));
-    boards.push({ key: '__uncat', label: '未分类', items: [] });
-    for (const item of results) {
-      const board = boards.find(b => b.key === item.category) || boards[boards.length - 1];
-      board.items.push(item);
-    }
-
-    for (const board of boards) {
-      if (board.items.length === 0) continue;
-      lines.push(`### ${board.label}（${board.items.length}）`, '');
-      for (const item of board.items) {
-        const meta = [`来源: ${item.source || keyword.type}`];
-        if (item.tier != null) meta.push(`T${item.tier}`);
-        meta.push(`相关度: ${item.score}`);
-        if (item.confidence) meta.push(CONFIDENCE_LABEL[item.confidence] || item.confidence);
-        if (item.corroboration_count > 1) meta.push(`${item.corroboration_count}源印证`);
-        if (item.conflict_flag) meta.push('⚠️冲突');
-        if (item.publishedAt) meta.push(`发布: ${new Date(item.publishedAt).toLocaleDateString()}`);
-        lines.push(`- ${item.title}`, `  > ${item.url}`, `  > ${meta.join('  |  ')}`, '', item.summary || '', '');
-      }
-      lines.push('');
-    }
-    lines.push('---', '');
-  }
-  return lines.join('\n');
 }
 
 async function run() {

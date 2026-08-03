@@ -1,13 +1,9 @@
 import { ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { relativeTime, formatDateTime } from '../utils/relativeTime';
+import { SOURCE_CONFIG } from '../lib/sources';
+import { TierBadge } from './badges';
 import type { Article } from '../types';
-
-const SOURCE_CONFIG: Record<string, { label: string; color: string }> = {
-  blog: { label: 'Blog', color: 'bg-violet-100 text-violet-700' },
-  'google-news': { label: 'Google News', color: 'bg-blue-100 text-blue-700' },
-  hackernews: { label: 'HackerNews', color: 'bg-orange-100 text-orange-700' },
-};
 
 function ScoreBadge({ score }: { score: number }) {
   const color =
@@ -25,20 +21,6 @@ function ScoreBadge({ score }: { score: number }) {
       )}
     >
       {score}
-    </span>
-  );
-}
-
-function TierBadge({ tier }: { tier: number }) {
-  const colors: Record<number, string> = {
-    0: 'bg-emerald-100 text-emerald-700',
-    1: 'bg-teal-100 text-teal-700',
-    2: 'bg-amber-100 text-amber-700',
-    3: 'bg-red-100 text-red-600',
-  };
-  return (
-    <span className={cn('rounded px-1.5 py-0.5 font-semibold text-[11px]', colors[tier] ?? 'bg-slate-100 text-slate-500')}>
-      T{tier}
     </span>
   );
 }
@@ -85,7 +67,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
         <span className={cn('rounded px-1.5 py-0.5 font-semibold text-[11px]', sourceColor)}>
           {sourceLabel}
         </span>
-        {article.source_tier != null && <TierBadge tier={article.source_tier} />}
+        <TierBadge tier={article.source_tier} />
         {article.keywords?.name && (
           <span className="bg-blue-50 text-blue-600 rounded px-1.5 py-0.5 text-[11px] font-medium">
             {article.keywords.name}
