@@ -49,3 +49,37 @@ export function useArticles(filters: FilterState, page: number) {
 
   return { articles, total, loading, error };
 }
+
+/**
+ * 板块视图专用：取最近 N 条（不分页），用于 BoardView 网格展示
+ */
+export function useBoardArticles(keywordId: string | null, limit = 60) {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!keywordId) {
+      setArticles([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    supabase
+      .from('articles')
+      .select('*, keywords(name, type)')
+      .eq('keyword_id', keywordId)
+      .gte('score', 60)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+      .then(({ data, error }) => {
+        if (error) setError(error.message);
+        else setArticles(data ?? []);
+        setLoading(false);
+      });
+  }, [keywordId, limit]);
+
+  return { articles, loading, error };
+}

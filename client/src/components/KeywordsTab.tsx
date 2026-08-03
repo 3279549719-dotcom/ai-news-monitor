@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { cn } from '../lib/utils';
 import ArticleFeed from './ArticleFeed';
+import BoardView from './BoardView';
 import EmptyState from './EmptyState';
+import LoadingSkeleton from './LoadingSkeleton';
+import { useBoardArticles } from '../hooks/useArticles';
 import type { FilterState, Keyword } from '../types';
 
 const DEFAULT_FILTERS: FilterState = { keywordId: '', source: '', sortBy: 'created_at', search: '', tier: null };
@@ -11,6 +14,9 @@ export default function KeywordsTab({ keywords }: { keywords: Keyword[] }) {
   const [page, setPage] = useState(1);
 
   const select = (id: string) => { setSelectedId(id); setPage(1); };
+
+  const selected = keywords.find(k => k.id === selectedId) ?? null;
+  const { articles: boardArticles, loading: boardLoading } = useBoardArticles(selectedId || null);
 
   return (
     <div>
@@ -36,9 +42,17 @@ export default function KeywordsTab({ keywords }: { keywords: Keyword[] }) {
           </button>
         ))}
       </div>
-      {selectedId
-        ? <ArticleFeed filters={{ ...DEFAULT_FILTERS, keywordId: selectedId }} page={page} onPageChange={setPage} />
-        : <EmptyState message="选择一个关键词查看相关文章" />}
+      {selectedId ? (
+        selected?.id === 'manchester-united' ? (
+          boardLoading ? <LoadingSkeleton count={3} /> : (
+            <BoardView articles={boardArticles} keywordId={selected.id} keywordName={selected.name} />
+          )
+        ) : (
+          <ArticleFeed filters={{ ...DEFAULT_FILTERS, keywordId: selectedId }} page={page} onPageChange={setPage} />
+        )
+      ) : (
+        <EmptyState message="选择一个关键词查看相关文章" />
+      )}
     </div>
   );
 }

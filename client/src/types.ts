@@ -20,6 +20,11 @@ export interface Article {
   published_at: string | null;
   created_at: string;
   source_tier?: number | null;
+  category?: string | null;
+  event?: string | null;
+  confidence?: 'high' | 'medium' | 'low' | null;
+  corroboration_count?: number | null;
+  conflict_flag?: boolean | null;
   keywords?: {
     name: string;
     type: string;

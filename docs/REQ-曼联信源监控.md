@@ -99,3 +99,36 @@ T1 记者之间爆料可能冲突（Ornstein vs Simon Stone 对同一谈判描�
 | 后端 | Node.js CommonJS（`src/index.js` 主调度）|
 | 前端 | React 18 + TypeScript + Vite + Tailwind |
 | 调度 | node-cron（`CRON_SCHEDULE` 环境变量）|
+
+---
+
+## 七、方案B/C 追加需求（2026-08-03 确认）
+
+> 以下需求在方案A落地后追加确认，基于 Patrick 的板块设计文档与前端原型图（docs/prototype-board.html）。
+
+### 7.1 交叉校验（方案B）
+
+- AI 评分时同时输出 event（一句话事件描述，用于聚类）
+- 本次运行内文章按 event 聚类；组内多源交叉印证 → 加分；单源 → 降权
+- 与 Tier0 官方公告冲突 → 标记 conflict_flag
+- articles 表新增字段：event / confidence / corroboration_count / conflict_flag
+- 前端卡片显示置信度徽章（高/中/低）+ 印证源数量
+- 传闻区 / 辟谣区由交叉验证结果自动驱动，不做 AI 手工分类
+
+### 7.2 板块分类（关键词级模板）
+
+- keywords 表新增 category_schema（JSON 字段），每个关键词配置自己的板块模板
+- 曼联专属模板（8 类）：official / transfer / injury / management / match / rumour / conflict / academy_women
+- 通用模板（其他关键词）：official / product / research / other
+- AI 在交叉验证时顺带输出 category，articles 表新增 category 列
+- 日报与前端共用同一套分类逻辑
+
+### 7.3 前端板块视图（阶段2）
+
+- 照原型图实现：2 行 3 列网格布局，蓝白配色
+- 5 大主板块：官方公告（Tier0 红框置顶）/ 转会合同 / 伤病停赛 / 管理层教练组 / 赛事竞技
+- 第 6 格：今日概览卡（新增/高置信/待核实统计 + 冲突提示）— 保留
+- 不保留折叠面板（决策2），传闻/冲突内容由交叉验证自动归入
+- 卡片结构：来源 | Tier徽章 | 日期 → 标题 → AI摘要 → 蓝色分类标签 + 原始链接
+- 分类标签为板块名，不做事件阶段标签（决策5）
+- 非曼联关键词使用通用模板的平铺/简化视图

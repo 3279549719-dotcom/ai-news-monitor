@@ -19,7 +19,9 @@
 | 曼联需求文档 | [docs/REQ-曼联信源监控.md](docs/REQ-曼联信源监控.md) | 曼联相关功能对齐 |
 | 技术决策纪要 | [docs/DECISION-方案选型纪要.md](docs/DECISION-方案选型纪要.md) | 了解架构选型原因 |
 | 执行计划 | [docs/PLAN-方案A执行计划.md](docs/PLAN-方案A执行计划.md) | 落地实施参照 |
+| 方案BC计划 | [docs/PLAN-方案BC执行计划.md](docs/PLAN-方案BC执行计划.md) | 交叉验证+板块视图开发参照 |
 | 验收清单 | [docs/CHECKLIST-方案A验收清单.md](docs/CHECKLIST-方案A验收清单.md) | 验证是否完成 |
+| 前端原型 | [docs/prototype-board.html](docs/prototype-board.html) | 板块视图 UI 参照 |
 
 ## 进度与 Spec
 

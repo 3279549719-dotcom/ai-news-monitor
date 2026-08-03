@@ -10,3 +10,5 @@ data/seen.json
 reports/
 *.log
 .DS_Store
+.crawl4ai-token
+scripts/_crawl4ai-items.json

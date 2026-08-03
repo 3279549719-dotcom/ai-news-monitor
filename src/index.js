@@ -8,6 +8,7 @@ const { fetchArticleContent } = require('./reader');
 const { summarizeArticle, analyzeResult } = require('./ai');
 const { searchAll } = require('./search');
 const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources } = require('./store');
+const { crosscheck } = require('./crosscheck');
 
 const PIPELINES = {
   blog: {
@@ -20,7 +21,7 @@ const PIPELINES = {
   },
   search: {
     fetch: (kw, sources = []) => searchAll(kw.query, sources),
-    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet, item.tier),
+    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet, item.tier, kw.category_schema),
   },
 };
 
@@ -35,8 +36,8 @@ async function analyzeItems(keyword, items, limit = 15) {
       console.error(`  分析失败 (${item.title.slice(0, 30)}): ${r.reason?.message}`);
       return acc;
     }
-    const { relevant, score, summary } = r.value;
-    return relevant ? [...acc, { ...item, score, summary }] : acc;
+    const { relevant, score, summary, event, category } = r.value;
+    return relevant ? [...acc, { ...item, score, summary, event, category }] : acc;
   }, []);
 }
 
@@ -64,29 +65,48 @@ async function processKeyword(keyword) {
   const relevant = await analyzeItems(keyword, newItems);
   console.log(`  相关: ${relevant.length}/${Math.min(newItems.length, 15)}`);
 
-  const relevantUrls = new Set(relevant.map(r => r.url));
-  const toSave = newItems.slice(0, 15).map(item => ({
+  // 交叉验证（方案B）：事件聚类 + 置信度 + 冲突标记
+  let crosschecked = relevant;
+  if (relevant.length > 0) {
+    crosschecked = crosscheck(relevant);
+    const high = crosschecked.filter(a => a.confidence === 'high').length;
+    const conflict = crosschecked.filter(a => a.conflict_flag).length;
+    console.log(`  [Crosscheck] ${crosschecked.length} 篇 → 高置信 ${high}，单源 ${crosschecked.length - high}，冲突 ${conflict}`);
+  }
+
+  const relevantUrls = new Set(crosschecked.map(r => r.url));
+  const toSave = newItems.slice(0, 15).map(item => {
+    const xc = crosschecked.find(r => r.url === item.url);
+    return {
     keyword_id: keyword.id,
     title: item.title,
     url: item.url,
     source: item.source || keyword.type,
     snippet: item.snippet || null,
     summary: relevantUrls.has(item.url)
-      ? (relevant.find(r => r.url === item.url)?.summary ?? null)
+      ? (xc?.summary ?? null)
       : null,
     score: relevantUrls.has(item.url)
-      ? (relevant.find(r => r.url === item.url)?.score ?? 0)
+      ? (xc?.score ?? 0)
       : 0,
     published_at: item.publishedAt
       ? new Date(item.publishedAt).toISOString()
       : null,
     source_tier: item.tier ?? null,
-  }));
+    category: xc?.category ?? null,
+    event: xc?.event ?? null,
+    confidence: xc?.confidence ?? null,
+    corroboration_count: xc?.corroboration_count ?? 0,
+    conflict_flag: xc?.conflict_flag ?? false,
+  };});
 
   await saveArticles(toSave);
-  return relevant;
+  return crosschecked;
 }
 
+const CONFIDENCE_LABEL = { high: '高置信', medium: '待核实', low: '存疑' };
+
+// 日报（方案C）：按关键词板块模板(category_schema)分组，附带置信度/印证数/冲突标记
 function buildReport(sections) {
   const date = new Date().toLocaleString('zh-CN');
   const total = sections.reduce((n, s) => n + s.results.length, 0);
@@ -98,10 +118,30 @@ function buildReport(sections) {
   for (const { keyword, results } of sections) {
     if (results.length === 0) continue;
     lines.push(`## ${keyword.name}`, '');
+
+    // 按板块模板分组；无 category 的文章归「未分类」
+    const schema = keyword.category_schema || {};
+    const boards = Object.entries(schema).map(([key, label]) => ({ key, label, items: [] }));
+    boards.push({ key: '__uncat', label: '未分类', items: [] });
     for (const item of results) {
-      const meta = [`来源: ${item.source || keyword.type}`, `相关度: ${item.score}`];
-      if (item.publishedAt) meta.push(`发布: ${new Date(item.publishedAt).toLocaleDateString()}`);
-      lines.push(`### ${item.title}`, `> ${item.url}`, `> ${meta.join('  |  ')}`, '', item.summary || '', '');
+      const board = boards.find(b => b.key === item.category) || boards[boards.length - 1];
+      board.items.push(item);
+    }
+
+    for (const board of boards) {
+      if (board.items.length === 0) continue;
+      lines.push(`### ${board.label}（${board.items.length}）`, '');
+      for (const item of board.items) {
+        const meta = [`来源: ${item.source || keyword.type}`];
+        if (item.tier != null) meta.push(`T${item.tier}`);
+        meta.push(`相关度: ${item.score}`);
+        if (item.confidence) meta.push(CONFIDENCE_LABEL[item.confidence] || item.confidence);
+        if (item.corroboration_count > 1) meta.push(`${item.corroboration_count}源印证`);
+        if (item.conflict_flag) meta.push('⚠️冲突');
+        if (item.publishedAt) meta.push(`发布: ${new Date(item.publishedAt).toLocaleDateString()}`);
+        lines.push(`- ${item.title}`, `  > ${item.url}`, `  > ${meta.join('  |  ')}`, '', item.summary || '', '');
+      }
+      lines.push('');
     }
     lines.push('---', '');
   }
@@ -144,18 +184,22 @@ async function run() {
   console.log(`\n报告已保存: ${reportPath}`);
 }
 
-const cronSchedule = process.env.CRON_SCHEDULE;
-if (cronSchedule) {
-  if (!cron.validate(cronSchedule)) {
-    console.error(`CRON_SCHEDULE 格式无效: "${cronSchedule}"`);
-    process.exit(1);
+if (require.main === module) {
+  const cronSchedule = process.env.CRON_SCHEDULE;
+  if (cronSchedule) {
+    if (!cron.validate(cronSchedule)) {
+      console.error(`CRON_SCHEDULE 格式无效: "${cronSchedule}"`);
+      process.exit(1);
+    }
+    console.log(`定时任务已启动，计划: ${cronSchedule}`);
+    run().catch(console.error);
+    cron.schedule(cronSchedule, () => run().catch(console.error));
+  } else {
+    run().catch(err => {
+      console.error('运行出错:', err.message);
+      process.exit(1);
+    });
   }
-  console.log(`定时任务已启动，计划: ${cronSchedule}`);
-  run().catch(console.error);
-  cron.schedule(cronSchedule, () => run().catch(console.error));
-} else {
-  run().catch(err => {
-    console.error('运行出错:', err.message);
-    process.exit(1);
-  });
 }
+
+module.exports = { run, buildReport };

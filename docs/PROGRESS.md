@@ -87,6 +87,26 @@
 - Sky Sports / 90min：AI 链接识别偶尔返回空 JSON（页面结构非标准），不影响整体管线
 - claude.com/blog：偶发超时（Anthropic 服务端）
 
+## F-006/F-007 方案BC交付内容（2026-08-03）
+
+**交叉验证（方案B）：**
+- `src/crosscheck.js`：事件聚类（中文 bigram 相似度，阈值 0.4）+ 置信度（≥2 源=high / 单源=medium / 与 T0 冲突=low+flag）
+- `src/ai.js` analyzeResult 输出扩展为 `{score, summary, event, category}`
+- `src/index.js` 管线接入：analyzeItems → crosscheck → saveArticles（新字段入库），processKeyword 返回 crosschecked
+- `index.js` 增加 `require.main === module` 守卫并导出 buildReport（可单测）
+
+**板块视图（方案C）：**
+- `client/src/components/BoardView.tsx`：2 行 3 列网格（官方红框/转会/伤病/管理层/赛事/今日概览），卡片带置信度徽章 + 印证数 + 分类标签
+- KeywordsTab 选中 MU → BoardView，其他关键词 → ArticleFeed（回归通过）
+- 日报 `buildReport` 按 category_schema 板块分组 + 置信度/印证数/冲突标记
+
+**crawl4ai 一次性验证（替代 Firecrawl）：**
+- `scripts/run-crawl4ai-demo.js`：读 `scripts/_crawl4ai-items.json` → filterNewItems → analyzeResult → crosscheck → saveArticles
+- 抓取三 tier 真实数据：T0 manutd.com / T1 Simon Stone·Ornstein(X) / T2 Sky·Guardian·90min
+- 结果：25 条 → 21 新 → 13 相关 → Tielemans 3 源聚类 high、单源 medium；Ornstein 非 MU 帖被相关性过滤拒绝
+- 前端板块视图实机验证：DOM dump 确认六板块 + 置信度/印证数渲染真实数据，截图 `docs/board-view-real.png`
+- **结论：crawl4ai 跨 tier 抓取可行**，接入生产管线（REST 模块 + X 账号建模）待用户 go/no-go
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：
@@ -99,8 +119,8 @@
 | 3 | 优化前端页面 | 已完成（F-004） |
 | 4 | 优化信息获取来源（per-keyword 定向 RSS + 来源可信度） | **代码完成** → specs/001（信源 URL 待修复） |
 | 4b | Firecrawl 直抓替代 Google News，前端 Tier 展示 | **代码完成** → specs/002 |
-| 5 | 信息流筛选和排序 | 待开发 |
-| 6 | 优化热点信息展示 | 待开发 |
+| 5 | 信息流筛选和排序 | 已完成（Tier 筛选 + 排序，F-004） |
+| 6 | 优化热点信息展示 | 部分完成（方案C 板块视图 + 交叉验证置信度，见 F-006/F-007） |
 | 7 | 优化 AI 分析准确度 + 扩展思路 | 待开发 |
 | 8 | Skills 开发（Agent Skill 技能包） | 待开发 |
 
@@ -114,5 +134,6 @@
 - [ ] Sky Sports / 90min AI 链接识别稳定性优化
 - [ ] GitHub 远程仓库推送（需 `gh auth login` 后执行）
 - [ ] RLS 策略收紧（从宽松模式改为认证模式）
-- [ ] 交叉校验打分引擎（方案B）
-- [ ] 四板块分类报告（方案C）
+- [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）
+- [x] 四板块分类报告（方案C）— 2026-08-03 板块视图 + 日报按板块分组完成
+- [ ] crawl4ai 接入生产管线（go/no-go 待用户确认：一次性 demo 已验证可行）

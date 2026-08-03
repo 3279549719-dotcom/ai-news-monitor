@@ -100,3 +100,39 @@ articles
   └── source_tier ← 从 keyword_sources.tier 继承
   └── UNIQUE(keyword_id, url) → 天然去重
 ```
+
+---
+
+## 追加决策：方案B/C 设计定稿（2026-08-03 18:15）
+
+### 决策记录
+
+| # | 决策点 | 结论 | 理由 |
+|---|--------|------|------|
+| D-01 | 前端布局 | 照设计稿做：2行3列网格，蓝白配色 | Patrick 确认（决策1） |
+| D-02 | 折叠面板 | 去掉，右侧改为「今日概览」静态统计卡 | Patrick 确认化简（决策2），统计卡保留 |
+| D-03 | 板块模板 | 关键词级模板（keywords.category_schema），MU 用 8 类专属，其他用通用类 | Patrick 确认方案A（决策3） |
+| D-04 | 卡片标签 | 蓝色分类标签 = 板块名（category） | Patrick 确认（决策4） |
+| D-05 | 事件阶段标签 | 不做（静态/动态都不做），只保留板块分类标签 | Patrick 确认（决策5） |
+| D-06 | 交叉验证范围 | 先做轻量版：本次运行内聚类 | 渐进升级，跑顺后升级到 7 天窗口 |
+| D-07 | 传闻/辟谣区 | 由交叉验证结果自动驱动（单源低置信→传闻；conflict→辟谣），不手工分类 | 逻辑干净，避免 AI 双重分类 |
+
+### 数据模型变更（待开发时执行）
+
+`sql
+ALTER TABLE articles
+  ADD COLUMN category TEXT,
+  ADD COLUMN event TEXT,
+  ADD COLUMN confidence TEXT CHECK (confidence IN ('high','medium','low')),
+  ADD COLUMN corroboration_count INT DEFAULT 0,
+  ADD COLUMN conflict_flag BOOLEAN DEFAULT false;
+
+ALTER TABLE keywords
+  ADD COLUMN category_schema JSONB;  -- 每关键词的板块模板
+`
+
+### 原型确认
+
+- 原型文件：docs/prototype-board.html（+ 截图 prototype-board.png）
+- 6 格布局确认：官方公告(红框) / 转会合同 / 伤病停赛 / 管理层教练组 / 赛事竞技 / 今日概览
+- 卡片结构确认：meta 行（来源|Tier|日期）→ 标题 → AI摘要 → 分类标签 + 原始链接
