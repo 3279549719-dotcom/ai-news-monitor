@@ -34,7 +34,15 @@ async function summarizeArticle(title, content) {
 }
 
 // For search sources: title + snippet → relevance score + summary
-async function analyzeResult(query, title, snippet) {
+// tier: 0/1 = top trusted media, 3 = low-trust tabloid, null/other = neutral
+async function analyzeResult(query, title, snippet, tier = null) {
+  const tierHint =
+    tier === 0 || tier === 1
+      ? '来源为顶级可信媒体，评分可相对宽松。'
+      : tier === 3
+        ? '来源为低可信小报，对标题党和捕风捉影内容主动降分。'
+        : '';
+
   const response = await getClient().chat.completions.create({
     model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
     messages: [
@@ -55,7 +63,8 @@ async function analyzeResult(query, title, snippet) {
           `- 60-79：文章明显围绕该关键词展开，非泛泛提及\n` +
           `- 30-59：边缘相关，仅偶尔提及或仅标题含关键词词根\n` +
           `- 0-29：无关或仅共享某个词\n` +
-          `score>=60 才视为相关并生成摘要。打分偏保守，宁可漏掉模糊结果，不要放入不相关内容。`,
+          `score>=60 才视为相关并生成摘要。打分偏保守，宁可漏掉模糊结果，不要放入不相关内容。` +
+          (tierHint ? `\n${tierHint}` : ''),
       },
     ],
     max_tokens: 300,

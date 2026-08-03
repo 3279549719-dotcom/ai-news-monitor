@@ -1,0 +1,19 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /e/claude/ai-news-monitor/client && npm run type-check 2>&1 | tail -20"
+          },
+          {
+            "type": "command",
+            "command": "cd /e/claude/ai-news-monitor/client && npm run lint 2>&1 | tail -20"
+          }
+        ]
+      }
+    ]
+  }
+}

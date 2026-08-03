@@ -1,49 +1,6 @@
 const axios = require('axios');
-const cheerio = require('cheerio');
-
-// Google News RSS — public feed, no API key, clean XML
-async function searchGoogleNews(query) {
-  try {
-    const url =
-      `https://news.google.com/rss/search?q=${encodeURIComponent(query)}` +
-      `&hl=en-US&gl=US&ceid=US:en`;
-    const { data } = await axios.get(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      timeout: 15000,
-    });
-
-    const $ = cheerio.load(data, { xmlMode: true });
-    const results = [];
-
-    $('item').each((_, el) => {
-      const rawTitle = $(el).find('title').first().text().trim();
-      const link = $(el).find('link').first().text().trim() ||
-                   $(el).find('link').first().next().text().trim();
-      const description = $(el).find('description').first().text()
-        .replace(/<[^>]+>/g, '').trim();
-      const pubDate = $(el).find('pubDate').first().text().trim();
-
-      // Google News titles sometimes include " - Source Name" suffix
-      const title = rawTitle.replace(/ - [^-]+$/, '').trim();
-      const href = link || $(el).find('guid').first().text().trim();
-
-      if (title && href && href.startsWith('http')) {
-        results.push({
-          title,
-          url: href,
-          source: 'google-news',
-          snippet: description.slice(0, 300),
-          publishedAt: pubDate ? new Date(pubDate) : null,
-        });
-      }
-    });
-
-    return results;
-  } catch (err) {
-    console.error(`  [Google News] 搜索失败: ${err.message}`);
-    return [];
-  }
-}
+const { fetchDirectSources } = require('./scraper-direct');
+const { getTier } = require('./tiers');
 
 // HackerNews via Algolia API — best for tech topics, free
 async function searchHackerNews(query) {
@@ -62,6 +19,7 @@ async function searchHackerNews(query) {
         source: 'hackernews',
         snippet: (h.story_text || '').replace(/<[^>]+>/g, '').slice(0, 300),
         publishedAt: h.created_at ? new Date(h.created_at) : null,
+        tier: getTier(h.url),
       }));
   } catch (err) {
     console.error(`  [HackerNews] 搜索失败: ${err.message}`);
@@ -69,31 +27,50 @@ async function searchHackerNews(query) {
   }
 }
 
+// Deduplicate by normalized URL, keeping the entry with the lower (more trusted) tier.
 function deduplicateByUrl(results) {
-  const seen = new Set();
-  return results.filter(r => {
+  const tierOf = r => (r.tier === null || r.tier === undefined) ? Infinity : r.tier;
+  const map = new Map();
+
+  for (const r of results) {
     const key = r.url
       .replace(/^https?:\/\/(www\.)?/, '')
       .replace(/[?#].*$/, '')
       .replace(/\/$/, '');
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+    if (!map.has(key)) {
+      map.set(key, r);
+    } else {
+      if (tierOf(r) < tierOf(map.get(key))) {
+        map.set(key, r);
+      }
+    }
+  }
+
+  return Array.from(map.values());
 }
 
-async function searchAll(query) {
-  const [gnRes, hnRes] = await Promise.allSettled([
-    searchGoogleNews(query),
-    searchHackerNews(query),
-  ]);
+async function searchAll(query, keywordSources = []) {
+  const configuredSources = keywordSources.filter(s => s.fetch_type === 'firecrawl' && s.scrape_url);
 
-  const combined = [
-    ...(gnRes.status === 'fulfilled' ? gnRes.value : []),
-    ...(hnRes.status === 'fulfilled' ? hnRes.value : []),
-  ];
+  const tasks = [];
+  // HackerNews only when no whitelist sources configured
+  if (configuredSources.length === 0) {
+    tasks.push(searchHackerNews(query));
+  }
+  if (configuredSources.length > 0) {
+    tasks.push(fetchDirectSources(configuredSources));
+  }
+
+  const settled = await Promise.allSettled(tasks);
+
+  const combined = [];
+  for (const res of settled) {
+    if (res.status === 'fulfilled') {
+      combined.push(...res.value);
+    }
+  }
 
   return deduplicateByUrl(combined);
 }
 
-module.exports = { searchAll, searchGoogleNews, searchHackerNews };
+module.exports = { searchAll, searchHackerNews };

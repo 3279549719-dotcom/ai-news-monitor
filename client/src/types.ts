@@ -19,6 +19,7 @@ export interface Article {
   score: number;
   published_at: string | null;
   created_at: string;
+  source_tier?: number | null;
   keywords?: {
     name: string;
     type: string;
@@ -30,4 +31,5 @@ export interface FilterState {
   source: string;
   sortBy: 'created_at' | 'score';
   search: string;
+  tier: number | null;
 }

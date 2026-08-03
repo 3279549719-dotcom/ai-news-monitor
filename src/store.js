@@ -36,4 +36,16 @@ async function saveArticles(records) {
   });
 }
 
-module.exports = { loadKeywords, filterNewItems, saveArticles };
+async function loadKeywordSources(keywordId) {
+  return withRetry(async () => {
+    const { data, error } = await getClient()
+      .from('keyword_sources')
+      .select('rss_url, scrape_url, source_name, tier, fetch_type')
+      .eq('keyword_id', keywordId)
+      .eq('enabled', true);
+    if (error) throw new Error(`loadKeywordSources: ${error.message}`);
+    return data || [];
+  });
+}
+
+module.exports = { loadKeywords, filterNewItems, saveArticles, loadKeywordSources };

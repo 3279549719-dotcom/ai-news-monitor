@@ -22,6 +22,7 @@ export function useArticles(filters: FilterState, page: number) {
 
     if (filters.keywordId) query = query.eq('keyword_id', filters.keywordId);
     if (filters.source) query = query.eq('source', filters.source);
+    if (filters.tier !== null && filters.tier !== undefined) query = query.eq('source_tier', filters.tier);
     if (filters.search.trim()) {
       const term = `%${filters.search.trim()}%`;
       query = query.or(`title.ilike.${term},summary.ilike.${term}`);
@@ -44,7 +45,7 @@ export function useArticles(filters: FilterState, page: number) {
       }
       setLoading(false);
     });
-  }, [filters, page]);
+  }, [filters.keywordId, filters.source, filters.search, filters.sortBy, filters.tier, page]);
 
   return { articles, total, loading, error };
 }

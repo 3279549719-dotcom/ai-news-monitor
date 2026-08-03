@@ -7,7 +7,7 @@ const { fetchArticleList } = require('./scraper');
 const { fetchArticleContent } = require('./reader');
 const { summarizeArticle, analyzeResult } = require('./ai');
 const { searchAll } = require('./search');
-const { loadKeywords, filterNewItems, saveArticles } = require('./store');
+const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources } = require('./store');
 
 const PIPELINES = {
   blog: {
@@ -19,8 +19,8 @@ const PIPELINES = {
     },
   },
   search: {
-    fetch: (kw) => searchAll(kw.query),
-    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet),
+    fetch: (kw, sources = []) => searchAll(kw.query, sources),
+    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet, item.tier),
   },
 };
 
@@ -50,7 +50,11 @@ async function processKeyword(keyword) {
   const label = keyword.type === 'blog' ? keyword.url : `"${keyword.query}"`;
   console.log(`\n[${keyword.name}] ${keyword.type === 'blog' ? '抓取' : '搜索'} ${label}`);
 
-  const allItems = await pipeline.fetch(keyword);
+  const keywordSources = keyword.type === 'search'
+    ? await loadKeywordSources(keyword.id)
+    : [];
+
+  const allItems = await pipeline.fetch(keyword, keywordSources);
   console.log(`  找到 ${allItems.length} 条`);
 
   const newItems = await filterNewItems(allItems, keyword.id);
@@ -76,6 +80,7 @@ async function processKeyword(keyword) {
     published_at: item.publishedAt
       ? new Date(item.publishedAt).toISOString()
       : null,
+    source_tier: item.tier ?? null,
   }));
 
   await saveArticles(toSave);
