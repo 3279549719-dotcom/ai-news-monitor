@@ -1,5 +1,6 @@
 const axios = require('axios');
-const { fetchDirectSources } = require('./scraper-direct');
+const { fetchSource } = require('./scraper-direct');
+const crawl4ai = require('./crawl4ai-fetch');
 const { getTier } = require('./tiers');
 
 // HackerNews via Algolia API — best for tech topics, free
@@ -49,24 +50,34 @@ function deduplicateByUrl(results) {
   return Array.from(map.values());
 }
 
+// crawl4ai 优先；失败/空结果降级 scraper-direct；X 账号仅走 crawl4ai（axios 抓 X 无意义）
+async function fetchSourceWithFallback(source) {
+  try {
+    const items = await crawl4ai.fetchSourceArticles(source);
+    if (items.length === 0) throw new Error('crawl4ai 空结果');
+    console.log(`  [Crawl4ai] ${source.source_name}: ${items.length} 篇`);
+    return items;
+  } catch (err) {
+    if (crawl4ai.isXUrl(source.scrape_url)) {
+      console.log(`  [Crawl4ai] X 源 ${source.source_name} 无结果，跳过降级: ${err.message}`);
+      return [];
+    }
+    console.log(`  [Crawl4ai] ${source.source_name} → 降级 Direct: ${err.message}`);
+    try { return await fetchSource(source); } catch (e) { return []; }
+  }
+}
+
 async function searchAll(query, keywordSources = []) {
   const configuredSources = keywordSources.filter(s => s.fetch_type === 'firecrawl' && s.scrape_url);
 
-  const tasks = [];
+  const combined = [];
   // HackerNews only when no whitelist sources configured
   if (configuredSources.length === 0) {
-    tasks.push(searchHackerNews(query));
-  }
-  if (configuredSources.length > 0) {
-    tasks.push(fetchDirectSources(configuredSources));
-  }
-
-  const settled = await Promise.allSettled(tasks);
-
-  const combined = [];
-  for (const res of settled) {
-    if (res.status === 'fulfilled') {
-      combined.push(...res.value);
+    combined.push(...await searchHackerNews(query));
+  } else {
+    // 逐源顺序抓取（避免并发压垮 crawl4ai 容器）
+    for (const source of configuredSources) {
+      combined.push(...await fetchSourceWithFallback(source));
     }
   }
 

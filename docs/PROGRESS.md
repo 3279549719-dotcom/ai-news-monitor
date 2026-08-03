@@ -105,7 +105,22 @@
 - 抓取三 tier 真实数据：T0 manutd.com / T1 Simon Stone·Ornstein(X) / T2 Sky·Guardian·90min
 - 结果：25 条 → 21 新 → 13 相关 → Tielemans 3 源聚类 high、单源 medium；Ornstein 非 MU 帖被相关性过滤拒绝
 - 前端板块视图实机验证：DOM dump 确认六板块 + 置信度/印证数渲染真实数据，截图 `docs/board-view-real.png`
-- **结论：crawl4ai 跨 tier 抓取可行**，接入生产管线（REST 模块 + X 账号建模）待用户 go/no-go
+
+## F-008 crawl4ai 接入生产管线（2026-08-03）
+
+**新增 `src/crawl4ai-fetch.js`（主抓取通道）：**
+- REST 调本地容器 `localhost:11235/crawl`，token 从 `.crawl4ai-token`/env 读，健康检查缓存 30s
+- 站点文章 URL 模式筛选（manutd `/en/news/`、Guardian `/football/20xx/`、Sky `/football/news/<id>/` 等），匹配 ≥3 直接用标题，避免 DeepSeek 被导航淹没
+- X 账号页：`links.external` 的 t.co 链即文章（帖子标题作标题），无需 AI
+- 候选不足时回退 DeepSeek 精选
+
+**`src/search.js` 接入：** 逐源 crawl4ai 优先 → 失败/空结果降级 scraper-direct；X 源不降级（axios 抓 X 无意义）
+
+**信源增补（白名单现 7 源三 tier）：** T0 manutd｜T1 Simon Stone(X)、David Ornstein(X)｜T2 Sky、ESPN、90min、Guardian（新增）
+
+**回归：** `node src/index.js` 全通过——MU 抓 123 条（T0:10/T1:10/T2:103），ESPN crawl4ai 空自动降级 Direct 8 篇，6 篇相关入库，日报按板块分组输出
+
+**已知限制：** Guardian 文章标题由 URL slug 生成（非原标题）；90min 每轮产出偏多（58 条），靠相关度过滤收敛；X 账号每日抓取受反爬影响可能偶发 0 结果（跳过不阻断）
 
 ## 项目开发路线图
 
@@ -136,4 +151,4 @@
 - [ ] RLS 策略收紧（从宽松模式改为认证模式）
 - [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）
 - [x] 四板块分类报告（方案C）— 2026-08-03 板块视图 + 日报按板块分组完成
-- [ ] crawl4ai 接入生产管线（go/no-go 待用户确认：一次性 demo 已验证可行）
+- [x] crawl4ai 接入生产管线（Phase E）— 2026-08-03 落地并回归，见 F-008

@@ -106,6 +106,26 @@ async function scrapeSourceUrl(pageUrl, sourceName) {
   }
 }
 
+// 抓单个信源，返回 items 数组（供 search.js 逐源降级调用）
+async function fetchSource(source) {
+  console.log(`  [Direct] 抓取 ${source.source_name}...`);
+  const articles = await scrapeSourceUrl(source.scrape_url, source.source_name);
+  console.log(`  [Direct] ${source.source_name}: 找到 ${articles.length} 篇`);
+
+  const sourceSlug = source.source_name.toLowerCase().replace(/\s+/g, '-');
+  return articles
+    .filter(item => item.url)
+    .map(item => ({
+      title: item.title,
+      url: item.url,
+      snippet: '',
+      publishedAt: item.publishedAt || new Date(),
+      source_name: source.source_name,
+      source: sourceSlug,
+      tier: source.tier,
+    }));
+}
+
 async function fetchDirectSources(sources) {
   if (!sources || sources.length === 0) return [];
 
@@ -119,28 +139,15 @@ async function fetchDirectSources(sources) {
     const source = enabledSources[i];
     if (i > 0) await new Promise(r => setTimeout(r, REQUEST_DELAY_MS));
 
-    console.log(`  [Direct] 抓取 ${source.source_name}...`);
-    const articles = await scrapeSourceUrl(source.scrape_url, source.source_name);
-    console.log(`  [Direct] ${source.source_name}: 找到 ${articles.length} 篇`);
-
-    for (const item of articles) {
-      if (!item.url || seen.has(item.url)) continue;
+    const items = await fetchSource(source);
+    for (const item of items) {
+      if (seen.has(item.url)) continue;
       seen.add(item.url);
-
-      const sourceSlug = source.source_name.toLowerCase().replace(/\s+/g, '-');
-      results.push({
-        title: item.title,
-        url: item.url,
-        snippet: '',
-        publishedAt: item.publishedAt || new Date(),
-        source_name: source.source_name,
-        source: sourceSlug,
-        tier: source.tier,
-      });
+      results.push(item);
     }
   }
 
   return results;
 }
 
-module.exports = { fetchDirectSources };
+module.exports = { fetchDirectSources, fetchSource };

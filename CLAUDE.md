@@ -29,8 +29,9 @@ src/
   db.js             Supabase client 单例 + withRetry 工具
   store.js          数据访问层：loadKeywords、loadKeywordSources、filterNewItems、saveArticles
   search.js         search 类型：白名单信源抓取调度 + HackerNews 兜底
-  scraper-direct.js 信源直抓：axios 拉 HTML → 正则提取链接 → DeepSeek 识别文章
-  firecrawl.js      Firecrawl API 抓取（当前余额不足，降级路径启用中）
+  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章URL模式筛选；X 账号走 external t.co 链
+  scraper-direct.js 信源直抓降级：axios 拉 HTML → 正则提取链接 → DeepSeek 识别文章
+  firecrawl.js      Firecrawl API（已停用：余额耗尽 402）
   ai.js             summarizeArticle（blog）、analyzeResult（search，含 tier 评分 + event/category 输出）
   crosscheck.js     交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记
   tiers.js          getTier(url)：域名 → Tier 映射
@@ -60,9 +61,9 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 
 - 关键词统一从 Supabase `keywords` 表读取（`keywords.json` 已删除）
 - search 类型：AI 评分 ≥60 视为相关（`MIN_SCORE=60`）；blog 类型：全部通过（score=100）
-- **抓取通道**：优先 Firecrawl API（`src/firecrawl.js`）；当前 Firecrawl 余额不足（HTTP 402），`src/search.js` 自动走降级路径 `src/scraper-direct.js`（axios + DeepSeek 识别链接）。额度恢复后切回主路径即可，无需改代码
+- **抓取通道（Phase E）**：`src/search.js` 逐源调用 `src/crawl4ai-fetch.js`（REST 调本地 crawl4ai 容器）→ 失败/空结果自动降级 `src/scraper-direct.js`（axios + DeepSeek 识别链接）。Firecrawl API 已停用。**定时管线依赖 Docker 容器 `crawl4ai` 在线**（`docker start crawl4ai`）；容器不可用时自动逐源降级，不影响其余源。X 账号信源仅走 crawl4ai（axios 抓 X 无意义），失败直接跳过
 - **白名单信源**：只抓取 `keyword_sources` 表中 `fetch_type='firecrawl'` 且 `enabled=true` 的信源页面。无白名单的关键词走 HackerNews 兜底
-- 信源页面选择国内可达站点（Man Utd Official、ESPN、Sky Sports、90min），避免 BBC / Guardian 等超时源
+- 信源页面选择国内可达站点（Man Utd Official、ESPN、Sky Sports、90min）+ crawl4ai 可达的 Guardian；避免 BBC / The Athletic（Node 与容器均不可达）
 - RLS 当前宽松模式（`USING (true)`），上线前须收紧
 - Windows 路径统一使用 `E:\claude\ai-news-monitor`（Git Bash 用 `/e/claude/...`）
 
@@ -79,10 +80,10 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 ## 已知陷阱
 
 ### 工具 / 依赖
-- **Firecrawl 额度不足时**：`api.firecrawl.dev` 返回 HTTP 402，此时 `src/search.js` 走 `scraper-direct.js` 降级路径。额度恢复后切回 `firecrawl.js`
+- **Firecrawl 已停用**（HTTP 402 余额耗尽）：管线主抓取通道已切换为 crawl4ai（`src/crawl4ai-fetch.js`）。如需恢复 Firecrawl，改 `search.js` 的逐源通道即可
 - **cheerio 解析现代 SPA 页面**：页面内联 CSS/JS 会被误判为选择器（报 `Unknown pseudo-class` / `Unmatched selector`）。提取链接优先使用正则：`/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi`，再交给 DeepSeek 筛选
 - **Sky Sports / 90min**：AI 链接识别偶发返回空 JSON（非标准页面结构），单源失败自动跳过，不影响其他源
-- **Crawl4AI MCP（交互式抓取，方案BC阶段新增）**：Docker 容器 `unclecode/crawl4ai` 跑在 `localhost:11235`，已配为 Claude Code SSE MCP（`crawl4ai`），带 `CRAWL4AI_API_TOKEN` 鉴权（token 存 `.crawl4ai-token`，已 gitignore）。**仅 Agent 交互式抓取用，不参与 `node src/index.js` 定时管线**（管线仍走 scraper-direct）。用前需 `docker start crawl4ai`。**本机代理陷阱**：Windows 用户级 `HTTP_PROXY=127.0.0.1:7890` 会拦截 localhost 导致 502，已设用户级 `NO_PROXY=localhost,127.0.0.1`（新开终端才生效）
+- **Crawl4AI**：Docker 容器 `unclecode/crawl4ai` 跑在 `localhost:11235`，既是 Agent 交互式抓取 MCP（`crawl4ai`），也是**定时管线主抓取通道（Phase E，`src/crawl4ai-fetch.js`）**，带 `CRAWL4AI_API_TOKEN` 鉴权（token 存 `.crawl4ai-token`，已 gitignore）。用前需 `docker start crawl4ai`。**本机代理陷阱**：Windows 用户级 `HTTP_PROXY=127.0.0.1:7890` 会拦截 localhost 导致 502，已设用户级 `NO_PROXY=localhost,127.0.0.1`（新开终端才生效）
 - **crawl4ai 信源可达性实测（2026-08-03）**：跨 Tier 均可抓——T0 manutd.com、T1 X 账号（Simon Stone/Ornstein 帖子+链接可提取）、T2 Sky/Guardian（Guardian Node 直连不可达但容器可达）/90min（跳转 si.com）。**不可用**：MEN 站点 404（文档 URL 失效）、ESPN 团队页 JS 重拿不到内容。**容器限制**：SSRF 保护使容器内浏览器无法访问宿主机 localhost / host.docker.internal（不能给本地 dev server 截图）；execute_js 端点默认禁用，需 `CRAWL4AI_EXECUTE_JS_ENABLED=true` 重建容器
 - **一次性验证脚本 `scripts/run-crawl4ai-demo.js`**：读 `scripts/_crawl4ai-items.json`（crawl4ai 抓取整理的真实 items）→ 复用 analyzeResult + crosscheck + saveArticles 跑通三 tier 交叉验证。仅验证用，不入生产管线
 
