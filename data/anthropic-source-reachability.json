@@ -1,0 +1,735 @@
+{
+  "summary": {
+    "testedAt": "2026-08-04T03:18:53.200Z",
+    "crawl4aiBase": "http://localhost:11235/crawl",
+    "totalUrls": 7,
+    "crawl4ai": {
+      "success": 6,
+      "fail": 1,
+      "avgTimeMs": 1468,
+      "totalLinks": 890
+    },
+    "direct": {
+      "success": 4,
+      "fail": 3,
+      "avgTimeMs": 1480
+    }
+  },
+  "results": [
+    {
+      "name": "TechCrunch Anthropic Tag",
+      "url": "https://techcrunch.com/tag/anthropic/",
+      "tier": 1,
+      "method": "crawl4ai",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 22758,
+      "internalLinks": 209,
+      "externalLinks": 12,
+      "sampleInternalLinks": [
+        {
+          "text": "Skip to content",
+          "href": "https://techcrunch.com/tag/anthropic/#wp--skip-link--target"
+        },
+        {
+          "text": " ![",
+          "href": "https://techcrunch.com/wp-content/uploads/2026/05/tc-lockup-hp.svg"
+        },
+        {
+          "text": " ![",
+          "href": "https://techcrunch.com/wp-content/uploads/2024/09/tc-logo-mobile.svg"
+        },
+        {
+          "text": "Latest",
+          "href": "https://techcrunch.com/latest/"
+        },
+        {
+          "text": "Startups",
+          "href": "https://techcrunch.com/category/startups/"
+        },
+        {
+          "text": "Venture",
+          "href": "https://techcrunch.com/category/venture/"
+        },
+        {
+          "text": "Apple",
+          "href": "https://techcrunch.com/tag/apple/"
+        },
+        {
+          "text": "Security",
+          "href": "https://techcrunch.com/category/security/"
+        },
+        {
+          "text": "AI",
+          "href": "https://techcrunch.com/category/artificial-intelligence/"
+        },
+        {
+          "text": "Apps",
+          "href": "https://techcrunch.com/category/apps/"
+        }
+      ],
+      "sampleExternalLinks": [
+        {
+          "text": " StrictlyVC ",
+          "href": "https://strictlyvc.com/"
+        },
+        {
+          "text": " Crunchboard ",
+          "href": "https://www.crunchboard.com/"
+        },
+        {
+          "text": "X",
+          "href": "https://twitter.com/techcrunch"
+        },
+        {
+          "text": "LinkedIn",
+          "href": "https://www.linkedin.com/company/techcrunch"
+        },
+        {
+          "text": "Facebook",
+          "href": "https://www.facebook.com/techcrunch"
+        }
+      ],
+      "hasArticleLinks": {
+        "count": 145,
+        "sample": [
+          {
+            "text": " ![",
+            "href": "https://techcrunch.com/wp-content/uploads/2026/05/tc-lockup-hp.svg"
+          },
+          {
+            "text": " ![",
+            "href": "https://techcrunch.com/wp-content/uploads/2024/09/tc-logo-mobile.svg"
+          },
+          {
+            "text": "Latest",
+            "href": "https://techcrunch.com/latest/"
+          },
+          {
+            "text": "Startups",
+            "href": "https://techcrunch.com/category/startups/"
+          },
+          {
+            "text": "Venture",
+            "href": "https://techcrunch.com/category/venture/"
+          }
+        ]
+      },
+      "elapsedMs": 962,
+      "serverTime": 0.8734798431396484,
+      "error": null
+    },
+    {
+      "name": "The Verge AI",
+      "url": "https://www.theverge.com/ai-artificial-intelligence",
+      "tier": 1,
+      "method": "crawl4ai",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 44957,
+      "internalLinks": 152,
+      "externalLinks": 123,
+      "sampleInternalLinks": [
+        {
+          "text": "Skip to main content",
+          "href": "https://www.theverge.com/ai-artificial-intelligence#content"
+        },
+        {
+          "text": "The homepageThe Verge The Verge logo.",
+          "href": "https://www.theverge.com/"
+        },
+        {
+          "text": "Subscribe",
+          "href": "https://www.theverge.com/subscribe?itm_campaign=desktop-top-navigation-subscribe&itm_medium=site&itm_source=desktop-top-navigation"
+        },
+        {
+          "text": "Sign In",
+          "href": "https://www.theverge.com/auth/login?returnPath=%2Fai-artificial-intelligence"
+        },
+        {
+          "text": "The Verge The Verge logo.",
+          "href": "https://www.theverge.com/"
+        },
+        {
+          "text": "Tech",
+          "href": "https://www.theverge.com/tech"
+        },
+        {
+          "text": "Reviews",
+          "href": "https://www.theverge.com/reviews"
+        },
+        {
+          "text": "Science",
+          "href": "https://www.theverge.com/science"
+        },
+        {
+          "text": "Entertainment",
+          "href": "https://www.theverge.com/entertainment"
+        },
+        {
+          "text": "AI",
+          "href": "https://www.theverge.com/ai-artificial-intelligence"
+        }
+      ],
+      "sampleExternalLinks": [
+        {
+          "text": "TikTok",
+          "href": "https://www.tiktok.com/@verge"
+        },
+        {
+          "text": "YouTube",
+          "href": "https://www.youtube.com/theverge"
+        },
+        {
+          "text": "Instagram",
+          "href": "https://www.instagram.com/verge"
+        },
+        {
+          "text": "Store",
+          "href": "https://shop.theverge.com/"
+        },
+        {
+          "text": "Facebook",
+          "href": "https://www.facebook.com/verge"
+        }
+      ],
+      "hasArticleLinks": {
+        "count": 139,
+        "sample": [
+          {
+            "text": "Subscribe",
+            "href": "https://www.theverge.com/subscribe?itm_campaign=desktop-top-navigation-subscribe&itm_medium=site&itm_source=desktop-top-navigation"
+          },
+          {
+            "text": "Tech",
+            "href": "https://www.theverge.com/tech"
+          },
+          {
+            "text": "Reviews",
+            "href": "https://www.theverge.com/reviews"
+          },
+          {
+            "text": "Science",
+            "href": "https://www.theverge.com/science"
+          },
+          {
+            "text": "Entertainment",
+            "href": "https://www.theverge.com/entertainment"
+          }
+        ]
+      },
+      "elapsedMs": 1900,
+      "serverTime": 1.8397722244262695,
+      "error": null
+    },
+    {
+      "name": "Ars Technica Anthropic Tag",
+      "url": "https://arstechnica.com/tag/anthropic/",
+      "tier": 1,
+      "method": "crawl4ai",
+      "success": false,
+      "statusCode": 202,
+      "markdownLength": 1,
+      "internalLinks": 0,
+      "externalLinks": 0,
+      "sampleInternalLinks": [],
+      "sampleExternalLinks": [],
+      "hasArticleLinks": {
+        "count": 0,
+        "sample": []
+      },
+      "elapsedMs": 1292,
+      "serverTime": 1.2673637866973877,
+      "error": null
+    },
+    {
+      "name": "VentureBeat Anthropic Tag",
+      "url": "https://venturebeat.com/tag/anthropic/",
+      "tier": 1,
+      "method": "crawl4ai",
+      "success": true,
+      "statusCode": 308,
+      "markdownLength": 41090,
+      "internalLinks": 144,
+      "externalLinks": 22,
+      "sampleInternalLinks": [
+        {
+          "text": "",
+          "href": "https://venturebeat.com/"
+        },
+        {
+          "text": "Orchestration",
+          "href": "https://venturebeat.com/category/orchestration"
+        },
+        {
+          "text": "Infrastructure",
+          "href": "https://venturebeat.com/category/infrastructure"
+        },
+        {
+          "text": "Data",
+          "href": "https://venturebeat.com/category/data"
+        },
+        {
+          "text": "Security",
+          "href": "https://venturebeat.com/category/security"
+        },
+        {
+          "text": "Events",
+          "href": "https://venturebeat.com/events"
+        },
+        {
+          "text": "Newsletters",
+          "href": "https://venturebeat.com/newsletters"
+        },
+        {
+          "text": "![Capybara typing on holographic control board in orbit over Earth",
+          "href": "https://venturebeat.com/_next/image?url=https%3A%2F%2Fimages.ctfassets.net%2Fjdtwqhzvc2n1%2FTEZ90oDEVagcCeMlphUJp%2Fc305312054f50210a953952ab93385b1%2FChatGPT_Image_Aug_3__2026__07_32_45_PM.png%3Fw%3D1000%26q%3D100&w=3840&q=50"
+        },
+        {
+          "text": "Qwen3.8-Max arrives with a bold claim: it outperforms GPT-5.6 Sol Max and Fable ",
+          "href": "https://venturebeat.com/technology/qwen3-8-max-arrives-with-a-bold-claim-it-outperforms-gpt-5-6-sol-max-and-fable-5-on-agentic-computer-use"
+        },
+        {
+          "text": "Carl Franzen",
+          "href": "https://venturebeat.com/author/carlfranzen"
+        }
+      ],
+      "sampleExternalLinks": [
+        {
+          "text": "Hybrid BRC",
+          "href": "https://www.brightmachines.com/platform/"
+        },
+        {
+          "text": "Microsoft AI's Superintelligence team",
+          "href": "https://microsoft.ai/"
+        },
+        {
+          "text": "Bing",
+          "href": "https://www.bing.com/"
+        },
+        {
+          "text": "PowerPoint",
+          "href": "https://www.microsoft.com/en-us/microsoft-365/powerpoint"
+        },
+        {
+          "text": "OneDrive",
+          "href": "https://www.microsoft.com/en-us/microsoft-365/onedrive/online-cloud-storage"
+        }
+      ],
+      "hasArticleLinks": {
+        "count": 102,
+        "sample": [
+          {
+            "text": "Orchestration",
+            "href": "https://venturebeat.com/category/orchestration"
+          },
+          {
+            "text": "Infrastructure",
+            "href": "https://venturebeat.com/category/infrastructure"
+          },
+          {
+            "text": "Data",
+            "href": "https://venturebeat.com/category/data"
+          },
+          {
+            "text": "Security",
+            "href": "https://venturebeat.com/category/security"
+          },
+          {
+            "text": "Events",
+            "href": "https://venturebeat.com/events"
+          }
+        ]
+      },
+      "elapsedMs": 814,
+      "serverTime": 0.7659831047058105,
+      "error": null
+    },
+    {
+      "name": "ZDNet Anthropic Topic",
+      "url": "https://www.zdnet.com/topic/anthropic/",
+      "tier": 2,
+      "method": "crawl4ai",
+      "success": true,
+      "statusCode": 404,
+      "markdownLength": 20972,
+      "internalLinks": 245,
+      "externalLinks": 19,
+      "sampleInternalLinks": [
+        {
+          "text": " ",
+          "href": "https://www.zdnet.com/ \"ZDNET\""
+        },
+        {
+          "text": "I wore the world's first HDR10 smart glasses ",
+          "href": "https://www.zdnet.com/article/rayneo-air-4-pro-hdr10-smart-glasses-ces/"
+        },
+        {
+          "text": "TCL's new E Ink tablet beats the Remarkable and Kindle ",
+          "href": "https://www.zdnet.com/article/tcl-note-a1-nxtpaper-ces/"
+        },
+        {
+          "text": "Anker's new charger is one of the most unique I've ever seen ",
+          "href": "https://www.zdnet.com/article/anker-wireless-chargers-ces-2026/"
+        },
+        {
+          "text": "Best laptop cooling pads ",
+          "href": "https://www.zdnet.com/home-and-office/best-laptop-cooling-pad/"
+        },
+        {
+          "text": "Best flip phones ",
+          "href": "https://www.zdnet.com/article/best-flip-phone/"
+        },
+        {
+          "text": "Roku TV vs Fire Stick ",
+          "href": "https://www.zdnet.com/home-and-office/home-entertainment/roku-tv-vs-fire-stick/"
+        },
+        {
+          "text": "Galaxy Buds 3 Pro vs Apple AirPods Pro 3 ",
+          "href": "https://www.zdnet.com/article/apple-airpods-pro-3-vs-samsung-galaxy-buds-3-pro/"
+        },
+        {
+          "text": "M5 MacBook Pro vs M4 MacBook Air ",
+          "href": "https://www.zdnet.com/article/m5-macbook-pro-vs-m4-macbook-air/"
+        },
+        {
+          "text": "Linux Mint vs Zorin OS ",
+          "href": "https://www.zdnet.com/article/linux-mint-vs-zorin-os-i-compared-the-two-windows-alternatives-and-heres-my-advice/"
+        }
+      ],
+      "sampleExternalLinks": [
+        {
+          "text": "ZDNET France ",
+          "href": "https://www.zdnet.fr/"
+        },
+        {
+          "text": "ZDNET Germany ",
+          "href": "https://www.zdnet.de/"
+        },
+        {
+          "text": "ZDNET Korea ",
+          "href": "https://www.zdnet.co.kr/"
+        },
+        {
+          "text": "ZDNET Japan ",
+          "href": "https://japan.zdnet.com/"
+        },
+        {
+          "text": "Do Not Sell or Share My Personal Information",
+          "href": "https://www.ziffdavis.com/ztg-privacy-policy/"
+        }
+      ],
+      "hasArticleLinks": {
+        "count": 241,
+        "sample": [
+          {
+            "text": " ",
+            "href": "https://www.zdnet.com/ \"ZDNET\""
+          },
+          {
+            "text": "I wore the world's first HDR10 smart glasses ",
+            "href": "https://www.zdnet.com/article/rayneo-air-4-pro-hdr10-smart-glasses-ces/"
+          },
+          {
+            "text": "TCL's new E Ink tablet beats the Remarkable and Kindle ",
+            "href": "https://www.zdnet.com/article/tcl-note-a1-nxtpaper-ces/"
+          },
+          {
+            "text": "Anker's new charger is one of the most unique I've ever seen ",
+            "href": "https://www.zdnet.com/article/anker-wireless-chargers-ces-2026/"
+          },
+          {
+            "text": "Best laptop cooling pads ",
+            "href": "https://www.zdnet.com/home-and-office/best-laptop-cooling-pad/"
+          }
+        ]
+      },
+      "elapsedMs": 1539,
+      "serverTime": 1.4703357219696045,
+      "error": null
+    },
+    {
+      "name": "Wired Anthropic Tag",
+      "url": "https://www.wired.com/tag/anthropic/",
+      "tier": 2,
+      "method": "crawl4ai",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 16119,
+      "internalLinks": 81,
+      "externalLinks": 29,
+      "sampleInternalLinks": [
+        {
+          "text": "Skip to main content",
+          "href": "https://www.wired.com/tag/anthropic/#main-content"
+        },
+        {
+          "text": "WIRED",
+          "href": "https://www.wired.com/"
+        },
+        {
+          "text": "SECURITY",
+          "href": "https://www.wired.com/category/security/"
+        },
+        {
+          "text": "POLITICS",
+          "href": "https://www.wired.com/category/politics/"
+        },
+        {
+          "text": "THE BIG STORY",
+          "href": "https://www.wired.com/category/big-story/"
+        },
+        {
+          "text": "BUSINESS",
+          "href": "https://www.wired.com/category/business/"
+        },
+        {
+          "text": "SCIENCE",
+          "href": "https://www.wired.com/category/science/"
+        },
+        {
+          "text": "CULTURE",
+          "href": "https://www.wired.com/category/culture/"
+        },
+        {
+          "text": "REVIEWS",
+          "href": "https://www.wired.com/category/gear/"
+        },
+        {
+          "text": "WIRED",
+          "href": "https://www.wired.com/"
+        }
+      ],
+      "sampleExternalLinks": [
+        {
+          "text": "Privacy Policy",
+          "href": "https://www.condenast.com/privacy-policy"
+        },
+        {
+          "text": "Consent powered by Ethyca",
+          "href": "https://www.ethyca.com/janus?utm_source=fides_consent&utm_medium=referral&utm_campaign=cmp_backlinks&utm_term=janus"
+        },
+        {
+          "text": "Merch",
+          "href": "https://shop.wired.com/"
+        },
+        {
+          "text": "7 States’ Water Systems Hit by Cyberattacks Likely Tied to Iran",
+          "href": "https://media.wired.com/photos/6a6d0ac2eedb5ffa3dae51ac/3:2/w_1280%2Cc_limit/SecurityRoundUp_WaterTowersBeingHacked_v1.jpg"
+        },
+        {
+          "text": "The OpenAI and Anthropic AI Hacking Sprees Are a Messy New Legal Frontier",
+          "href": "https://media.wired.com/photos/6a6d14b8b61d0975176f3aa8/3:2/w_1280%2Cc_limit/Security_The%2520OpenAI%2520and%2520Anthropic%2520Hacking%2520Sprees%2520May%2520Have%2520Legal%2520Consequences_v1.jpg"
+        }
+      ],
+      "hasArticleLinks": {
+        "count": 57,
+        "sample": [
+          {
+            "text": "SECURITY",
+            "href": "https://www.wired.com/category/security/"
+          },
+          {
+            "text": "POLITICS",
+            "href": "https://www.wired.com/category/politics/"
+          },
+          {
+            "text": "THE BIG STORY",
+            "href": "https://www.wired.com/category/big-story/"
+          },
+          {
+            "text": "BUSINESS",
+            "href": "https://www.wired.com/category/business/"
+          },
+          {
+            "text": "SCIENCE",
+            "href": "https://www.wired.com/category/science/"
+          }
+        ]
+      },
+      "elapsedMs": 2771,
+      "serverTime": 2.6626312732696533,
+      "error": null
+    },
+    {
+      "name": "Anthropic Research (Official)",
+      "url": "https://www.anthropic.com/research",
+      "tier": "official",
+      "method": "crawl4ai",
+      "success": true,
+      "statusCode": 200,
+      "markdownLength": 10379,
+      "internalLinks": 59,
+      "externalLinks": 59,
+      "sampleInternalLinks": [
+        {
+          "text": "Skip to main content",
+          "href": "https://www.anthropic.com/research#main-content"
+        },
+        {
+          "text": "Skip to footer",
+          "href": "https://www.anthropic.com/research#footer"
+        },
+        {
+          "text": "",
+          "href": "https://www.anthropic.com/"
+        },
+        {
+          "text": "Research",
+          "href": "https://www.anthropic.com/research"
+        },
+        {
+          "text": "Policy",
+          "href": "https://www.anthropic.com/policy"
+        },
+        {
+          "text": "News",
+          "href": "https://www.anthropic.com/news"
+        },
+        {
+          "text": "Alignment",
+          "href": "https://www.anthropic.com/research/team/alignment"
+        },
+        {
+          "text": "Economic Research",
+          "href": "https://www.anthropic.com/research/team/economic-research"
+        },
+        {
+          "text": "Interpretability",
+          "href": "https://www.anthropic.com/research/team/interpretability"
+        },
+        {
+          "text": "Societal Impacts",
+          "href": "https://www.anthropic.com/research/team/societal-impacts"
+        }
+      ],
+      "sampleExternalLinks": [
+        {
+          "text": "Try Claude",
+          "href": "https://claude.ai/"
+        },
+        {
+          "text": "Discovering cryptographic weaknesses with Claude",
+          "href": "https://www-cdn.anthropic.com/images/4zrzovbb/website/802260d34a0653f23fd4944fae43064df367aa44-1000x1000.svg"
+        },
+        {
+          "text": "Claude",
+          "href": "https://claude.com/product/overview"
+        },
+        {
+          "text": "Claude Code",
+          "href": "https://claude.com/product/claude-code"
+        },
+        {
+          "text": "Claude Code Enterprise",
+          "href": "https://claude.com/product/claude-code/enterprise"
+        }
+      ],
+      "hasArticleLinks": {
+        "count": 54,
+        "sample": [
+          {
+            "text": "Research",
+            "href": "https://www.anthropic.com/research"
+          },
+          {
+            "text": "Policy",
+            "href": "https://www.anthropic.com/policy"
+          },
+          {
+            "text": "News",
+            "href": "https://www.anthropic.com/news"
+          },
+          {
+            "text": "Alignment",
+            "href": "https://www.anthropic.com/research/team/alignment"
+          },
+          {
+            "text": "Economic Research",
+            "href": "https://www.anthropic.com/research/team/economic-research"
+          }
+        ]
+      },
+      "elapsedMs": 998,
+      "serverTime": 0.9565517902374268,
+      "error": null
+    },
+    {
+      "name": "TechCrunch Anthropic Tag",
+      "url": "https://techcrunch.com/tag/anthropic/",
+      "method": "direct",
+      "success": true,
+      "statusCode": 200,
+      "htmlLength": 295142,
+      "linkCount": 46,
+      "elapsedMs": 1383,
+      "error": null
+    },
+    {
+      "name": "The Verge AI",
+      "url": "https://www.theverge.com/ai-artificial-intelligence",
+      "method": "direct",
+      "success": true,
+      "statusCode": 200,
+      "htmlLength": 568607,
+      "linkCount": 136,
+      "elapsedMs": 267,
+      "error": null
+    },
+    {
+      "name": "Ars Technica Anthropic Tag",
+      "url": "https://arstechnica.com/tag/anthropic/",
+      "method": "direct",
+      "success": false,
+      "statusCode": 202,
+      "htmlLength": 1991,
+      "linkCount": 0,
+      "elapsedMs": 850,
+      "error": null
+    },
+    {
+      "name": "VentureBeat Anthropic Tag",
+      "url": "https://venturebeat.com/tag/anthropic/",
+      "method": "direct",
+      "success": false,
+      "statusCode": 429,
+      "htmlLength": 31036,
+      "linkCount": 0,
+      "elapsedMs": 2674,
+      "error": "HTTP 429"
+    },
+    {
+      "name": "ZDNet Anthropic Topic",
+      "url": "https://www.zdnet.com/topic/anthropic/",
+      "method": "direct",
+      "success": false,
+      "statusCode": 404,
+      "htmlLength": 417363,
+      "linkCount": 258,
+      "elapsedMs": 1981,
+      "error": "HTTP 404"
+    },
+    {
+      "name": "Wired Anthropic Tag",
+      "url": "https://www.wired.com/tag/anthropic/",
+      "method": "direct",
+      "success": true,
+      "statusCode": 200,
+      "htmlLength": 1882473,
+      "linkCount": 30,
+      "elapsedMs": 1679,
+      "error": null
+    },
+    {
+      "name": "Anthropic Research (Official)",
+      "url": "https://www.anthropic.com/research",
+      "method": "direct",
+      "success": true,
+      "statusCode": 200,
+      "htmlLength": 258434,
+      "linkCount": 116,
+      "elapsedMs": 1529,
+      "error": null
+    }
+  ]
+}

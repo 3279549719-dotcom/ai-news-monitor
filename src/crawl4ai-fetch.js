@@ -89,12 +89,19 @@ function extractMarkdownLinks(md) {
 
 // 站点 → 文章 URL 模式（用模式直接筛选，避免 DeepSeek 被导航淹没）
 const ARTICLE_PATTERNS = [
+  // MU 信源
   { host: 'manutd.com', re: /\/en\/news\// },
   { host: 'theguardian.com', re: /\/football\/20\d\d\// },
   { host: 'skysports.com', re: /\/football\/(news\/\d+|transfer-paper-talk\/\d+|.*?\/report\/\d+|live-blog\/\d+)/ },
   { host: 'espn.com', re: /\/soccer\/story\/_\/id\// },
   { host: 'si.com', re: /\/soccer\/(?!teams|video|news)[a-z0-9-]+$/ },
   { host: '90min.com', re: /\/soccer\// },
+  // Anthropic 信源
+  { host: 'anthropic.com', re: /\/(news|research)\// },
+  { host: 'claude.com', re: /\/blog\// },
+  { host: 'techcrunch.com', re: /\/20\d\d\/\d+\// },
+  { host: 'venturebeat.com', re: /\/(technology|ai|business)\// },
+  { host: 'wired.com', re: /\/story\// },
 ];
 function getArticlePattern(pageUrl) {
   try {
