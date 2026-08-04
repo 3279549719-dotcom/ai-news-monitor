@@ -12,6 +12,36 @@ const { crosscheck, CONFIDENCE_LABEL } = require('./crosscheck');
 const { buildReport } = require('./report');
 const { RESULT_LIMIT } = require('./config');
 
+// 词根映射表 — 用于 preFilter 和 C1 验收
+function getKeywordRoots(name) {
+  const map = {
+    'Manchester United': ['man', 'united', 'mufc', 'mufc', '老特拉福德', '梦剧场', 'red devils', 'rashford', 'bruno', 'garnacho', 'højlund', 'ten hag'],
+    'Anthropic': ['anthropic', 'claude', 'amodei'],
+    'Dallas Mavericks': ['maverick', 'mavs', 'dallas', 'doncic', 'luka', 'kyrie', 'irving', 'cuban'],
+  };
+  return map[name] || [];
+}
+
+// 前置过滤：标题不含关键词词根的直接跳过（省 DeepSeek 调用）
+function preFilter(items, keywordName) {
+  const roots = getKeywordRoots(keywordName);
+  if (roots.length === 0) return items;
+  const filtered = [];
+  const skipped = [];
+  for (const item of items) {
+    const t = (item.title || '').toLowerCase();
+    if (roots.some(r => t.includes(r.toLowerCase()))) {
+      filtered.push(item);
+    } else {
+      skipped.push(item);
+    }
+  }
+  if (skipped.length > 0) {
+    console.log(`  [PreFilter] ${skipped.length} 条跳过（标题不含词根）`);
+  }
+  return filtered;
+}
+
 const PIPELINES = {
   blog: {
     fetch: (kw) => fetchArticleList(kw.url),
@@ -63,8 +93,15 @@ async function processKeyword(keyword) {
   console.log(`  未处理: ${newItems.length}`);
   if (newItems.length === 0) return [];
 
-  const relevant = await analyzeItems(keyword, newItems);
-  console.log(`  相关: ${relevant.length}/${Math.min(newItems.length, RESULT_LIMIT)}`);
+  // 前置过滤：只在大批量时启用，避免误杀少量新文章
+  let candidates = newItems;
+  if (newItems.length >= 5) {
+    candidates = preFilter(newItems, keyword.name);
+    if (candidates.length === 0) return [];
+  }
+
+  const relevant = await analyzeItems(keyword, candidates);
+  console.log(`  相关: ${relevant.length}/${Math.min(candidates.length, RESULT_LIMIT)}`);
 
   // 交叉验证（方案B）：事件聚类 + 置信度 + 冲突标记
   let crosschecked = relevant;
@@ -155,4 +192,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run, buildReport };
+module.exports = { run, buildReport, getKeywordRoots, preFilter };

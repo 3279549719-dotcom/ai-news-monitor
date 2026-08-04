@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-04（Dallas Mavericks 白名单信源 + 前端 BoardView 落地 + 导航垃圾过滤修复）
+> 最后更新：2026-08-04（Phase 7 AI 分析管线优化交付 + 自动化验收脚本）
 
 ## 功能进度
 
@@ -13,6 +13,7 @@
 | F-005 | Phase 5：白名单定向抓取（方案A）— 移除 Google News RSS + Firecrawl，改用 scraper-direct.js | **已完成** | 2026-08-03 端到端验证通过（MU 3篇入库） |
 | F-009 | Anthropic 白名单信源扩展（方案A续）— 6 源二 tier，claude-blog 合并下线 | **已完成** | 2026-08-04 端到端验证通过（154条抓取，8篇入库） |
 | F-010 | Dallas Mavericks 白名单信源 + 前端 BoardView — 8 源三 tier，导航垃圾过滤修复 | **已完成** | 2026-08-04 端到端 264条抓取→9篇入库（0垃圾） |
+| F-011 | Phase 7：AI 分析管线体验优化 — 三段式摘要 + 分类判别标准 + preFilter + 自动化验收 | **已完成** | 2026-08-04 端到端 11篇入库，无占位语，三段式 100%，22/22 test |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -137,8 +138,8 @@
 | 4 | 优化信息获取来源（per-keyword 定向 RSS + 来源可信度） | **代码完成** → docs/archive/specs/001（已归档） |
 | 4b | Firecrawl 直抓替代 Google News，前端 Tier 展示 | **代码完成** → docs/archive/specs/002（已归档） |
 | 5 | 信息流筛选和排序 | 已完成（Tier 筛选 + 排序，F-004） |
-| 6 | 优化热点信息展示 | 部分完成（方案C 板块视图 + 交叉验证置信度，见 F-006/F-007） |
-| 7 | 优化 AI 分析准确度 + 扩展思路 | 待开发 |
+| 6 | 优化热点信息展示 | 已完成（方案C 板块视图 + 交叉验证置信度，见 F-006/F-007） |
+| 7 | 优化 AI 分析准确度 + 扩展思路 | **已完成（F-011）— 三段式摘要 + 分类优化 + preFilter** |
 | 8 | Skills 开发（Agent Skill 技能包） | 待开发 |
 
 ## 遗留与待跟进
@@ -156,6 +157,6 @@
 - [x] crawl4ai 接入生产管线（Phase E）— 2026-08-03 落地并回归，见 F-008
 - [x] 文档体系整合（2026-08-04）— 两份 REQ 合并为一份（信源资产 + 实测备注）；历史 PLAN/CHECKLIST/spec 归档至 `docs/archive/`；PRD 更新至 crawl4ai 架构 + 方案BC 数据模型；`src/firecrawl.js` 删除；CLAUDE.md / DOCUMENT_MAP.md 索引同步
 - [x] 代码化简重构（2026-08-04）— 新增 `src/config.js`（配置集中）、`src/items.js`（item 规整）、`src/report.js`（日报）；ai.js 收敛 OpenAI 单例 + 共享 `selectArticleLinks`/`parseAnalyzeResult`；删 scraper-direct 死代码 `fetchDirectSources`；crosscheck 冲突检测去死循环；前端抽 `useSupabaseQuery` 通用 hook（统一错误处理+取消）、共享 `TierBadge/ConfidenceBadge` 与 `constants/sources`；`KeywordsTab` 惰性拉取关键词；新增 node:test 单元测试（tiers/crosscheck/ai/search，22 例全过）。⚠️ 期间 `node --test src/` 误触发一次真实管线运行，test script 已改 `node --test "src/*.test.js"`（见 CLAUDE.md 已知陷阱）
-- [x] 重构遗留决策（2026-08-04，**已确认：记录为后续优化项，本期不做**）：① 删 blog 管线（scraper/reader/summarizeArticle）— **claude-blog 已停用（2026-08-04），blog 管线代码保留但不再触发**；② X 通道策略表 CHANNEL_POLICY 集中 isXUrl 判定；③ 抓取有界并发（现串行，B-003 曾因并发压垮 Supabase 连接池）；④ BoardView 改读 category_schema 数据驱动（现前端硬编码 MU_BOARDS/DAL_BOARDS）；⑤ relativeTime 换 date-fns（会改变用户可见中文文案）
+- [x] Phase 7 AI 分析管线体验优化（2026-08-04）— ① analyzeResult prompt 重写：三段式摘要 `【事件】【要点】【为什么重要】` + 分类判别标准 + 正反例 ② selectArticleLinks prompt 硬化：显式排除 Standings/Scores/Schedule 等非文章链接 ③ preFilter 前置过滤：标题无词根直接跳过 ④ `scripts/check-quality.js` 自动化验收脚本（14/18 项可机器判定）。详情见 `docs/REQ-Phase7-AI分析优化.md` + `docs/DECISION-Phase7-AI分析优化.md`。回归：`node --check` 通过，`npm test` 22/22 全绿。验收：A2 无占位语 ✅、A3 三段式 100% ✅、C1 标题词根 0 异常 ✅、D1 score 跨 3 个十位段 ✅：① 删 blog 管线（scraper/reader/summarizeArticle）— **claude-blog 已停用（2026-08-04），blog 管线代码保留但不再触发**；② X 通道策略表 CHANNEL_POLICY 集中 isXUrl 判定；③ 抓取有界并发（现串行，B-003 曾因并发压垮 Supabase 连接池）；④ BoardView 改读 category_schema 数据驱动（现前端硬编码 MU_BOARDS/DAL_BOARDS）；⑤ relativeTime 换 date-fns（会改变用户可见中文文案）
 - [x] **Anthropic 白名单信源扩展（F-009，2026-08-04）** — 6 源二 tier。端到端：154 条抓取，8 篇入库。文档：REQ/DECISION + 实测数据 data/
 - [x] **Dallas Mavericks 白名单 + 前端 BoardView（F-010，2026-08-04）** — **8 源三 tier**：T0 nba.com/mavs/news + T1 Marc Stein(X) + T2 DMN/Yahoo/BR/SI/Mavs Moneyball/Smoking Cuban。新增 3 个信源基于 crawl4ai 实测。前端 BoardView 五宫格（官方/交易/伤病/管理层/赛事）。**踩坑修复**：首版 Yahoo/BR/NBA.com 产出导航垃圾（standings/stats/schedule 等），根因 `isNonArticleUrl()` 未覆盖 NBA 特有导航词。修复后新增 20+ 过滤词 + 3 个新信源，Dallas 从 4 条假新闻 → 9 条真新闻（0 垃圾）。截图 `screenshots/dallas-boardview.png`
