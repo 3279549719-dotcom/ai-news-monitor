@@ -5,3 +5,4 @@ export const DEFAULT_FILTERS: FilterState = { keywordId: '', source: '', sortBy:
 
 // 板块视图专用关键词（当前仅曼联配置了 category_schema 板块）
 export const MU_KEYWORD_ID = 'manchester-united';
+export const DAL_KEYWORD_ID = 'dallas-mavericks';

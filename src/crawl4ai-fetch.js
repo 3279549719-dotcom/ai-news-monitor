@@ -102,6 +102,11 @@ const ARTICLE_PATTERNS = [
   { host: 'techcrunch.com', re: /\/20\d\d\/\d+\// },
   { host: 'venturebeat.com', re: /\/(technology|ai|business)\// },
   { host: 'wired.com', re: /\/story\// },
+  // Dallas Mavericks 信源
+  { host: 'nba.com', re: /\/mavs\/news\// },
+  { host: 'dallasnews.com', re: /\/sports\/mavericks\// },
+  { host: 'sports.yahoo.com', re: /\/nba\// },
+  { host: 'bleacherreport.com', re: /\/dallas-mavericks\// },
 ];
 function getArticlePattern(pageUrl) {
   try {

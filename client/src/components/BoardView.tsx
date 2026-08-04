@@ -2,7 +2,7 @@ import { ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { relativeTime } from '../utils/relativeTime';
 import { TierBadge, ConfidenceBadge } from './badges';
-import { MU_KEYWORD_ID } from '../lib/constants';
+import { MU_KEYWORD_ID, DAL_KEYWORD_ID } from '../lib/constants';
 import type { Article } from '../types';
 
 // 曼联板块定义（顺序即展示顺序）
@@ -14,7 +14,16 @@ export const MU_BOARDS: { key: string; label: string; emoji: string; official?: 
   { key: 'match', label: '赛事竞技资讯', emoji: '⚽' },
 ];
 
-// 通用板块（非曼联关键词）
+// Dallas Mavericks 板块定义（顺序即展示顺序）
+export const DAL_BOARDS: { key: string; label: string; emoji: string; official?: boolean }[] = [
+  { key: 'official', label: '官方公告', emoji: '🔵', official: true },
+  { key: 'trade', label: '交易签约', emoji: '🔄' },
+  { key: 'injury', label: '伤病报告', emoji: '🏥' },
+  { key: 'management', label: '管理层·教练组', emoji: '🏛️' },
+  { key: 'match', label: '赛事战报', emoji: '🏀' },
+];
+
+// 通用板块（非曼联/独行侠关键词）
 export const GENERIC_BOARDS: { key: string; label: string; emoji: string; official?: boolean }[] = [
   { key: 'official', label: '官方公告', emoji: '🔴' },
   { key: 'product', label: '产品发布', emoji: '🚀' },
@@ -66,7 +75,8 @@ interface BoardViewProps {
 
 export default function BoardView({ articles, keywordId, keywordName }: BoardViewProps) {
   const isMU = keywordId === MU_KEYWORD_ID;
-  const boards = isMU ? MU_BOARDS : GENERIC_BOARDS;
+  const isDAL = keywordId === DAL_KEYWORD_ID;
+  const boards = isMU ? MU_BOARDS : isDAL ? DAL_BOARDS : GENERIC_BOARDS;
 
   const byCategory = (key: string) => articles.filter(a => a.category === key);
 

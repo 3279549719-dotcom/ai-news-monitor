@@ -6,7 +6,7 @@ import EmptyState from './EmptyState';
 import LoadingSkeleton from './LoadingSkeleton';
 import { useBoardArticles } from '../hooks/useArticles';
 import { useKeywords } from '../hooks/useKeywords';
-import { DEFAULT_FILTERS, MU_KEYWORD_ID } from '../lib/constants';
+import { DEFAULT_FILTERS, MU_KEYWORD_ID, DAL_KEYWORD_ID } from '../lib/constants';
 
 export default function KeywordsTab() {
   const [selectedId, setSelectedId] = useState('');
@@ -17,8 +17,9 @@ export default function KeywordsTab() {
   const select = (id: string) => { setSelectedId(id); setPage(1); };
 
   const selected = keywords.find(k => k.id === selectedId) ?? null;
-  // 仅 MU 用板块视图；其余关键词直接走 ArticleFeed，避免无谓的板块查询
-  const showBoard = selected?.id === MU_KEYWORD_ID;
+  // 有板块视图的关键词列表（MU + Dallas）
+  const BOARD_KEYWORD_IDS = [MU_KEYWORD_ID, DAL_KEYWORD_ID];
+  const showBoard = selected?.id != null && BOARD_KEYWORD_IDS.includes(selected.id);
   const { articles: boardArticles, loading: boardLoading } = useBoardArticles(showBoard ? selectedId : null);
 
   if (loading) return <LoadingSkeleton count={3} />;
