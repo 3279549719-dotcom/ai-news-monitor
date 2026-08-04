@@ -36,3 +36,22 @@ export function formatDateTime(dateStr: string | null | undefined): string {
     minute: '2-digit',
   });
 }
+
+// 30 天内的相对时间阈值（与 useArticles 的 recency 窗口保持一致）
+const RECENT_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * 文章卡片日期展示：
+ * - published_at ≤30 天 → relativeTime（X分钟前/X小时前/X天前）
+ * - published_at >30 天 → formatDateTime（绝对日期）
+ * - published_at 为 null → 「发现于 {relativeTime(created_at)}」
+ */
+export function formatArticleDate(publishedAt: string | null | undefined, createdAt: string | null | undefined): string {
+  const published = parseDate(publishedAt);
+  if (published) {
+    return Date.now() - published.getTime() <= RECENT_MS
+      ? relativeTime(publishedAt)
+      : formatDateTime(publishedAt);
+  }
+  return createdAt ? `发现于 ${relativeTime(createdAt)}` : '';
+}

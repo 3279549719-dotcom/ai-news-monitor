@@ -1,8 +1,8 @@
 import { ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { relativeTime } from '../utils/relativeTime';
+import { formatArticleDate } from '../utils/relativeTime';
 import { TierBadge, ConfidenceBadge } from './badges';
-import { MU_KEYWORD_ID, DAL_KEYWORD_ID } from '../lib/constants';
+import { MU_KEYWORD_ID, DAL_KEYWORD_ID, PAYWALL_SOURCES } from '../lib/constants';
 import type { Article } from '../types';
 
 // 曼联板块定义（顺序即展示顺序）
@@ -32,6 +32,7 @@ export const GENERIC_BOARDS: { key: string; label: string; emoji: string; offici
 ];
 
 function ArticleCard({ article }: { article: Article }) {
+  const paywallLabel = PAYWALL_SOURCES[article.source];
   return (
     <div className="border border-slate-100 bg-[#fafbfc] rounded-lg p-3 mb-2 hover:shadow-sm transition-shadow">
       <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
@@ -41,7 +42,17 @@ function ArticleCard({ article }: { article: Article }) {
         {article.corroboration_count != null && article.corroboration_count > 1 && (
           <span className="text-blue-500 font-medium">{article.corroboration_count}源印证</span>
         )}
-        <span className="ml-auto">{relativeTime(article.published_at ?? article.created_at)}</span>
+        {paywallLabel && (
+          <span className="text-[10px] text-orange-600 bg-orange-50 border border-orange-200 rounded px-1.5 py-0.5 font-semibold">
+            {paywallLabel}
+          </span>
+        )}
+        {article.event_type && (
+          <span className="text-[10px] text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">
+            {article.event_type}
+          </span>
+        )}
+        <span className="ml-auto">{formatArticleDate(article.published_at, article.created_at)}</span>
       </div>
       <h4 className="text-[13px] font-semibold text-slate-800 leading-snug mb-1">
         <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:text-blue-700 hover:underline">
@@ -79,6 +90,11 @@ export default function BoardView({ articles, keywordId, keywordName }: BoardVie
   const boards = isMU ? MU_BOARDS : isDAL ? DAL_BOARDS : GENERIC_BOARDS;
 
   const byCategory = (key: string) => articles.filter(a => a.category === key);
+
+  // 兜底：不在任何板块定义内的分类（如 rumour/conflict/academy_women）进「其他」板，避免静默丢弃
+  const unmatched = articles.filter(
+    a => a.category && !boards.some(b => b.key === a.category) && a.category !== 'other'
+  );
 
   // 今日概览统计
   const highCount = articles.filter(a => a.confidence === 'high').length;
@@ -121,6 +137,18 @@ export default function BoardView({ articles, keywordId, keywordName }: BoardVie
             </section>
           );
         })}
+
+        {/* 兜底「其他」板：未匹配到任何板块定义的分类 */}
+        {unmatched.length > 0 && (
+          <section className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 self-start">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-base">📄</span>
+              <h3 className="text-sm font-bold text-slate-800">其他</h3>
+              <span className="ml-auto text-[11px] text-slate-400">{unmatched.length} 条</span>
+            </div>
+            {unmatched.slice(0, 4).map(a => <ArticleCard key={a.id} article={a} />)}
+          </section>
+        )}
 
         {/* 今日概览卡 */}
         <section className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">

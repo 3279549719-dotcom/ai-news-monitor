@@ -102,11 +102,12 @@ score               INTEGER CHECK(score BETWEEN 0 AND 100)
 source_tier         INTEGER CHECK(source_tier BETWEEN 0 AND 3)  -- 从 keyword_sources.tier 继承
 category            TEXT            -- 板块分类（方案C）
 event               TEXT            -- 事件描述（方案B，聚类用）
+event_type          TEXT            -- 体裁（interview/match/rumour/injury/deal/official/analysis，Phase8）
 confidence          TEXT CHECK(confidence IN ('high','medium','low'))  -- 交叉验证置信度
 corroboration_count INT DEFAULT 0   -- 印证源数（方案B）
 conflict_flag       BOOLEAN DEFAULT false  -- 与 T0 冲突标记（方案B）
-published_at        TIMESTAMPTZ
-created_at          TIMESTAMPTZ DEFAULT NOW()
+published_at        TIMESTAMPTZ     -- 真实发布日期（Phase8 起从 URL 提取，无日期为 NULL；前端 30 天窗口 + created_at 兜底）
+created_at          TIMESTAMPTZ DEFAULT NOW()  -- 首次发现时间（保留原始语义）
 UNIQUE(keyword_id, url)
 ```
 
@@ -117,6 +118,7 @@ UNIQUE(keyword_id, url)
 ### 索引
 - `articles_keyword_id_idx` on articles(keyword_id)
 - `articles_created_at_idx` on articles(created_at DESC)
+- `articles_published_at_idx` on articles(published_at DESC)  -- Phase8 新增，支持按发布日期排序/窗口过滤
 
 ## 环境变量（.env）
 

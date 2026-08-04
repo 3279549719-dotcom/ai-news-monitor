@@ -116,6 +116,11 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 - **Anthropic 关键词 query 字段**：使用 `"anthropic AI"`，白名单 6 源（T0: anthropic.com/news + research + claude.com/blog | T1: TechCrunch + VentureBeat + Wired）
 - **Dallas 关键词 query 字段**：使用 `"dallas mavericks"`，白名单 8 源（T0: nba.com/mavs/news | T1: Marc Stein(X) | T2: Dallas Morning News + Yahoo Sports + Bleacher Report + SI Mavs + Mavs Moneyball + The Smoking Cuban）
 - **claude-blog 关键词已停用**（2026-08-04），原 blog pipeline（scraper.js/reader.js/summarizeArticle）保留代码但不再触发
+- **`published_at` 语义（Phase8 起）**：真实发布日期，由 `src/dates.js` 的 `extractPublishDateFromUrl(url)` 从 URL 提取（Guardian 英文月 + 数字日期，拒绝未来/非法日期）；URL 无日期 → **NULL**，`created_at` 保留首次发现时间。前端 30 天 recency 窗口豁免 `published_at.is.null` 与 `source_tier.eq.0`
+- **`articles.event_type` 列**（Phase8）：体裁（interview/match/rumour/injury/deal/official/analysis），由 AI 从 analyzeResult 提取，index.js 全链路入库；前端卡片显示小灰字体裁徽章
+- **正文喂养**：`src/crawl4ai-fetch.js` 导出 `fetchArticleBody(url)→string|null`（正文片段，剥导航去重截 1500 字）；`src/index.js` 对 search 类型候选并发池 3 抓正文喂 `analyzeResult(..., body)`，失败回落标题-only。摘要质量（A4a 事实锚点）依赖此机制
+- **DMN 付费墙**：dallasnews.com 计量墙（10篇/30天），保留信源但前端 `PAYWALL_SOURCES` 标注"正文需订阅"角标，不删除（本地最强跟队 Townsend/Caplan 独家）
+- **Mavs Moneyball / Smoking Cuban**：JS 重渲染站点，crawl4ai 抓取需 `wait_for`（`JS_SOURCES` 命中自动 5s），否则 0 产出
 
 ### Agent 行为
 - **路径中的 "claude" 易被写成 "droid"**：使用 Windows 绝对路径（`E:\claude\...`）规避；Git Bash 必须用 `/e/claude/...`

@@ -6,6 +6,7 @@ const cron = require('node-cron');
 const { fetchArticleList } = require('./scraper');
 const { fetchArticleContent } = require('./reader');
 const { summarizeArticle, analyzeResult } = require('./ai');
+const crawl4ai = require('./crawl4ai-fetch');
 const { searchAll } = require('./search');
 const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources } = require('./store');
 const { crosscheck, CONFIDENCE_LABEL } = require('./crosscheck');
@@ -53,13 +54,42 @@ const PIPELINES = {
   },
   search: {
     fetch: (kw, sources = []) => searchAll(kw.query, sources),
-    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet, item.tier, kw.category_schema),
+    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet, item.tier, kw.category_schema, item.body),
   },
 };
+
+// 并发池：为每个 item 抓单篇正文并挂到 item.body（失败/undefined → null，单篇失败不影响整体）。
+// 正文用于 AI 摘要的事实锚点；抓不到就回落标题-only。
+async function feedArticleBodies(items, poolSize = 3) {
+  if (typeof crawl4ai.fetchArticleBody !== 'function') {
+    for (const item of items) item.body = null;
+    return;
+  }
+  let idx = 0;
+  const workers = Array.from({ length: Math.min(poolSize, items.length) }, async () => {
+    while (idx < items.length) {
+      const i = idx++;
+      const item = items[i];
+      try {
+        const body = await crawl4ai.fetchArticleBody(item.url);
+        item.body = typeof body === 'string' && body.trim() ? body : null;
+      } catch (err) {
+        item.body = null;
+      }
+    }
+  });
+  await Promise.allSettled(workers);
+}
 
 async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
   const { analyze } = PIPELINES[keyword.type];
   const toProcess = items.slice(0, limit);
+
+  // 正文喂养：仅 search 类型，并发池 3 抓正文（失败回落标题-only）
+  if (keyword.type === 'search') {
+    await feedArticleBodies(toProcess, 3);
+  }
+
   const settled = await Promise.allSettled(toProcess.map(item => analyze(keyword, item)));
 
   return toProcess.reduce((acc, item, i) => {
@@ -68,8 +98,8 @@ async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
       console.error(`  分析失败 (${item.title.slice(0, 30)}): ${r.reason?.message}`);
       return acc;
     }
-    const { relevant, score, summary, event, category } = r.value;
-    return relevant ? [...acc, { ...item, score, summary, event, category }] : acc;
+    const { relevant, score, summary, event, event_type, category } = r.value;
+    return relevant ? [...acc, { ...item, score, summary, event, event_type, category }] : acc;
   }, []);
 }
 
@@ -112,6 +142,12 @@ async function processKeyword(keyword) {
     console.log(`  [Crosscheck] ${crosschecked.length} 篇 → 高置信 ${high}，单源 ${crosschecked.length - high}，冲突 ${conflict}`);
   }
 
+  // category 越界清洗：AI 返回的分类不在关键词 schema 键内 → 置 null（前端"其他"兜底）。
+  // schema 为数组（anthropic 历史脏数据）或空时，无法按键校验，同样置 null。
+  const schemaKeys = keyword.category_schema && !Array.isArray(keyword.category_schema)
+    ? Object.keys(keyword.category_schema)
+    : [];
+
   const toSave = newItems.slice(0, RESULT_LIMIT).map(item => {
     const xc = crosschecked.find(r => r.url === item.url);
     return {
@@ -126,8 +162,9 @@ async function processKeyword(keyword) {
         ? new Date(item.publishedAt).toISOString()
         : null,
       source_tier: item.tier ?? null,
-      category: xc?.category ?? null,
+      category: xc?.category && schemaKeys.includes(xc.category) ? xc.category : null,
       event: xc?.event ?? null,
+      event_type: xc?.event_type ?? null,
       confidence: xc?.confidence ?? null,
       corroboration_count: xc?.corroboration_count ?? 0,
       conflict_flag: xc?.conflict_flag ?? false,

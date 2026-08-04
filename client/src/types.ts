@@ -25,6 +25,7 @@ export interface Article {
   confidence?: 'high' | 'medium' | 'low' | null;
   corroboration_count?: number | null;
   conflict_flag?: boolean | null;
+  event_type?: string | null;
   keywords?: {
     name: string;
     type: string;
@@ -34,7 +35,8 @@ export interface Article {
 export interface FilterState {
   keywordId: string;
   source: string;
-  sortBy: 'created_at' | 'score';
+  sortBy: 'created_at' | 'score' | 'published_at';
   search: string;
   tier: number | null;
+  includeOld: boolean;
 }

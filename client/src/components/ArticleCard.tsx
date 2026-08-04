@@ -1,7 +1,8 @@
 import { ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { relativeTime, formatDateTime } from '../utils/relativeTime';
+import { formatArticleDate } from '../utils/relativeTime';
 import { SOURCE_CONFIG } from '../lib/sources';
+import { PAYWALL_SOURCES } from '../lib/constants';
 import { TierBadge } from './badges';
 import type { Article } from '../types';
 
@@ -34,7 +35,7 @@ export default function ArticleCard({ article }: ArticleCardProps) {
     label: article.source,
     color: 'bg-slate-100 text-slate-600',
   };
-  const time = article.published_at ?? article.created_at;
+  const paywallLabel = PAYWALL_SOURCES[article.source];
 
   return (
     <article className="bg-white rounded-xl border border-blue-100 p-5 hover:shadow-md hover:border-blue-200 transition-all">
@@ -73,9 +74,17 @@ export default function ArticleCard({ article }: ArticleCardProps) {
             {article.keywords.name}
           </span>
         )}
-        <span title={formatDateTime(time)} className="ml-auto">
-          {relativeTime(time)}
-        </span>
+        {paywallLabel && (
+          <span className="text-[10px] text-orange-600 bg-orange-50 border border-orange-200 rounded px-1.5 py-0.5 font-semibold">
+            {paywallLabel}
+          </span>
+        )}
+        {article.event_type && (
+          <span className="text-[10px] text-gray-400 bg-gray-100 rounded px-1.5 py-0.5">
+            {article.event_type}
+          </span>
+        )}
+        <span className="ml-auto">{formatArticleDate(article.published_at, article.created_at)}</span>
       </div>
 
       {article.summary && (

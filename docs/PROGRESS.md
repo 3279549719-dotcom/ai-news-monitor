@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-04（Phase 7 AI 分析管线优化交付 + 自动化验收脚本）
+> 最后更新：2026-08-04 23:05（Phase 8 交付完成 — 假日期/付费墙/分类/体裁/时效窗口，验收 A4a 100%）
 
 ## 功能进度
 
@@ -14,6 +14,7 @@
 | F-009 | Anthropic 白名单信源扩展（方案A续）— 6 源二 tier，claude-blog 合并下线 | **已完成** | 2026-08-04 端到端验证通过（154条抓取，8篇入库） |
 | F-010 | Dallas Mavericks 白名单信源 + 前端 BoardView — 8 源三 tier，导航垃圾过滤修复 | **已完成** | 2026-08-04 端到端 264条抓取→9篇入库（0垃圾） |
 | F-011 | Phase 7：AI 分析管线体验优化 — 三段式摘要 + 分类判别标准 + preFilter + 自动化验收 | **已完成** | 2026-08-04 端到端 11篇入库，无占位语，三段式 100%，22/22 test |
+| F-012 | Phase 8：信息获取与理解层优化 — 假日期修复 + AI 正文喂养 + 分类/体裁落地 + 付费墙标注 + 前端时效窗口 | **已完成** | 2026-08-04 端到端 4篇入库，A4a 事实锚点 100%，npm test 35/35，前端三件套全绿 |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -125,6 +126,29 @@
 
 **已知限制：** Guardian 文章标题由 URL slug 生成（非原标题）；90min 每轮产出偏多（58 条），靠相关度过滤收敛；X 账号每日抓取受反爬影响可能偶发 0 结果（跳过不阻断）
 
+## F-012 Phase8 交付内容（2026-08-04）
+
+**获取层·数据卫生（P0）：**
+- 新增 `src/dates.js`（URL 提取真实发布日期，拒绝未来/非法日期）+ `src/dates.test.js`（7 例）
+- 三抓取通道 `publishedAt: new Date()` → `extractPublishDateFromUrl(url)`（crawl4ai-fetch 两处 / scraper-direct / items 兜底置 null）
+- `scripts/backfill-published-at.js`：历史 583 行回填（58 行取到真实日期，525 置 NULL 保留 created_at），导航垃圾 18 行按 PLAN 清理
+- `isNonArticleUrl` 加固（剥尾部斜杠 + `\b` 边界 + roster/injuries/odds/静态资源/CDN）+ 新增 `isSpamTitle`（add 与快路径双调用）
+- ARTICLE_PATTERNS：Yahoo `\.html$`、BR `/articles/`、新增 HoopsHype
+- JS 源 wait_for（Mavs Moneyball / Smoking Cuban 5s，crawl4ai-fetch 接线）
+
+**理解层·AI 重写（P1）：**
+- SYSTEM_PROMPT 摘要 6 铁律 + buildAnalyzePrompt v2（正反例 2+2 + `event_type` 字段 + 正文片段）
+- `fetchArticleBody(url)` 正文喂养（index.js 并发池 3，search 类型，失败回落标题-only）— A4a 事实锚点 9% → 100%
+- buildCategoryHint v2：`Array.isArray` 分支（修 anthropic 数字键）+ 证据门控 + 体裁前置规则（访谈→other 等）
+- category 越界清洗（schema 键外置 null）+ `event_type` 入库（提取→analyzeItems→toSave 全链路）
+- `check-quality.js` v2：A4 拆 A4a/A4b/A4c，A2 禁词扩展 + 诚实回退白名单，C3 GBK 修复
+
+**信源整治（P2）：** Dallas 8→9 源（新增 HoopsHype T2）；DMN 保留 + 前端"正文需订阅"角标；ClutchPoints/r-Mavericks 记待测
+
+**前端（S7）：** recency 30 天窗口（`published_at.gte.{cutoff},is.null,source_tier.eq.0`）、按 `published_at` 排序（null 靠后）、"显示旧闻"开关、日期三态展示（≤30d relativeTime / >30d 绝对日期 / null 发现于 created_at）、付费墙 + 体裁徽章、"其他"板兜底（修 MU rumour/conflict 静默丢弃）
+
+**验收：** `node --check` ✅ ｜ `npm test` 35/35 ✅ ｜ 前端 type-check/lint/build ✅ ｜ 端到端 4 篇入库（Dallas 3 + Anthropic 1）✅ ｜ check-quality v2 **9 PASS**（A4a 100% / A2 / A3 / A4c / C1 / D1）· E4 假失败（MU 在上一轮管线已入库，DB 确认 score 90 rumour 存在）
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：
@@ -150,7 +174,7 @@
 - [x] Google News RSS 已移除
 - [x] `rss.js` + `keywords.json` 已删除
 - [ ] Sky Sports / 90min AI 链接识别稳定性优化
-- [ ] GitHub 远程仓库推送（需 `gh auth login` 后执行）
+- [x] GitHub 远程仓库推送（2026-08-04 已推送 `origin/master` 至 32801e5，含全部历史提交 + 临时文件清理）
 - [ ] RLS 策略收紧（从宽松模式改为认证模式）
 - [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）
 - [x] 四板块分类报告（方案C）— 2026-08-03 板块视图 + 日报按板块分组完成

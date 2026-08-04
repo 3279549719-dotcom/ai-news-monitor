@@ -148,17 +148,22 @@ checks.push({
 });
 
 // A2: 无占位语
+// 白名单：SYSTEM_PROMPT 允许的诚实回退语（"标题未给出可验证细节""标题信息有限"），不视为占位语
+const HONEST_FALLBACK = /标题未给出可验证细节|标题信息有限|真实影响需读原文|需点开正文/;
 checks.push({
   id: 'A2', label: '无占位语', required: true,
   run(report) {
     const banned = [
-      /可能涉及/g, /或许讨论/g, /由于缺乏(摘要|细节)/g,
-      /具体细节不明/g, /整体围绕.*展开/g, /文章讨论了/g,
-      /核心涉及/g, /可能讨论/g, /内容与.*直接相关/g,
+      /可能涉及/, /或许讨论/, /由于缺乏(摘要|细节)/,
+      /具体细节不明/, /整体围绕.*展开/, /文章讨论了/,
+      /核心涉及/, /可能讨论/, /内容与.*直接相关/,
+      // Phase8 扩展：空话禁词（与 SYSTEM_PROMPT ⑤一致）
+      /这一举措|此举|该球员|该消息|该操作|相关人士|相关机构|某球员|某公司|上述操作|展现了|体现了|反映了|旨在|至关重要|意义重大/,
     ];
     const lines = report.split('\n');
     const hits = [];
     for (let i = 0; i < lines.length; i++) {
+      if (HONEST_FALLBACK.test(lines[i])) continue; // 白名单放行诚实回退语
       for (const re of banned) {
         if (re.test(lines[i])) {
           hits.push(`L${i + 1}: ${lines[i].trim().slice(0, 80)}`);
@@ -214,22 +219,95 @@ checks.push({
   }
 });
 
-// A4: 具体事实辅助
+// ── A4 拆分为 A4a（事实锚点）/ A4b（信息增量）/ A4c（无空话硬约束）──
+
+// FACT_ANCHOR 扩宽：数字/日期/百分数/序数/英文专名（中文专名走 titleEcho 标题回显）
+const FACT_ANCHOR = /\d+|[A-Z][a-z]{2,}|第[一二三四五六七八九十百\d]+/;
+// 标题回显停用词：中文片段若命中这些词则不算专名
+const TITLE_ECHO_STOP = /的|了|与|和|是|在|为|对|有|新|大|小|一|不|都|将|该|这|那|被|把|并|及|或|而|但|等|中|上|下|后|前|已|也|还|能|要|会|他|她|它|我们|他们|什么|如何|为什么|意味着|表示|宣布|报道|以及|正在|已经|成为|可能是|或许/;
+// 标题回显：summary 含标题里的人名/队名（英文大写词 / 2-4 字中文片段且非停用词）
+function titleEcho(title, summary) {
+  if (!title || !summary) return false;
+  const names = [];
+  const en = title.match(/[A-Z][a-z]{2,}/g) || [];
+  names.push(...en);
+  const zh = title.match(/[一-龥]{2,4}/g) || [];
+  for (const w of zh) {
+    if (!TITLE_ECHO_STOP.test(w)) names.push(w);
+  }
+  return names.some(n => summary.includes(n));
+}
+
+// A4a: 事实锚点（数字/日期/百分数/序数/中文英文专名 + 标题回显），阈值 ≥70%
 checks.push({
-  id: 'A4', label: '具体事实（辅助）',
+  id: 'A4a', label: '事实锚点',
   run(report) {
-    const points = extractArticles(report).filter(a => a.summary).map(a => {
-      const m = a.summary.match(/【要点】([^\n【]*)/);
-      return m ? m[1] : '';
-    }).filter(Boolean);
-    if (points.length === 0) return [SKIP, '无【要点】段'];
-    let withNumber = 0;
-    for (const p of points) {
-      if (/\d+万|\d+亿|\d+欧元|\d+美元|\d+人|\d+%|第[一二三]/.test(p)) withNumber++;
+    const articles = extractArticles(report).filter(a => a.summary);
+    if (articles.length === 0) return [SKIP, '无文章'];
+    let anchored = 0;
+    const bad = [];
+    for (const a of articles) {
+      if (FACT_ANCHOR.test(a.summary) || titleEcho(a.title, a.summary)) anchored++;
+      else bad.push(a.title.slice(0, 50));
     }
-    const ratio = withNumber / points.length;
-    if (ratio >= 0.7) return [PASS, `${withNumber}/${points.length} 含具体数据 (${(ratio * 100).toFixed(0)}%)`];
-    return [WARN, `${withNumber}/${points.length} 含具体数据 (${(ratio * 100).toFixed(0)}% < 70%)`];
+    const ratio = anchored / articles.length;
+    if (ratio >= 0.7) return [PASS, `${anchored}/${articles.length} 含事实锚点 (${(ratio * 100).toFixed(0)}%)`];
+    return [WARN, `${anchored}/${articles.length} 含事实锚点 (${(ratio * 100).toFixed(0)}% < 70%)`, bad.slice(0, 5)];
+  }
+});
+
+// A4b: 信息增量 — summary 与标题公共字符占比（去停用词）<60% 且 summary 长度 ≥ 标题×1.15
+const SUMMARY_STOP = /的|了|与|和|是|在|为|对|有|新|大|小|一|不|都|将|该|这|那|被|把|并|及|或|而|但|等|中|上|下|后|前|已|也|还|能|要|会|他|她|它|我们|他们|你们|什么|如何|为什么|意味着|表示|宣布|报道|以及|正在|已经|成为|可能是|或许/g;
+checks.push({
+  id: 'A4b', label: '信息增量',
+  run(report) {
+    const articles = extractArticles(report).filter(a => a.summary && a.title);
+    if (articles.length === 0) return [SKIP, '无文章'];
+    let ok = 0;
+    const bad = [];
+    for (const a of articles) {
+      const cleanSummary = a.summary.replace(/[【】\s,，。；;：:、()（）"'！!？?\-—_/\\]/g, '').replace(SUMMARY_STOP, '');
+      const cleanTitle = a.title.replace(SUMMARY_STOP, '');
+      const sChars = new Set(cleanSummary);
+      const titleUnique = new Set(cleanTitle);
+      let common = 0;
+      for (const c of titleUnique) if (sChars.has(c)) common++;
+      const overlap = titleUnique.size > 0 ? common / titleUnique.size : 0;
+      if (overlap < 0.6 && a.summary.length >= a.title.length * 1.15) ok++;
+      else bad.push(a.title.slice(0, 50));
+    }
+    const ratio = ok / articles.length;
+    if (ratio >= 0.7) return [PASS, `${ok}/${articles.length} 信息增量达标 (${(ratio * 100).toFixed(0)}%)`];
+    return [WARN, `${ok}/${articles.length} 信息增量不足 (${(ratio * 100).toFixed(0)}%)`, bad.slice(0, 5)];
+  }
+});
+
+// A4c: 无空话（硬约束）— EMPTY_HARD 命中 或 要点以"这/该/其/此"开头 → 不过
+const EMPTY_HARD = /这一举措|这一决定|此举|该球员|该消息|该操作|相关人士|相关机构|某球员|某公司|上述操作|展现了|体现了|反映了|旨在|至关重要|意义重大|有着重要意义|进行了/;
+checks.push({
+  id: 'A4c', label: '无空话（硬约束）', required: true,
+  run(report) {
+    const articles = extractArticles(report).filter(a => a.summary);
+    if (articles.length === 0) return [SKIP, '无文章'];
+    const violations = [];
+    for (const a of articles) {
+      if (EMPTY_HARD.test(a.summary)) {
+        violations.push(`${a.title.slice(0, 40)}: 空话禁词`);
+        continue;
+      }
+      // 要点（【要点】后内容）以"这/该/其/此"开头 → 违反③（要点必须点名）
+      const m = a.summary.match(/【要点】([\s\S]*?)(?=【为什么重要】|$)/);
+      const points = m ? m[1] : '';
+      const pointLines = points.split('\n').map(x => x.trim()).filter(Boolean);
+      for (const pl of pointLines) {
+        if (/^[这该其此]/.test(pl)) {
+          violations.push(`${a.title.slice(0, 40)}: 要点以指代词开头「${pl.slice(0, 20)}」`);
+          break;
+        }
+      }
+    }
+    if (violations.length === 0) return [PASS, '0 篇含空话'];
+    return [FAIL, `${violations.length} 篇含空话`, violations.slice(0, 5)];
   }
 });
 
@@ -274,7 +352,8 @@ checks.push({
   id: 'C3', label: 'preFilter 工作',
   run(_report, _reportPath, runLog) {
     if (!runLog) return [SKIP, '无 run.log'];
-    const match = runLog.match(/\[PreFilter\] (\d+) 条跳过/);
+    // 只匹配 ASCII 前缀，避免 GBK 编码下中文"条跳过"被替换/乱码导致误报
+    const match = runLog.match(/\[PreFilter\] (\d+)/);
     if (match && parseInt(match[1]) > 0) return [PASS, `preFilter 拦截 ${match[1]} 条`];
     if (match) return [WARN, 'preFilter 触发但未拦截'];
     return [WARN, 'preFilter 未触发（可能本轮无无关文章）'];

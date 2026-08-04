@@ -4,6 +4,7 @@ const axios = require('axios');
 const { selectArticleLinks } = require('./ai');
 const { HTTP_USER_AGENT, HTTP_TIMEOUT_MS } = require('./config');
 const { toItem } = require('./items');
+const { extractPublishDateFromUrl } = require('./dates');
 
 /**
  * Extract <a href="...">text</a> from HTML using regex (no CSS parsing).
@@ -54,7 +55,7 @@ async function scrapeSourceUrl(pageUrl, sourceName) {
     }
 
     const articles = await selectArticleLinks(links, sourceName, pageUrl, 'Direct');
-    return articles.map(a => ({ ...a, publishedAt: new Date() }));
+    return articles.map(a => ({ ...a, publishedAt: extractPublishDateFromUrl(a.url) }));
   } catch (err) {
     console.log(`  [Direct] ${sourceName} 跳过: ${err.message}`);
     return [];

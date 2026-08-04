@@ -1,6 +1,7 @@
 import { ArrowDownUp, RotateCcw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { SOURCE_OPTIONS } from '../lib/sources';
+import { DEFAULT_FILTERS } from '../lib/constants';
 import type { FilterState } from '../types';
 
 const SOURCES = [{ value: '', label: '全部来源' }, ...SOURCE_OPTIONS];
@@ -14,6 +15,7 @@ const TIERS = [
 ];
 
 const SORTS: { value: FilterState['sortBy']; label: string }[] = [
+  { value: 'published_at', label: '最新发布' },
   { value: 'created_at', label: '最新发现' },
   { value: 'score', label: '最高相关' },
 ];
@@ -28,7 +30,11 @@ export default function FilterSortBar({ filters, onChange }: FilterSortBarProps)
     onChange({ ...filters, [key]: value });
   };
 
-  const hasActiveFilter = filters.source !== '' || filters.sortBy !== 'created_at' || filters.tier !== null;
+  const hasActiveFilter =
+    filters.source !== DEFAULT_FILTERS.source ||
+    filters.sortBy !== DEFAULT_FILTERS.sortBy ||
+    filters.tier !== DEFAULT_FILTERS.tier ||
+    filters.includeOld !== DEFAULT_FILTERS.includeOld;
 
   return (
     <div className="flex items-center gap-2 flex-wrap mb-4">
@@ -87,10 +93,21 @@ export default function FilterSortBar({ filters, onChange }: FilterSortBarProps)
         ))}
       </div>
 
+      {/* 显示旧闻开关 */}
+      <label className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs text-slate-500 cursor-pointer select-none hover:text-blue-700 transition-colors">
+        <input
+          type="checkbox"
+          checked={filters.includeOld}
+          onChange={(e) => update('includeOld', e.target.checked)}
+          className="w-3.5 h-3.5 accent-blue-700 cursor-pointer"
+        />
+        显示旧闻
+      </label>
+
       {/* Reset */}
       {hasActiveFilter && (
         <button
-          onClick={() => onChange({ ...filters, source: '', sortBy: 'created_at', tier: null })}
+          onClick={() => onChange({ ...DEFAULT_FILTERS })}
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs text-slate-400 hover:text-blue-700 transition-colors"
         >
           <RotateCcw className="w-3 h-3" />

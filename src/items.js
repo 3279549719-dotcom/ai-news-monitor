@@ -11,7 +11,7 @@ function toItem(source, { title, url, publishedAt }) {
     title,
     url,
     snippet: '',
-    publishedAt: publishedAt || new Date(),
+    publishedAt: publishedAt || null,
     source_name: source.source_name,
     source: sourceSlug(source.source_name),
     tier: source.tier,

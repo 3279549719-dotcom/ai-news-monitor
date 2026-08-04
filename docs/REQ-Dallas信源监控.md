@@ -34,15 +34,19 @@
 
 ## 四、信源资产（Source Map）
 
-### 4.1 生产白名单（5 源三 tier）
+### 4.1 生产白名单（9 源三 tier，2026-08-04 Phase8 更新）
 
 | 信源 | 抓取页面 | Tier | 实测 | 备注 |
 |------|---------|------|------|------|
 | NBA Mavs News | `nba.com/mavs/news` | 0 | crawl4ai ✅ + Node ✅ | 官方新闻（mavs.com 301 跳转至此） |
 | Marc Stein (X) | `x.com/TheSteinLine` | 1 | crawl4ai ✅ (t.co 提取) | 独行侠内幕权威，Substack 链接 |
-| Dallas Morning News | `dallasnews.com/sports/mavericks/` | 2 | crawl4ai ✅ + Node ✅ | **84 链接，最强商业信源** |
-| Yahoo Sports | `sports.yahoo.com/nba/teams/dallas/` | 2 | crawl4ai ✅ (Node 403) | 仅 crawl4ai 通道 |
-| Bleacher Report | `bleacherreport.com/dallas-mavericks` | 2 | crawl4ai ✅ (Node 403) | 链接发现 + 外部指向 |
+| Dallas Morning News | `dallasnews.com/sports/mavericks/` | 2 | crawl4ai ✅ + Node ✅ | **最强本地跟队（Townsend/Caplan 独家）**；⚠️ **正文计量墙 10篇/30天**——列表页标题免费仍有情报价值，Phase8 决策保留并前端标注"正文需订阅" |
+| Yahoo Sports | `sports.yahoo.com/nba/teams/dallas/` | 2 | crawl4ai ✅ (Node 403) | 仅 crawl4ai 通道；Phase8 已修导航垃圾（pattern `\.html$` + isSpamTitle） |
+| Bleacher Report | `bleacherreport.com/dallas-mavericks` | 2 | crawl4ai ✅ (Node 403) | 链接发现 + 外部指向；Phase8 pattern 改 `/\/articles\//` |
+| SI Mavs | `si.com/nba/mavericks/news` | 2 | crawl4ai ✅ | /news 子页可达，正文质量高 |
+| Mavs Moneyball | `mavsmoneyball.com/mavericks-news` | 2 | crawl4ai ✅（需 wait_for） | SB Nation 免费；JS 渲染，Phase8 加 wait_for 治 0 产出 |
+| The Smoking Cuban | `thesmokingcuban.com` | 2 | crawl4ai ✅（需 wait_for） | FanSided 免费；同上加 wait_for |
+| HoopsHype | `hoopshype.com/tag/dallas-mavericks/` | 2 | crawl4ai ✅（2026-08-04 实测 31 链接） | Phase8 新增；补传闻/交易聚合，ARTICLE_PATTERN 实测定稿 |
 
 ### 4.2 已验证不可用（排除）
 
