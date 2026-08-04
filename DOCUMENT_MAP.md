@@ -17,6 +17,11 @@
 |------|------|---------|
 | 技术规范 / 数据模型 | [docs/PRD.md](docs/PRD.md) | 改表结构、了解 pipeline 架构 |
 | 曼联需求文档 | [docs/REQ-曼联信源监控.md](docs/REQ-曼联信源监控.md) | 曼联相关功能对齐（含信源资产与实测） |
+| Anthropic 需求文档 | [docs/REQ-Anthropic信源监控.md](docs/REQ-Anthropic信源监控.md) | Anthropic 信源配置与验收 |
+| Anthropic 决策纪要 | [docs/DECISION-Anthropic方案选型.md](docs/DECISION-Anthropic方案选型.md) | Anthropic 信源选型决策 |
+| Dallas 需求文档 | [docs/REQ-Dallas信源监控.md](docs/REQ-Dallas信源监控.md) | Dallas 信源配置与验收 |
+| Dallas 决策纪要 | [docs/DECISION-Dallas方案选型.md](docs/DECISION-Dallas方案选型.md) | Dallas 信源选型决策 |
+| Dallas 执行计划 | [docs/PLAN-Dallas执行计划.md](docs/PLAN-Dallas执行计划.md) | Dallas 实施 checklist |
 | 技术决策纪要 | [docs/DECISION-方案选型纪要.md](docs/DECISION-方案选型纪要.md) | 了解架构选型原因 |
 | 前端原型 | [docs/prototype-board.html](docs/prototype-board.html) | 板块视图 UI 参照 |
 

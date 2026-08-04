@@ -65,7 +65,7 @@ function isXUrl(url) {
 
 // 明显非文章链接的 URL 标记（视频/导航/交易/社交/账号）
 function isNonArticleUrl(url) {
-  return /(video|watch|live-blog|\/live$|\/scores|\/fixtures|transfer-centre|\/topic\/|\/tag\/|\/category\/|\/listing|players|staff|mutv|tickets|store|membership|become-a-member|login|signup|onboarding|header_photo|\/photo$|following|verified_followers|compose|\/status\/|javascript:|mailto:|\.css|\.js$)/i.test(url);
+  return /(video|watch|live-blog|\/live$|\/scores|\/scoreboard|\/fixtures|transfer-centre|\/topic\/|\/tag\/|\/category\/|\/listing|players|staff|mutv|tickets|store|membership|become-a-member|login|signup|onboarding|header_photo|\/photo$|following|verified_followers|compose|\/status\/|javascript:|mailto:|\.css|\.js$|standings|stats$|schedule$|playoffs$|fantasy|premium|suites|sponsorship|\/gem$|ticketprogram|newsroom|natural-resources|personal-finance|college-football|college-basketball|womens-college-basketball|all-elite-wrestling|philadelphia-76ers|\/nba\/draft\/|\/nba\/teams\/$|powered-by)/i.test(url);
 }
 
 // 从 markdown 提取 [text](url) / Guardian 式 [](url)+###标题 链接
@@ -107,6 +107,9 @@ const ARTICLE_PATTERNS = [
   { host: 'dallasnews.com', re: /\/sports\/mavericks\// },
   { host: 'sports.yahoo.com', re: /\/nba\// },
   { host: 'bleacherreport.com', re: /\/dallas-mavericks\// },
+  { host: 'si.com', re: /\/nba\/mavericks\// },
+  { host: 'mavsmoneyball.com', re: /\// },
+  { host: 'thesmokingcuban.com', re: /\// },
 ];
 function getArticlePattern(pageUrl) {
   try {

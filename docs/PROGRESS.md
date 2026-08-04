@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-04（Anthropic 白名单信源落地）
+> 最后更新：2026-08-04（Dallas Mavericks 白名单信源 + 前端 BoardView 落地 + 导航垃圾过滤修复）
 
 ## 功能进度
 
@@ -12,6 +12,7 @@
 | F-004 | Phase 4：前端 UI（React18 + TypeScript + Vite + Tailwind） | 已完成 | 2026-08-02 localhost 验证 |
 | F-005 | Phase 5：白名单定向抓取（方案A）— 移除 Google News RSS + Firecrawl，改用 scraper-direct.js | **已完成** | 2026-08-03 端到端验证通过（MU 3篇入库） |
 | F-009 | Anthropic 白名单信源扩展（方案A续）— 6 源二 tier，claude-blog 合并下线 | **已完成** | 2026-08-04 端到端验证通过（154条抓取，8篇入库） |
+| F-010 | Dallas Mavericks 白名单信源 + 前端 BoardView — 8 源三 tier，导航垃圾过滤修复 | **已完成** | 2026-08-04 端到端 264条抓取→9篇入库（0垃圾） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -157,4 +158,4 @@
 - [x] 代码化简重构（2026-08-04）— 新增 `src/config.js`（配置集中）、`src/items.js`（item 规整）、`src/report.js`（日报）；ai.js 收敛 OpenAI 单例 + 共享 `selectArticleLinks`/`parseAnalyzeResult`；删 scraper-direct 死代码 `fetchDirectSources`；crosscheck 冲突检测去死循环；前端抽 `useSupabaseQuery` 通用 hook（统一错误处理+取消）、共享 `TierBadge/ConfidenceBadge` 与 `constants/sources`；`KeywordsTab` 惰性拉取关键词；新增 node:test 单元测试（tiers/crosscheck/ai/search，22 例全过）。⚠️ 期间 `node --test src/` 误触发一次真实管线运行，test script 已改 `node --test "src/*.test.js"`（见 CLAUDE.md 已知陷阱）
 - [x] 重构遗留决策（2026-08-04，**已确认：记录为后续优化项，本期不做**）：① 删 blog 管线（scraper/reader/summarizeArticle）— **claude-blog 已停用（2026-08-04），blog 管线代码保留但不再触发**；② X 通道策略表 CHANNEL_POLICY 集中 isXUrl 判定；③ 抓取有界并发（现串行，B-003 曾因并发压垮 Supabase 连接池）；④ BoardView 改读 category_schema 数据驱动（现前端硬编码 MU_BOARDS/DAL_BOARDS）；⑤ relativeTime 换 date-fns（会改变用户可见中文文案）
 - [x] **Anthropic 白名单信源扩展（F-009，2026-08-04）** — 6 源二 tier。端到端：154 条抓取，8 篇入库。文档：REQ/DECISION + 实测数据 data/
-- [x] **Dallas Mavericks 白名单 + 前端 BoardView（F-010，2026-08-04）** — 5 源三 tier：T0 nba.com/mavs/news + T1 Marc Stein(X) + T2 DMN/Yahoo/BR。前端 KeywordsTab 扩展 showBoard 条件（MU+DAL），BoardView 新增 DAL_BOARDS（5 板块）复制 MU 组件。端到端：32 条抓取，4 篇战报入库（T2 Yahoo Sports match 类）。文档：REQ/DECISION/PLAN
+- [x] **Dallas Mavericks 白名单 + 前端 BoardView（F-010，2026-08-04）** — **8 源三 tier**：T0 nba.com/mavs/news + T1 Marc Stein(X) + T2 DMN/Yahoo/BR/SI/Mavs Moneyball/Smoking Cuban。新增 3 个信源基于 crawl4ai 实测。前端 BoardView 五宫格（官方/交易/伤病/管理层/赛事）。**踩坑修复**：首版 Yahoo/BR/NBA.com 产出导航垃圾（standings/stats/schedule 等），根因 `isNonArticleUrl()` 未覆盖 NBA 特有导航词。修复后新增 20+ 过滤词 + 3 个新信源，Dallas 从 4 条假新闻 → 9 条真新闻（0 垃圾）。截图 `screenshots/dallas-boardview.png`
