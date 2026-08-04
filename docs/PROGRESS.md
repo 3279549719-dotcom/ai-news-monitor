@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-04（代码化简重构 + 文档体系整合）
+> 最后更新：2026-08-04（Anthropic 白名单信源落地）
 
 ## 功能进度
 
@@ -11,6 +11,7 @@
 | F-003 | Phase 3：Supabase 持久化 + cron 定时 + 代码重构 | 已完成 | 2026-08-02 实机验证 |
 | F-004 | Phase 4：前端 UI（React18 + TypeScript + Vite + Tailwind） | 已完成 | 2026-08-02 localhost 验证 |
 | F-005 | Phase 5：白名单定向抓取（方案A）— 移除 Google News RSS + Firecrawl，改用 scraper-direct.js | **已完成** | 2026-08-03 端到端验证通过（MU 3篇入库） |
+| F-009 | Anthropic 白名单信源扩展（方案A续）— 6 源二 tier，claude-blog 合并下线 | **已完成** | 2026-08-04 端到端验证通过（154条抓取，8篇入库） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -154,4 +155,5 @@
 - [x] crawl4ai 接入生产管线（Phase E）— 2026-08-03 落地并回归，见 F-008
 - [x] 文档体系整合（2026-08-04）— 两份 REQ 合并为一份（信源资产 + 实测备注）；历史 PLAN/CHECKLIST/spec 归档至 `docs/archive/`；PRD 更新至 crawl4ai 架构 + 方案BC 数据模型；`src/firecrawl.js` 删除；CLAUDE.md / DOCUMENT_MAP.md 索引同步
 - [x] 代码化简重构（2026-08-04）— 新增 `src/config.js`（配置集中）、`src/items.js`（item 规整）、`src/report.js`（日报）；ai.js 收敛 OpenAI 单例 + 共享 `selectArticleLinks`/`parseAnalyzeResult`；删 scraper-direct 死代码 `fetchDirectSources`；crosscheck 冲突检测去死循环；前端抽 `useSupabaseQuery` 通用 hook（统一错误处理+取消）、共享 `TierBadge/ConfidenceBadge` 与 `constants/sources`；`KeywordsTab` 惰性拉取关键词；新增 node:test 单元测试（tiers/crosscheck/ai/search，22 例全过）。⚠️ 期间 `node --test src/` 误触发一次真实管线运行，test script 已改 `node --test "src/*.test.js"`（见 CLAUDE.md 已知陷阱）
-- [ ] 重构遗留决策（2026-08-04，**已确认：记录为后续优化项，本期不做**）：① 删 blog 管线（scraper/reader/summarizeArticle）— 注意 `claude-blog` 关键词仍启用，删除前需先下线该关键词；② X 通道策略表 CHANNEL_POLICY 集中 isXUrl 判定；③ 抓取有界并发（现串行，B-003 曾因并发压垮 Supabase 连接池）；④ BoardView 改读 category_schema 数据驱动（现前端硬编码 MU_BOARDS）；⑤ relativeTime 换 date-fns（会改变用户可见中文文案）
+- [x] 重构遗留决策（2026-08-04，**已确认：记录为后续优化项，本期不做**）：① 删 blog 管线（scraper/reader/summarizeArticle）— **claude-blog 已停用（2026-08-04），blog 管线代码保留但不再触发**；② X 通道策略表 CHANNEL_POLICY 集中 isXUrl 判定；③ 抓取有界并发（现串行，B-003 曾因并发压垮 Supabase 连接池）；④ BoardView 改读 category_schema 数据驱动（现前端硬编码 MU_BOARDS）；⑤ relativeTime 换 date-fns（会改变用户可见中文文案）
+- [x] **Anthropic 白名单信源扩展（F-009，2026-08-04）** — `claude-blog` 关键词停用，统一合并到 `anthropic` 关键词。新增 6 源：T0 anthropic.com/news + anthropic.com/research + claude.com/blog（crawl4ai 容器可达），T1 TechCrunch + VentureBeat + Wired。crawl4ai-fetch.js 新增 5 组 ARTICLE_PATTERNS，source-tiers.json 新增 5 条域名映射。端到端验证：154 条抓取，8 篇入库（全部 T0），日报/前端正常。两份文档：REQ-Anthropic信源监控.md + DECISION-Anthropic方案选型.md，实测数据 data/ 目录。

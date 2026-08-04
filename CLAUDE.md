@@ -62,10 +62,11 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 ## 关键约束
 
 - 关键词统一从 Supabase `keywords` 表读取（`keywords.json` 已删除）
-- search 类型：AI 评分 ≥60 视为相关（`MIN_SCORE=60`）；blog 类型：全部通过（score=100）
+- search 类型：AI 评分 ≥60 视为相关（`MIN_SCORE=60`）；blog 类型已下线（`claude-blog` 关键词停用，官方内容由 anthropic 关键词的 T0 信源覆盖）
 - **抓取通道（Phase E）**：`src/search.js` 逐源调用 `src/crawl4ai-fetch.js`（REST 调本地 crawl4ai 容器）→ 失败/空结果自动降级 `src/scraper-direct.js`（axios + DeepSeek 识别链接）。Firecrawl API 已停用。**定时管线依赖 Docker 容器 `crawl4ai` 在线**（`docker start crawl4ai`）；容器不可用时自动逐源降级，不影响其余源。X 账号信源仅走 crawl4ai（axios 抓 X 无意义），失败直接跳过
 - **白名单信源**：只抓取 `keyword_sources` 表中 `fetch_type='firecrawl'` 且 `enabled=true` 的信源页面。无白名单的关键词走 HackerNews 兜底
-- 信源页面选择实测可达站点：白名单 7 源三 tier（T0 manutd ｜ T1 Stone·Ornstein(X) ｜ T2 Sky/ESPN/90min/Guardian）；避免 BBC / The Athletic / MEN（Node 与容器均不可达或 paywall），详见 `docs/REQ-曼联信源监控.md` §5
+- 当前关键词覆盖：MU（7 源三 tier）、Anthropic（6 源二 tier）、Dallas Mavericks（0 源，待扩展），详见各 REQ 文档
+- 信源页面选择实测可达站点：优先 crawl4ai 容器（可过墙），Node 直连不可达但容器可达的站点（Guardian、claude.com/blog）仍可纳入白名单
 - RLS 当前宽松模式（`USING (true)`），上线前须收紧
 - Windows 路径统一使用 `E:\claude\ai-news-monitor`（Git Bash 用 `/e/claude/...`）
 
@@ -92,12 +93,17 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 
 ### 网络访问
 - **BBC Sport / The Guardian**：Node 直连（axios）ETIMEDOUT 不可达；crawl4ai 容器可达 Guardian。管线抓取仍优先选国内可达站点
-- **claude.com/blog**：偶发超时（15s），属 Anthropic 服务端响应慢，重试即可
+- **claude.com/blog**：Node 直连超时（国内不可达），crawl4ai 容器可达（2026-08-04 实测 ✅）
+- **anthropic.com/news / anthropic.com/research**：crawl4ai 容器可达（2026-08-04 实测 ✅）
+- **TechCrunch / Wired**：双通道可达；**VentureBeat**：仅 crawl4ai（Node 429 限流）
+- **Ars Technica**：JS challenge wall，双通道均不可达（不可用）
 
 ### 数据约束
 - **`keyword_sources.rss_url` 列有 NOT NULL 约束**：仅用 firecrawl 模式时，插入记录也要给 `rss_url` 填值（填与 `scrape_url` 相同的值）
 - **`keyword_sources` 的 `(keyword_id, rss_url)` 有唯一约束**：更新信源时先 DELETE 旧行再 INSERT 新行
 - **MU 关键词 query 字段**：使用宽泛词 `"Manchester United"`（白名单模式下信源已限定，query 无需附加限定词）
+- **Anthropic 关键词 query 字段**：使用 `"anthropic AI"`，白名单 6 源（T0: anthropic.com/news + research + claude.com/blog | T1: TechCrunch + VentureBeat + Wired）
+- **claude-blog 关键词已停用**（2026-08-04），原 blog pipeline（scraper.js/reader.js/summarizeArticle）保留代码但不再触发
 
 ### Agent 行为
 - **路径中的 "claude" 易被写成 "droid"**：使用 Windows 绝对路径（`E:\claude\...`）规避；Git Bash 必须用 `/e/claude/...`
