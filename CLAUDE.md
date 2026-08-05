@@ -92,7 +92,8 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 - **一次性验证脚本 `scripts/run-crawl4ai-demo.js`**：读 `scripts/_crawl4ai-items.json`（crawl4ai 抓取整理的真实 items）→ 复用 analyzeResult + crosscheck + saveArticles 跑通三 tier 交叉验证。仅验证用，不入生产管线
 - **⚠️ `scripts/dedup-existing.js` 的 `--keep-ids` 只认空格分隔**：`flag()` 解析 `--keep-ids ID1,ID2`，**不接受 `--keep-ids=ID1,ID2`（等号形式被静默忽略 → keep 集为空 → 全部行被删）**。2026-08-05 曾因此误删用户要求保留的 Cisse + Project Fetch 两行（Cisse 已恢复，Project Fetch 经用户确认弃留）。传参必须空格分隔；`--apply` 前务必先跑 `--dry-run` 核对清单
 - **`npm test` 不要用 `node --test src/`**：Node 22 会把 `src` 当作单个测试入口、误执行 `src/index.js`，触发一次真实管线运行（连 crawl4ai + DeepSeek + Supabase，写库并生成日报，耗时近 1 分钟）。2026-08-04 曾因此误跑一次。统一用 package.json 的 `node --test "src/*.test.js"`（只跑 4 个 *.test.js）
-- **前端视觉验证用 Playwright（Phase9）**：crawl4ai 容器 SSRF 保护无法访问 localhost（实测 `URL blocked (SSRF protection)`），前端截图改走 `scripts/screenshot-ui.js`（devDependency `playwright-core`，浏览器已装 `C:\Users\asus\AppData\Local\ms-playwright`，找不到时设 `PLAYWRIGHT_BROWSERS_PATH` 兜底）
+- **前端视觉验证用 Playwright（Phase9）**：crawl4ai 容器 SSRF 保护无法访问 localhost（实测 `URL blocked (SSRF protection)`），前端截图改走 `scripts/screenshot-ui.js`（devDependency `playwright-core`，浏览器已装 `C:\Users\asus\AppData\Local\ms-playwright`，找不到时设 `PLAYWRIGHT_BROWSERS_PATH` 兜底）。✅ **已跑通**（2026-08-05 产出 `screenshots/ui-board-dallas-final.png` / `screenshots/ui-board-mu-final.png`）
+- **Phase9 最终交付（2026-08-05）**：历史数据回填去重 + 前端空态验收全绿（npm test 42/42、前端三件套、Carrick score 90、Naji 4→1），已 commit 并 push `origin/master`（caa4808 + 文档收尾提交）
 
 ### 网络访问
 - **BBC Sport / The Guardian**：Node 直连（axios）ETIMEDOUT 不可达；crawl4ai 容器可达 Guardian。管线抓取仍优先选国内可达站点

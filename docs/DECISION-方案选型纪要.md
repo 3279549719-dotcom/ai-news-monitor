@@ -1,7 +1,7 @@
 # DECISION: 曼联信源监控技术方案选型纪要
 
 > 决策日期: 2026-08-03 ｜ 参与: Patrick + Alice + 豆包
-> 最后更新: 2026-08-04（抓取通道由 Firecrawl 改为 crawl4ai；方案B/C 状态标记完成）
+> 最后更新: 2026-08-05（Phase9 决策追加；抓取通道由 Firecrawl 改为 crawl4ai；方案B/C 状态标记完成）
 
 ---
 
@@ -77,6 +77,7 @@ Supabase 白名单 (T0/T1/T2)
 | **短期** | 补交叉校验后处理层（方案B：event 聚类 + 置信度/冲突标记） | ✅ 已完成（2026-08-03 落地） |
 | **中期** | 板块分类报告（方案C：日报按板块分组 + 前端板块视图） | ✅ 已完成（2026-08-03 落地） |
 | **远期** | 转会窗高频 + Tier 动态调整 / 事实-观点拆分（原短期项，未做） | 按需 |
+| **Phase9** | 历史数据回填重算 + 同事件三层去重 + 前端空态重构 + Playwright 截图 | ✅ 已完成（2026-08-05 最终交付并 push，见文末追加决策） |
 
 ---
 
@@ -136,3 +137,28 @@ ALTER TABLE keywords
 - 原型文件：docs/prototype-board.html（+ 截图 prototype-board.png）
 - 6 格布局确认：官方公告(红框) / 转会合同 / 伤病停赛 / 管理层教练组 / 赛事竞技 / 今日概览
 - 卡片结构确认：meta 行（来源|Tier|日期）→ 标题 → AI摘要 → 分类标签 + 原始链接
+
+---
+
+## 追加决策：Phase9 历史数据回填去重与前端空态（2026-08-05 最终交付）
+
+> 需求：`docs/REQ-Phase9-历史数据回填去重与前端空态.md` ｜ 完整决策与执行偏差：`docs/DECISION-Phase9-历史数据回填去重与前端空态.md` ｜ 验收：PROGRESS F-013
+
+### 决策记录
+
+| # | 决策点 | 结论 | 理由 |
+|---|--------|------|------|
+| D-08 | 历史摘要修正路径 | **全量回填重算脚本**（`scripts/backfill-resummarize.js`），不重跑管线 | `filterNewItems` URL 去重使重跑对已入库行无效，只能脚本逐篇重算 |
+| D-09 | 去重规则 | **v3 双信号 + seed-only 聚类**（规则A 文本高相似 + 动作兼容 / 规则B 共享特有专名 + 同动作组） | v1 单阈值实测把 Anthropic 37→33 误删（共享 "Anthropic/Claude" 实体膨胀），v3 校准后误删砍到 4 |
+| D-10 | 回填并发与 score 策略 | **pool 1-2 串行 + 正文重试**；正文缺失时 `score = max(current, model)` 不降分 | crawl4ai 持续并发过载实测（pool3 正文缺失 66%），v2 严格判分曾把 210 篇压出 60 |
+| D-11 | 前端空态 | **空板块不渲染 + 行动导向空态 + Tier 色条签名**，不全面换肤 | 用户痛点是空白非配色，结构性消灭白卡占位 |
+| D-12 | 前端视觉验证 | **playwright-core + `scripts/screenshot-ui.js`**（替代 crawl4ai 容器截图） | crawl4ai SSRF 保护实测拦截 localhost，无法给本地 dev server 截图 |
+| D-13 | 存量清理工具 | **`scripts/dedup-existing.js`**：默认 `--dry-run` 预览 → `--apply` 执行 | 硬反向删除操作需前置预览 + 显式开关 |
+
+### 执行结果（简）
+
+- **回填**：v1（pool3）305 篇正文缺失 66% → v2 修复（pool1-2+重试）324 篇 **0 失败**、正文缺失 12.7%、**恢复可见 48 条**；google-news 240 死链行清零
+- **去重**：Naji 续约 4→1；Anthropic 误删 33→4；同批合并 + 跨运行防重接线 index.js
+- **截图**：`screenshot-ui.js` 跑通，产出 `screenshots/ui-board-dallas-final.png` / `ui-board-mu-final.png`
+- **验收**：npm test 42/42、前端三件套全绿、Carrick 摘要修正（score 90）、管线回归通过
+- **事故披露**：`dedup-existing --keep-ids` 等号传参被静默忽略导致 11 行全删，Cisse 已恢复、Project Fetch 经用户确认弃留（详见 DECISION-Phase9 §6.3 / CLAUDE.md 已知陷阱）

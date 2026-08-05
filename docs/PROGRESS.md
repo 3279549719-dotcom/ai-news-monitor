@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-05（Phase 9 交付完成 — 历史数据回填重算 + 同事件三层去重 + 前端空态重构 + Playwright 截图，验收全绿）
+> 最后更新：2026-08-05（Phase 9 最终交付完成 — 历史数据回填重算 + 同事件三层去重 + 前端空态重构 + Playwright 截图，验收全绿，已 push origin/master）
 
 ## 功能进度
 
@@ -15,7 +15,7 @@
 | F-010 | Dallas Mavericks 白名单信源 + 前端 BoardView — 8 源三 tier，导航垃圾过滤修复 | **已完成** | 2026-08-04 端到端 264条抓取→9篇入库（0垃圾） |
 | F-011 | Phase 7：AI 分析管线体验优化 — 三段式摘要 + 分类判别标准 + preFilter + 自动化验收 | **已完成** | 2026-08-04 端到端 11篇入库，无占位语，三段式 100%，22/22 test |
 | F-012 | Phase 8：信息获取与理解层优化 — 假日期修复 + AI 正文喂养 + 分类/体裁落地 + 付费墙标注 + 前端时效窗口 | **已完成** | 2026-08-04 端到端 4篇入库，A4a 事实锚点 100%，npm test 35/35，前端三件套全绿 |
-| F-013 | Phase 9：历史数据回填去重 + 前端空态 — 全量回填重算 + 同事件三层去重 + BoardView 空态重构 + Playwright 截图 | **已完成** | 2026-08-05 验收：Carrick 摘要修正(score 90)、Naji 4→1、npm test 42/42、前端三件套全绿（见 F-013 交付内容） |
+| F-013 | Phase 9：历史数据回填去重 + 前端空态 — 全量回填重算 + 同事件三层去重 + BoardView 空态重构 + Playwright 截图 | **已完成（最终交付）** | 2026-08-05 验收全绿：Carrick 摘要修正(score 90)、Naji 4→1、npm test 42/42、前端三件套全绿、管线回归通过、**已 push origin/master**（见 F-013 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -170,13 +170,14 @@
 - `BoardView.tsx`：空板块不渲染（结构性消灭空白）+ 行动导向空态 + Tier 左色条签名（T0 红/T1 琥珀/T2 灰）+ 板块数量徽章 + 今日概览移全宽底带
 - `KeywordsTab.tsx` "显示旧闻"开关、`EmptyState.tsx` 行动引导、`index.css` 衬线字面层次
 - `package.json` 加 `playwright-core` devDep + `scripts/screenshot-ui.js`（headless chromium 截图，`PLAYWRIGHT_BROWSERS_PATH` 兜底）
-- 截图：`screenshots/ui-board-dallas.png` / `screenshots/ui-board-mu.png`
+- **截图脚本已跑通**：最终产出 `screenshots/ui-board-dallas-final.png` / `screenshots/ui-board-mu-final.png`（首版 `ui-board-dallas.png` / `ui-board-mu.png` 亦留存）
 
 **验收：**
 - 后端 `node --check src/*.js scripts/*.js` ✅ ｜ `npm test` **42/42** ✅（新增 7 个去重用例：Naji 判重 / 受伤不判重 / 交易门 / 空 event / seed-only 聚类）
 - 前端 `cd client && npm run type-check && npm run lint && npm run build` ✅
 - 数据：Carrick 摘要修正（score 90，主帅认知正确）✅ ｜ Naji 续约 score≥60 4→1 ✅ ｜ 可见相关文章 **82 篇**（MU 29 / Anthropic 33 / Dallas 10 / blog 10）✅ ｜ Cisse 恢复 ✅
 - 管线回归 `node src/index.js` 端到端通过，无重复事件新增 ✅
+- **最终交付**：已 commit 并 push `origin/master`（caa4808 + 本次文档收尾提交）✅
 
 ## 项目开发路线图
 

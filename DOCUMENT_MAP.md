@@ -23,8 +23,8 @@
 | Dallas 决策纪要 | [docs/DECISION-Dallas方案选型.md](docs/DECISION-Dallas方案选型.md) | Dallas 信源选型决策 |
 | Dallas 执行计划 | [docs/PLAN-Dallas执行计划.md](docs/PLAN-Dallas执行计划.md) | Dallas 实施 checklist |
 | 技术决策纪要 | [docs/DECISION-方案选型纪要.md](docs/DECISION-方案选型纪要.md) | 了解架构选型原因 |
-| Phase9 需求（回填去重+空态） | [docs/REQ-Phase9-历史数据回填去重与前端空态.md](docs/REQ-Phase9-历史数据回填去重与前端空态.md) | 历史数据回填/去重/前端空态验收 |
-| Phase9 决策纪要 | [docs/DECISION-Phase9-历史数据回填去重与前端空态.md](docs/DECISION-Phase9-历史数据回填去重与前端空态.md) | 回填/去重/空态选型 + 执行结果偏差 |
+| ✅ Phase9 需求（回填去重+空态，已交付） | [docs/REQ-Phase9-历史数据回填去重与前端空态.md](docs/REQ-Phase9-历史数据回填去重与前端空态.md) | 历史数据回填/去重/前端空态验收 |
+| ✅ Phase9 决策纪要（已交付） | [docs/DECISION-Phase9-历史数据回填去重与前端空态.md](docs/DECISION-Phase9-历史数据回填去重与前端空态.md) | 回填/去重/空态选型 + 执行结果偏差 |
 | 前端原型 | [docs/prototype-board.html](docs/prototype-board.html) | 板块视图 UI 参照 |
 
 ## 进度与归档
@@ -52,3 +52,4 @@
 | 类型 | 路径 | 说明 |
 |------|------|------|
 | 日报 | `reports/YYYY-MM-DD.md` | 每次运行时自动生成 |
+| 前端视觉截图 | `screenshots/*.png` | Phase9 起 Playwright 截图产物（`scripts/screenshot-ui.js`） |
