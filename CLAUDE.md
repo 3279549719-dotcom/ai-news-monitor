@@ -25,11 +25,12 @@ CRON_SCHEDULE="0 8 * * *" node src/index.js  # 每天8点定时运行
 
 ```
 src/
-  index.js          主流程：关键词循环、pipeline 调度、报告生成
+  index.js          主流程：关键词循环、pipeline 调度、报告生成（processKeyword 拆为 fetchCandidates→analyzeAndCrosscheck→dedupeAgainstRecent→assembleRecords→persist 阶段函数）
   config.js         环境变量与常量集中读取（MIN_SCORE/RESULT_LIMIT/HTTP/DeepSeek/crawl4ai/Supabase）
   db.js             Supabase client 单例 + withRetry 工具
-  store.js          数据访问层：loadKeywords、loadKeywordSources、filterNewItems、saveArticles
+  store.js          数据访问层：loadKeywords、loadKeywordSources、filterNewItems、saveArticles、loadRecentRelevant
   search.js         search 类型：白名单信源逐源调度（crawl4ai 优先 → 降级 scraper-direct）+ HackerNews 兜底；HN 走 toItem + normalizeUrlKey 去重
+  keyword-roots.js  关键词词根映射表（KEYWORD_ROOTS / getKeywordRoots，供 preFilter + C1 验收；词根外置直接编辑本文件）
   crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章 URL 模式筛选（模式表外置 article-patterns.json）；X 账号走 external t.co 链
   article-patterns.json 站点 → 文章 URL 模式表（按 host 分组多模式，新增信源/改模式直接编辑本文件不动代码）
   scraper-direct.js 信源直抓降级：axios 拉 HTML → 正则提取链接 → AI 精选文章
@@ -37,7 +38,7 @@ src/
   ai.js             getOpenAI 单例 + analyzeResult(options)/parseAnalyzeResult/selectArticleLinks（共享链接精选）；提示词外置 prompts/
   prompts/          AI 提示词集中目录（analyze-prompt.js 摘要6铁律 / select-links-prompt.js 链接精选）
   items.js          抓取结果 → 入库 items 形状规整（toItem/sourceSlug/normalizeUrlKey，多通道共用）
-  crosscheck.js     交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记
+  crosscheck.js     交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记 + 同事件去重（dedupeBySimilarity 双信号 / collapseSameEvent / dedupeAgainstExisting）
   report.js         日报 buildReport（按 category_schema 分组）
   tiers.js          getTier(url)：域名 → Tier 映射
   source-tiers.json 域名可信度映射表

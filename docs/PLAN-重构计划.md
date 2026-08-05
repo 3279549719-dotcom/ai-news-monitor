@@ -1,7 +1,7 @@
 # 重构计划 — ai-news-monitor
 
 > 生成时间：2026-08-05 12:00 | 来源：Claude Code CLI 分析
-> 进度：**第一批已完成** P0① + P1⑥⑦（2026-08-05）；其余见下方状态标记
+> 进度：**第一批已完成** P0① + P1③⑥⑦（2026-08-05）；其余见下方状态标记
 
 ## 总体判断
 
@@ -31,6 +31,7 @@
 - 跨运行去重抽到 crosscheck.js
 - getKeywordRoots 下沉到数据文件
 - blog 分支标注 LEGACY 归档
+- ✅ **已完成（2026-08-05，commit `da8d349`）**：`processKeyword` 拆为 5 个模块级阶段函数（`fetchCandidates` → `analyzeAndCrosscheck` → `dedupeAgainstRecent` → `assembleRecords` → `persist`）；`buildRecord` 提为模块级纯函数 `toArticleRecord(item, keyword, overrides)`；`getKeywordRoots` 下沉 `src/keyword-roots.js` 词根数据文件（`KEYWORD_ROOTS` 表，词根外置直接编辑该文件）；blog 分支标注 LEGACY；`crosscheck.js` 新增导出 `dedupeAgainstExisting(items, existing)`。重构不改行为，42 tests pass
 
 ### ④ BoardView.tsx 拆分
 - 抽共享 ArticleCard / CardMetaRow / BoardSection / OverviewBar
@@ -64,6 +65,7 @@
 - 抽 groupBySimilarity 公共原语
 - 停用词表/阈值外置
 - 导出 dedupeAgainstExisting
+- 🔶 子项「导出 dedupeAgainstExisting」已完成（2026-08-05，随 `da8d349` P1③ 一并落地）；`groupBySimilarity` 公共原语 + 停用词表/阈值外置待后续批次
 
 ### ⑪ store.js MIN_SCORE 引 config
 - 从 config 导入而非硬编码

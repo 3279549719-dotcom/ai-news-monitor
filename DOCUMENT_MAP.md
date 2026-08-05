@@ -41,7 +41,7 @@
 | 主调度 | `src/index.js` | Pipeline 循环、交叉验证、报告生成 |
 | 搜索 + 抓取 | `src/search.js` → `src/crawl4ai-fetch.js`（主）→ `src/scraper-direct.js`（降级） | 白名单信源逐源抓取 + HackerNews 兜底 |
 | AI 评分 | `src/ai.js` | DeepSeek 评分 + 摘要 + event/category |
-| 交叉验证 | `src/crosscheck.js` | event 聚类 + 置信度/印证数/冲突标记 |
+| 交叉验证 + 去重 | `src/crosscheck.js` | event 聚类 + 置信度/印证数/冲突标记 + 同事件去重（dedupeBySimilarity 双信号 / collapseSameEvent / dedupeAgainstExisting） |
 | 配置 / item 规整 / 日报 | `src/config.js` / `src/items.js` / `src/report.js` | env+常量集中 / toItem / buildReport |
 | 数据访问 | `src/store.js` (Supabase) | keywords / keyword_sources / articles CRUD |
 | Tier 工具 | `src/tiers.js` + `src/source-tiers.json` | URL 域名 → Tier 映射 |
