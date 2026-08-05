@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-05（Phase 9 最终交付完成 — 历史数据回填重算 + 同事件三层去重 + 前端空态重构 + Playwright 截图，验收全绿，已 push origin/master）
+> 最后更新：2026-08-05（Phase 9 最终交付 + 重构第一批 P0①/P1⑥⑦ 完成 — 已 push origin/master）
 
 ## 功能进度
 
@@ -179,6 +179,21 @@
 - 管线回归 `node src/index.js` 端到端通过，无重复事件新增 ✅
 - **最终交付**：已 commit 并 push `origin/master`（caa4808 + 本次文档收尾提交）✅
 
+## 重构第一批（2026-08-05，对应 `docs/PLAN-重构计划.md` P0① + P1⑥⑦）
+
+> 数据外置/接口形状统一的首批落地，**重构不改行为**。三个 commit：`4190daf`（crawl4ai 模式表外置）→ `d696282`（ai options + 提示词外置）→ `fae4395`（search URL 规范化 + HN 走 toItem）。剩余计划项见 `docs/PLAN-重构计划.md`。
+
+| 计划项 | 内容 | 状态 |
+|---|---|---|
+| P0① | crawl4ai ARTICLE_PATTERNS 外置 `src/article-patterns.json`，按 host 分组**多模式数组**、逐一 `test()`；**修 si.com 双条目**（soccer/nba 各自匹配，Dallas nba 模式不再被 `.find` 取第一条遮蔽） | ✅ 已完成（`4190daf`） |
+| P1⑥ | ai.js `analyzeResult`/`buildAnalyzePrompt` 6 位置参数 → **options 对象**；提示词外置 `src/prompts/analyze-prompt.js`（SYSTEM_PROMPT 摘要6铁律）+ `src/prompts/select-links-prompt.js`（buildSelectLinksPrompt） | ✅ 已完成（`d696282`） |
+| P1⑦ | search.js HN 分支改走 `toItem` 统一 item 形状（去重/去重键与白名单通道一致）；URL 规范化抽 `normalizeUrlKey`（`src/items.js`），`deduplicateByUrl` 复用 | ✅ 已完成（`fae4395`） |
+
+**后续维护要点：**
+- 新信源加 URL 模式 / 改匹配规则：**编辑 `src/article-patterns.json`**，无需改代码（照 source-tiers.json 数据外置模式）
+- 改 AI 摘要规则或链接筛选提示词：只动 `src/prompts/`，勿在 ai.js 内联维护
+- URL 去重键统一走 `normalizeUrlKey`（剥协议/www/查询串/尾斜杠），新去重逻辑复用，勿另写
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：
@@ -207,6 +222,7 @@
 - [x] GitHub 远程仓库推送（2026-08-04 已推送 `origin/master` 至 32801e5，含全部历史提交 + 临时文件清理）
 - [ ] RLS 策略收紧（从宽松模式改为认证模式）
 - [x] **Phase9 历史数据回填去重与前端空态（2026-08-05 完成）** — 全量回填重算（v2 修复模式 324 篇 0 失败）+ 同事件三层去重（Naji 4→1，去重 v3 双信号）+ BoardView 空态重构 + playwright-core 截图。见 `docs/REQ-Phase9-历史数据回填去重与前端空态.md` / `docs/DECISION-Phase9-历史数据回填去重与前端空态.md` / PROGRESS F-013
+- [x] **第一批重构（2026-08-05 完成）** — P0① crawl4ai 模式表外置 `src/article-patterns.json`（修 si.com 双条目）+ P1⑥ ai.js options 对象 + 提示词外置 `src/prompts/` + P1⑦ search HN 走 toItem + `normalizeUrlKey` 统一。详见本节"重构第一批"段落与 `docs/PLAN-重构计划.md`
 - [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）
 - [x] 四板块分类报告（方案C）— 2026-08-03 板块视图 + 日报按板块分组完成
 - [x] crawl4ai 接入生产管线（Phase E）— 2026-08-03 落地并回归，见 F-008

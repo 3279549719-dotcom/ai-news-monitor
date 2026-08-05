@@ -29,12 +29,14 @@ src/
   config.js         环境变量与常量集中读取（MIN_SCORE/RESULT_LIMIT/HTTP/DeepSeek/crawl4ai/Supabase）
   db.js             Supabase client 单例 + withRetry 工具
   store.js          数据访问层：loadKeywords、loadKeywordSources、filterNewItems、saveArticles
-  search.js         search 类型：白名单信源逐源调度（crawl4ai 优先 → 降级 scraper-direct）+ HackerNews 兜底
-  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章URL模式筛选；X 账号走 external t.co 链
+  search.js         search 类型：白名单信源逐源调度（crawl4ai 优先 → 降级 scraper-direct）+ HackerNews 兜底；HN 走 toItem + normalizeUrlKey 去重
+  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章 URL 模式筛选（模式表外置 article-patterns.json）；X 账号走 external t.co 链
+  article-patterns.json 站点 → 文章 URL 模式表（按 host 分组多模式，新增信源/改模式直接编辑本文件不动代码）
   scraper-direct.js 信源直抓降级：axios 拉 HTML → 正则提取链接 → AI 精选文章
   scraper.js/reader.js blog 类型：claude-blog 抓列表 + 读正文
-  ai.js             getOpenAI 单例 + summarizeArticle / analyzeResult / parseAnalyzeResult / selectArticleLinks（共享链接精选）
-  items.js          抓取结果 → 入库 items 形状规整（toItem/sourceSlug，两通道共用）
+  ai.js             getOpenAI 单例 + analyzeResult(options)/parseAnalyzeResult/selectArticleLinks（共享链接精选）；提示词外置 prompts/
+  prompts/          AI 提示词集中目录（analyze-prompt.js 摘要6铁律 / select-links-prompt.js 链接精选）
+  items.js          抓取结果 → 入库 items 形状规整（toItem/sourceSlug/normalizeUrlKey，多通道共用）
   crosscheck.js     交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记
   report.js         日报 buildReport（按 category_schema 分组）
   tiers.js          getTier(url)：域名 → Tier 映射
@@ -78,7 +80,7 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 - `useArticles` 的 effect 依赖使用标量字段（`filters.keywordId`、`filters.source`、`filters.search`、`filters.sortBy`、`filters.tier`），不传 `filters` 对象本身（对象引用每次渲染都变，会触发无效重请求）
 - 提交前运行检查：后端 `node --check src/*.js` + `npm test`（node:test）；前端 `cd client && npm run type-check && npm run lint && npm run build`
 - 只暂存本次任务涉及的文件；`.env*`、node_modules、本地产物不入库
-- 新增信源时同步更新 `source-tiers.json` 域名映射（如无映射则 AI 评分不获 tier 提示）
+- 新增信源时同步更新 `source-tiers.json` 域名映射（如无映射则 AI 评分不获 tier 提示）+ `article-patterns.json` 站点文章 URL 模式（如无模式命中则退回 DeepSeek 链接精选）
 
 ## 已知陷阱
 
@@ -108,6 +110,7 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 
 ### 抓取陷阱
 
+- **ARTICLE_PATTERNS 已外置（2026-08-05 第一批重构）**：站点→文章 URL 模式表从 `crawl4ai-fetch.js` 抽到 `src/article-patterns.json`，按 host 分组**多模式数组**，匹配为逐一 `test()`（修 si.com 双条目——soccer/nba 各自匹配，Dallas 的 nba 模式不再被 `.find` 取第一条遮蔽）。新增信源/改 URL 模式**只编辑该 JSON**，勿改 crawl4ai-fetch.js 代码
 - **⚠️ 门户页导航链接污染（2026-08-04 Dallas 踩坑）**：Yahoo Sports / Bleacher Report / NBA.com 团队门户页包含大量非文章导航链接（Scores/Standings/Schedule/Stats/Draft/Fantasy/Suites/Sponsorship 等），`crawl4ai-fetch.js` 的 `isNonArticleUrl()` 过滤器必须持续维护，否则垃圾链接会被当作"文章"入库。**修复**：在 `isNonArticleUrl()` 中新增 20+ NBA 特有导航关键词过滤。验证结果：修复后 Yahoo 从 15 条垃圾 → 0 条，Dallas 真实新闻占比 100%。
 - **⚠️ 白名单 URL 准确性验证**：新加信源时，不能仅凭 HTTP 200 判断可用——必须人工验证 crawl4ai 返回的链接是否是真新闻文章（非导航/菜单/比分）。Yahoo `sports.yahoo.com/nba/teams/dallas/` 返回 200 但初始产出全部是比分板链接，修复后正常。
 - **Dallas 信源特征**：休赛期 NBA 团队门户页新闻更新频率远低于足球赛季中。Mavs Moneyball / The Smoking Cuban 等博客产出量大（150+ 条/轮），靠 AI 评分 + URL 去重收敛。
