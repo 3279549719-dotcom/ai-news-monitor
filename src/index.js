@@ -54,7 +54,7 @@ const PIPELINES = {
   },
   search: {
     fetch: (kw, sources = []) => searchAll(kw.query, sources),
-    analyze: (kw, item) => analyzeResult(kw.query, item.title, item.snippet, item.tier, kw.category_schema, item.body),
+    analyze: (kw, item) => analyzeResult({ query: kw.query, title: item.title, snippet: item.snippet, tier: item.tier, categorySchema: kw.category_schema, body: item.body }),
   },
 };
 

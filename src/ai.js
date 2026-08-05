@@ -2,6 +2,8 @@
 
 const OpenAI = require('openai');
 const { DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, MIN_SCORE } = require('./config');
+const { SYSTEM_PROMPT } = require('./prompts/analyze-prompt');
+const { buildSelectLinksPrompt } = require('./prompts/select-links-prompt');
 
 let _openai = null;
 
@@ -13,21 +15,8 @@ function getOpenAI() {
   return _openai;
 }
 
-// 摘要 6 铁律（Phase8 理解层 v2）。buildAnalyzePrompt 的摘要区块引用本常量，勿在两处重复维护。
-const SYSTEM_PROMPT = [
-  '你是信息筛选助手。只输出JSON，不要任何其他文字。',
-  '',
-  '摘要 6 铁律（写 summary 时必须全部遵守）：',
-  '',
-  '①【不编造】标题里没有的数字、金额、比分、引语、条款一律不得虚构；拿不到就明说（"标题未给出可验证细节（需点开正文）"/"标题信息有限，真实影响需读原文"），编造比空话更严重。',
-  '②【首句即结论】【事件】= 谁 + 做了什么 + 结果/量化信息，专名和数字顶句首；禁止"这一举措/该公司/某球员"等指代词。',
-  '③【要点是增量】每条要点必须能独立成立；判断标准：删掉这条标题信息量变不变，没变=复述直接删；至少一条锚定专名或数字/日期；榨不出可验证细节就写"标题未给出可验证细节（需点开正文）"。',
-  '④【为什么重要要落地】写"谁（具体人群/组织）因什么具体变化受影响"；禁止"对X而言，这意味着…/至关重要/意义重大"。',
-  '⑤【空话禁词表】这一举措、这一决定、此举、该球员、该消息、该操作、相关人士、相关机构、某球员、某公司、上述操作、进行了、展现了、体现了、反映了、旨在、有着重要意义、至关重要、意义重大。',
-  '⑥【字数上限】【事件】≤40字；每条【要点】≤25字，最多3条；【为什么重要】≤40字；全文≤180字。宁可短，不可空。',
-].join('\n');
-
-// For blog sources: full article content → Chinese summary
+// LEGACY: 仅供 blog 类型源使用（全文摘要），search 类型已走 analyzeResult 流程。
+// 如需扩展 blog 通道的评分/分类能力，应迁移到 analyzeResult options 模式。
 async function summarizeArticle(title, content) {
   const response = await getOpenAI().chat.completions.create({
     model: DEEPSEEK_MODEL,
@@ -90,7 +79,9 @@ function buildCategoryHint(categorySchema) {
 }
 
 // For search sources: title + snippet + body → relevance score + summary + event + event_type + category
-async function analyzeResult(query, title, snippet, tier = null, categorySchema = null, body = null) {
+async function analyzeResult(options) {
+  const { query, title, snippet, tier = null, categorySchema = null, body = null } = options;
+
   const tierHint =
     tier === 0
       ? '来源为T0官方/权威信源，默认可信度最高。'
@@ -107,7 +98,7 @@ async function analyzeResult(query, title, snippet, tier = null, categorySchema 
       },
       {
         role: 'user',
-        content: buildAnalyzePrompt(query, title, snippet, tierHint, categoryHint, body),
+        content: buildAnalyzePrompt({ query, title, snippet, tierHint, categoryHint, body }),
       },
     ],
     max_tokens: 600,
@@ -117,7 +108,8 @@ async function analyzeResult(query, title, snippet, tier = null, categorySchema 
   return parseAnalyzeResult(response.choices[0].message.content.trim());
 }
 
-function buildAnalyzePrompt(query, title, snippet, tierHint, categoryHint, body) {
+function buildAnalyzePrompt(options) {
+  const { query, title, snippet, tierHint, categoryHint, body } = options;
   return [
     `判断以下文章是否与关键词"${query}"真正相关，输出JSON。`,
     '',
@@ -205,22 +197,7 @@ async function selectArticleLinks(links, sourceName, pageUrl, logPrefix = '') {
     messages: [
       {
         role: 'system',
-        content: [
-          `You are a web scraping assistant. From a list of links extracted from "${sourceName}" (page: ${pageUrl}), identify which are NEWS ARTICLES (editorial content with a specific story or report).`,
-          '',
-          'These are NOT news articles and MUST be excluded:',
-          '- Standings / League tables / Scores / Box scores / Schedule / Fixtures / Results',
-          '- Stats / Player statistics / Fantasy sports / Power rankings',
-          '- Tickets / Shop / Merchandise / Sponsorship / Suites / Hospitality',
-          '- Draft picks (bare list, no story) / Mock drafts',
-          '- Video highlights / Photo galleries / Podcast episodes',
-          '- About/Contact/Privacy/Terms/Subscribe pages',
-          '- Generic navigation: Home, News, Sports, Teams, Trending',
-          '',
-          'Return ONLY a JSON array: [{"index": number, "title": "clean title"}, ...].',
-          'Index refers to the [N] number. Return [] if no articles found.',
-          'No markdown, no explanation.',
-        ].join('\n'),
+        content: buildSelectLinksPrompt(sourceName, pageUrl),
       },
       { role: 'user', content: list },
     ],

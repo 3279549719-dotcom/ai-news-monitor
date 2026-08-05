@@ -44,7 +44,7 @@ test('score 非数字 → 0', () => {
 
 test('Yoro 访谈标题 → 归类指令含"访谈/人物特写 → other"', () => {
   const schema = { injury: '伤病', transfer: '转会', other: '其他' };
-  const prompt = buildAnalyzePrompt('manchester united', 'Leny Yoro exclusive interview: settling in at Old Trafford', 'snippet', '', buildCategoryHint(schema), '');
+  const prompt = buildAnalyzePrompt({ query: 'manchester united', title: 'Leny Yoro exclusive interview: settling in at Old Trafford', snippet: 'snippet', tierHint: '', categoryHint: buildCategoryHint(schema), body: '' });
   assert.ok(prompt.includes('访谈/人物特写'));
   assert.ok(prompt.includes('→ other'));
   assert.ok(prompt.includes('永远不是 injury'));
@@ -52,29 +52,29 @@ test('Yoro 访谈标题 → 归类指令含"访谈/人物特写 → other"', () 
 
 test('"ruled out six weeks" 可归 injury', () => {
   const schema = { injury: '伤病', other: '其他' };
-  const prompt = buildAnalyzePrompt('manchester united', 'Rashford ruled out for six weeks with injury', 'snippet', '', buildCategoryHint(schema), '');
+  const prompt = buildAnalyzePrompt({ query: 'manchester united', title: 'Rashford ruled out for six weeks with injury', snippet: 'snippet', tierHint: '', categoryHint: buildCategoryHint(schema), body: '' });
   assert.ok(prompt.includes('injury'));
   assert.ok(prompt.includes('恢复时间表'));
 });
 
 test('"agree £50m fee" 归 deal/transfer', () => {
   const schema = { transfer: '转会', other: '其他' };
-  const prompt = buildAnalyzePrompt('manchester united', 'Man Utd agree £50m fee for winger', 'snippet', '', buildCategoryHint(schema), '');
+  const prompt = buildAnalyzePrompt({ query: 'manchester united', title: 'Man Utd agree £50m fee for winger', snippet: 'snippet', tierHint: '', categoryHint: buildCategoryHint(schema), body: '' });
   assert.ok(prompt.includes('deal(转会/签约/续约)'));
 });
 
 test('访谈永不归 injury', () => {
   const schema = { injury: '伤病', other: '其他' };
-  const prompt = buildAnalyzePrompt('manchester united', 'Yoro interview: my first month at United', 'snippet', '', buildCategoryHint(schema), '');
+  const prompt = buildAnalyzePrompt({ query: 'manchester united', title: 'Yoro interview: my first month at United', snippet: 'snippet', tierHint: '', categoryHint: buildCategoryHint(schema), body: '' });
   assert.ok(prompt.includes('访谈/特写永远不是 injury'));
 });
 
 test('JSON 输出格式含 event_type', () => {
-  const prompt = buildAnalyzePrompt('anthropic', 'Anthropic 宣布攻破 3 家公司', '', '', buildCategoryHint({ other: '其他' }), '');
+  const prompt = buildAnalyzePrompt({ query: 'anthropic', title: 'Anthropic 宣布攻破 3 家公司', snippet: '', tierHint: '', categoryHint: buildCategoryHint({ other: '其他' }), body: '' });
   assert.ok(prompt.includes('"event_type":"体裁key或空"'));
 });
 
 test('正文片段按 body 渲染（可选事实锚点）', () => {
-  const prompt = buildAnalyzePrompt('anthropic', 'Anthropic 宣布攻破 3 家公司', 'snippet', '', '', '攻击者利用 Anyscale 环境变量泄露窃取了机密训练权重。');
+  const prompt = buildAnalyzePrompt({ query: 'anthropic', title: 'Anthropic 宣布攻破 3 家公司', snippet: 'snippet', tierHint: '', categoryHint: '', body: '攻击者利用 Anyscale 环境变量泄露窃取了机密训练权重。' });
   assert.ok(prompt.includes('正文片段：攻击者利用 Anyscale 环境变量泄露窃取了机密训练权重。'));
 });
