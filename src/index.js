@@ -9,21 +9,15 @@ const { summarizeArticle, analyzeResult } = require('./ai');
 const crawl4ai = require('./crawl4ai-fetch');
 const { searchAll } = require('./search');
 const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources, loadRecentRelevant } = require('./store');
-const { crosscheck, collapseSameEvent, dedupeBySimilarity, CONFIDENCE_LABEL } = require('./crosscheck');
+const { crosscheck, collapseSameEvent, dedupeAgainstExisting, CONFIDENCE_LABEL } = require('./crosscheck');
+const { getKeywordRoots } = require('./keyword-roots');
 const { buildReport } = require('./report');
 const { RESULT_LIMIT } = require('./config');
 
-// 词根映射表 — 用于 preFilter 和 C1 验收
-function getKeywordRoots(name) {
-  const map = {
-    'Manchester United': ['man', 'united', 'mufc', 'mufc', '老特拉福德', '梦剧场', 'red devils', 'rashford', 'bruno', 'garnacho', 'højlund', 'ten hag'],
-    'Anthropic': ['anthropic', 'claude', 'amodei'],
-    'Dallas Mavericks': ['maverick', 'mavs', 'dallas', 'doncic', 'luka', 'kyrie', 'irving', 'cuban'],
-  };
-  return map[name] || [];
-}
-
+// ---------------------------------------------------------------------------
 // 前置过滤：标题不含关键词词根的直接跳过（省 DeepSeek 调用）
+// ---------------------------------------------------------------------------
+
 function preFilter(items, keywordName) {
   const roots = getKeywordRoots(keywordName);
   if (roots.length === 0) return items;
@@ -43,6 +37,12 @@ function preFilter(items, keywordName) {
   return filtered;
 }
 
+// ---------------------------------------------------------------------------
+// Pipelines
+// ---------------------------------------------------------------------------
+
+// LEGACY: blog 类型走专用 scraper/reader 链路，未来计划迁移到 search 管线统一处理。
+// 目前仅老博客关键词使用，新增关键词请使用 search 类型。
 const PIPELINES = {
   blog: {
     fetch: (kw) => fetchArticleList(kw.url),
@@ -103,11 +103,19 @@ async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
   }, []);
 }
 
-async function processKeyword(keyword) {
+// ---------------------------------------------------------------------------
+// processKeyword 拆分的命名阶段函数
+// ---------------------------------------------------------------------------
+
+/**
+ * 阶段 1：抓取候选文章
+ * 调用 pipeline.fetch 获取原始列表，经 filterNewItems 过滤已入库 URL。
+ */
+async function fetchCandidates(keyword) {
   const pipeline = PIPELINES[keyword.type];
   if (!pipeline) {
     console.warn(`  [${keyword.name}] 未知类型 "${keyword.type}"，跳过`);
-    return [];
+    return null;
   }
 
   const isBlog = keyword.type === 'blog';
@@ -121,8 +129,15 @@ async function processKeyword(keyword) {
 
   const newItems = await filterNewItems(allItems, keyword.id);
   console.log(`  未处理: ${newItems.length}`);
-  if (newItems.length === 0) return [];
 
+  return newItems;
+}
+
+/**
+ * 阶段 2：分析 + 交叉验证
+ * preFilter → analyzeItems → crosscheck → collapseSameEvent
+ */
+async function analyzeAndCrosscheck(keyword, newItems) {
   // 前置过滤：只在大批量时启用，避免误杀少量新文章
   let candidates = newItems;
   if (newItems.length >= 5) {
@@ -143,7 +158,6 @@ async function processKeyword(keyword) {
   }
 
   // Phase9 同批合并：按双信号同事件聚类，每簇保留最高分代表行。
-  // computeConfidence 已按簇给所有成员赋相同 corroboration_count，代表行自然携带多源印证。
   let toSaveRelevant = crosschecked;
   if (crosschecked.length > 0) {
     const before = crosschecked.length;
@@ -152,38 +166,40 @@ async function processKeyword(keyword) {
     if (dropped > 0) console.log(`  [Dedup] 同批合并: ${before} → ${toSaveRelevant.length}（丢弃 ${dropped} 条同事件重复）`);
   }
 
-  // Phase9 跨运行防重：代表行 event 与近 30 天已存相关事件双信号比对，命中跳过
-  if (toSaveRelevant.length > 0) {
-    const existing = await loadRecentRelevant(keyword.id, 30);
-    if (existing.length > 0) {
-      const kept = [];
-      let dropped = 0;
-      for (const item of toSaveRelevant) {
-        if (!item.event) { kept.push(item); continue; }
-        const hit = existing.find(e => dedupeBySimilarity(item, e));
-        if (hit) {
-          dropped++;
-          console.log(`  [Dedup] 跨运行跳过: ${item.title.slice(0, 50)}（近30天已存在相似事件）`);
-        } else {
-          kept.push(item);
-        }
-      }
-      if (dropped > 0) console.log(`  [Dedup] 跨运行共跳过 ${dropped} 条`);
-      toSaveRelevant = kept;
-    }
-  }
+  return toSaveRelevant;
+}
 
-  // category 越界清洗：AI 返回的分类不在关键词 schema 键内 → 置 null（前端"其他"兜底）。
-  // schema 为数组（anthropic 历史脏数据）或空时，无法按键校验，同样置 null。
+/**
+ * 阶段 3：跨运行去重
+ * 代表行 event 与近 30 天已存相关事件双信号比对，命中跳过。
+ */
+async function dedupeAgainstRecent(items, keywordId, days = 30) {
+  if (!items || items.length === 0) return items;
+
+  const existing = await loadRecentRelevant(keywordId, days);
+  if (existing.length === 0) return items;
+
+  const { kept, dropped } = dedupeAgainstExisting(items, existing);
+  for (const item of dropped) {
+    console.log(`  [Dedup] 跨运行跳过: ${item.title.slice(0, 50)}（近${days}天已存在相似事件）`);
+  }
+  if (dropped.length > 0) console.log(`  [Dedup] 跨运行共跳过 ${dropped.length} 条`);
+
+  return kept;
+}
+
+/**
+ * 模块级纯函数：构造入库记录
+ * @param {Object} item    - 文章对象（title, url, source, snippet, publishedAt, tier）
+ * @param {Object} keyword - 关键词对象（id, type, category_schema）
+ * @param {Object} overrides - 额外字段（summary, score, category, event, ...）
+ */
+function toArticleRecord(item, keyword, overrides = {}) {
   const schemaKeys = keyword.category_schema && !Array.isArray(keyword.category_schema)
     ? Object.keys(keyword.category_schema)
     : [];
 
-  // 相关行（去重后）入库；无关行（含被去重吞掉的重复行）score=0 标记已见，
-  // 避免下轮重抓重评（前端 gte score 60 不显示）。
-  const savedRelevant = new Set(toSaveRelevant.map(r => r.url));
-  const slice = newItems.slice(0, RESULT_LIMIT);
-  const buildRecord = (item, fields) => ({
+  return {
     keyword_id: keyword.id,
     title: item.title,
     url: item.url,
@@ -191,20 +207,34 @@ async function processKeyword(keyword) {
     snippet: item.snippet || null,
     published_at: item.publishedAt ? new Date(item.publishedAt).toISOString() : null,
     source_tier: item.tier ?? null,
-    ...fields,
-  });
-  const toSave = [
-    ...toSaveRelevant.map(item => buildRecord(item, {
-      summary: item.summary ?? null,
-      score: item.score ?? 0,
-      category: item.category && schemaKeys.includes(item.category) ? item.category : null,
-      event: item.event ?? null,
-      event_type: item.event_type ?? null,
-      confidence: item.confidence ?? null,
-      corroboration_count: item.corroboration_count ?? 0,
-      conflict_flag: item.conflict_flag ?? false,
-    })),
-    ...slice.filter(i => !savedRelevant.has(i.url)).map(item => buildRecord(item, {
+    ...overrides,
+    // category 越界清洗：AI 返回的分类不在关键词 schema 键内 → 置 null
+    category: overrides.category && schemaKeys.includes(overrides.category) ? overrides.category : null,
+  };
+}
+
+/**
+ * 阶段 4：构造入库记录
+ * 相关行入库；无关行（含被去重吞掉的重复行）score=0 标记已见。
+ */
+function assembleRecords(keyword, toSaveRelevant, allNewItems) {
+  const savedRelevant = new Set(toSaveRelevant.map(r => r.url));
+  const slice = allNewItems.slice(0, RESULT_LIMIT);
+
+  const relevantRecords = toSaveRelevant.map(item => toArticleRecord(item, keyword, {
+    summary: item.summary ?? null,
+    score: item.score ?? 0,
+    category: item.category ?? null,
+    event: item.event ?? null,
+    event_type: item.event_type ?? null,
+    confidence: item.confidence ?? null,
+    corroboration_count: item.corroboration_count ?? 0,
+    conflict_flag: item.conflict_flag ?? false,
+  }));
+
+  const irrelevantRecords = slice
+    .filter(i => !savedRelevant.has(i.url))
+    .map(item => toArticleRecord(item, keyword, {
       summary: null,
       score: 0,
       category: null,
@@ -213,12 +243,47 @@ async function processKeyword(keyword) {
       confidence: null,
       corroboration_count: 0,
       conflict_flag: false,
-    })),
-  ];
+    }));
 
-  await saveArticles(toSave);
-  return toSaveRelevant;
+  return [...relevantRecords, ...irrelevantRecords];
 }
+
+/**
+ * 阶段 5：持久化入库
+ */
+async function persist(records) {
+  await saveArticles(records);
+}
+
+// ---------------------------------------------------------------------------
+// processKeyword：编排各阶段
+// ---------------------------------------------------------------------------
+
+async function processKeyword(keyword) {
+  // 阶段 1：抓取候选
+  const newItems = await fetchCandidates(keyword);
+  if (newItems === null) return [];   // 未知类型
+  if (newItems.length === 0) return [];
+
+  // 阶段 2：分析 + 交叉验证
+  const toSaveRelevant = await analyzeAndCrosscheck(keyword, newItems);
+  if (toSaveRelevant.length === 0 && newItems.length === 0) return [];
+
+  // 阶段 3：跨运行去重
+  const deduped = await dedupeAgainstRecent(toSaveRelevant, keyword.id, 30);
+
+  // 阶段 4：构造记录
+  const records = assembleRecords(keyword, deduped, newItems);
+
+  // 阶段 5：持久化
+  await persist(records);
+
+  return deduped;
+}
+
+// ---------------------------------------------------------------------------
+// run & entry point
+// ---------------------------------------------------------------------------
 
 async function run() {
   console.log('=== AI News Monitor ===');
@@ -274,4 +339,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run, buildReport, getKeywordRoots, preFilter };
+module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord };

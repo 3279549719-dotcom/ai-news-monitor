@@ -283,11 +283,38 @@ function crosscheck(articles) {
   return result;
 }
 
+/**
+ * 跨运行去重：将本次运行的相关文章与近 N 天已存文章比对，
+ * 命中（同一事件）则跳过，未命中则保留。
+ *
+ * @param {Array} items  - 本次运行的相关文章（含 event/title）
+ * @param {Array} existing - 近 N 天已存相关文章（含 event/title）
+ * @returns {{ kept: Array, dropped: Array }}
+ */
+function dedupeAgainstExisting(items, existing) {
+  if (!items || items.length === 0 || !existing || existing.length === 0) {
+    return { kept: items || [], dropped: [] };
+  }
+  const kept = [];
+  const dropped = [];
+  for (const item of items) {
+    if (!item.event) { kept.push(item); continue; }
+    const hit = existing.find(e => dedupeBySimilarity(item, e));
+    if (hit) {
+      dropped.push(item);
+    } else {
+      kept.push(item);
+    }
+  }
+  return { kept, dropped };
+}
+
 module.exports = {
   crosscheck,
   clusterByEvent,
   collapseSameEvent,
   dedupeBySimilarity,
+  dedupeAgainstExisting,
   computeConfidence,
   CONFIDENCE_LABEL,
 };
