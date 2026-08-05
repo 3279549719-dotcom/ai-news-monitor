@@ -2,6 +2,7 @@ const axios = require('axios');
 const { fetchSource } = require('./scraper-direct');
 const crawl4ai = require('./crawl4ai-fetch');
 const { getTier } = require('./tiers');
+const { toItem, normalizeUrlKey } = require('./items');
 
 // HackerNews via Algolia API — best for tech topics, free
 async function searchHackerNews(query) {
@@ -12,16 +13,22 @@ async function searchHackerNews(query) {
       `&tags=story&hitsPerPage=10&numericFilters=created_at_i>${since}`;
     const { data } = await axios.get(url, { timeout: 10000 });
 
+    const fakeSource = { source_name: 'HackerNews', tier: null };
+
     return (data.hits || [])
       .filter(h => h.url)
-      .map(h => ({
-        title: h.title || '',
-        url: h.url,
-        source: 'hackernews',
-        snippet: (h.story_text || '').replace(/<[^>]+>/g, '').slice(0, 300),
-        publishedAt: h.created_at ? new Date(h.created_at) : null,
-        tier: getTier(h.url),
-      }));
+      .map(h => {
+        const item = toItem(fakeSource, {
+          title: h.title || '',
+          url: h.url,
+          publishedAt: h.created_at ? new Date(h.created_at) : null,
+        });
+        // HN 特有字段补充
+        item.snippet = (h.story_text || '').replace(/<[^>]+>/g, '').slice(0, 300);
+        item.source = 'hackernews';
+        item.tier = getTier(h.url);
+        return item;
+      });
   } catch (err) {
     console.error(`  [HackerNews] 搜索失败: ${err.message}`);
     return [];
@@ -34,10 +41,7 @@ function deduplicateByUrl(results) {
   const map = new Map();
 
   for (const r of results) {
-    const key = r.url
-      .replace(/^https?:\/\/(www\.)?/, '')
-      .replace(/[?#].*$/, '')
-      .replace(/\/$/, '');
+    const key = normalizeUrlKey(r.url);
     if (!map.has(key)) {
       map.set(key, r);
     } else {

@@ -18,4 +18,12 @@ function toItem(source, { title, url, publishedAt }) {
   };
 }
 
-module.exports = { sourceSlug, toItem };
+// 规范化 URL 为去重键：剥协议、www、查询串、尾斜杠
+function normalizeUrlKey(url) {
+  return (url || '')
+    .replace(/^https?:\/\/(www\.)?/i, '')
+    .replace(/[?#].*$/, '')
+    .replace(/\/$/, '');
+}
+
+module.exports = { sourceSlug, toItem, normalizeUrlKey };
