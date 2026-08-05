@@ -1,0 +1,23 @@
+{
+  "manutd.com": ["\\/en\\/news\\/"],
+  "theguardian.com": ["\\/football\\/20\\d\\d\\/"],
+  "skysports.com": ["\\/football\\/(news\\/\\d+|transfer-paper-talk\\/\\d+|.*?\\/report\\/\\d+|live-blog\\/\\d+)"],
+  "espn.com": ["\\/soccer\\/story\\/_\\/id\\/"],
+  "si.com": [
+    "\\/soccer\\/(?!teams|video|news)[a-z0-9-]+$",
+    "\\/nba\\/mavericks\\/"
+  ],
+  "90min.com": ["\\/soccer\\/"],
+  "anthropic.com": ["\\/(news|research)\\/"],
+  "claude.com": ["\\/blog\\/"],
+  "techcrunch.com": ["\\/20\\d\\d\\/\\d+\\/"],
+  "venturebeat.com": ["\\/(technology|ai|business)\\/"],
+  "wired.com": ["\\/story\\/"],
+  "nba.com": ["\\/mavs\\/news\\/"],
+  "dallasnews.com": ["\\/sports\\/mavericks\\/"],
+  "sports.yahoo.com": ["\\.html$"],
+  "bleacherreport.com": ["\\/articles\\/"],
+  "mavsmoneyball.com": ["\\/"],
+  "thesmokingcuban.com": ["\\/"],
+  "hoopshype.com": ["\\/20\\d\\d\\/\\d{1,2}\\/"]
+}

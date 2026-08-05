@@ -17,13 +17,9 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { selectArticleLinks } = require('./ai');
-const { CRAWL4AI_URL, CRAWL4AI_API_TOKEN } = require('./config');
+const { CRAWL4AI_URL, CRAWL4AI_API_TOKEN, JS_SOURCES, JS_WAIT_MS } = require('./config');
 const { toItem } = require('./items');
 const { extractPublishDateFromUrl } = require('./dates');
-
-// JS 重渲染站点：crawlPage 需等渲染完成再取链接，否则只拿到首屏骨架
-const JS_SOURCES = new Set(['mavsmoneyball.com', 'thesmokingcuban.com']);
-const JS_WAIT_MS = 5000;
 
 // 命中 JS_SOURCES 时返回等待毫秒数，否则 0（不等待）
 function jsWaitMsFor(pageUrl) {
@@ -119,37 +115,22 @@ function extractMarkdownLinks(md) {
   return links;
 }
 
-// 站点 → 文章 URL 模式（用模式直接筛选，避免 DeepSeek 被导航淹没）
-const ARTICLE_PATTERNS = [
-  // MU 信源
-  { host: 'manutd.com', re: /\/en\/news\// },
-  { host: 'theguardian.com', re: /\/football\/20\d\d\// },
-  { host: 'skysports.com', re: /\/football\/(news\/\d+|transfer-paper-talk\/\d+|.*?\/report\/\d+|live-blog\/\d+)/ },
-  { host: 'espn.com', re: /\/soccer\/story\/_\/id\// },
-  { host: 'si.com', re: /\/soccer\/(?!teams|video|news)[a-z0-9-]+$/ },
-  { host: '90min.com', re: /\/soccer\// },
-  // Anthropic 信源
-  { host: 'anthropic.com', re: /\/(news|research)\// },
-  { host: 'claude.com', re: /\/blog\// },
-  { host: 'techcrunch.com', re: /\/20\d\d\/\d+\// },
-  { host: 'venturebeat.com', re: /\/(technology|ai|business)\// },
-  { host: 'wired.com', re: /\/story\// },
-  // Dallas Mavericks 信源
-  { host: 'nba.com', re: /\/mavs\/news\// },
-  { host: 'dallasnews.com', re: /\/sports\/mavericks\// },
-  { host: 'sports.yahoo.com', re: /\.html$/ },
-  { host: 'bleacherreport.com', re: /\/articles\// },
-  { host: 'si.com', re: /\/nba\/mavericks\// },
-  { host: 'mavsmoneyball.com', re: /\// },
-  { host: 'thesmokingcuban.com', re: /\// },
-  { host: 'hoopshype.com', re: /\/20\d\d\/\d{1,2}\// },
-];
-function getArticlePattern(pageUrl) {
+// 站点 → 文章 URL 模式表（外置 JSON，按 host 分组多模式）
+// getArticlePatterns 返回该 host 的全部 RegExp 数组（逐一 test），无匹配返回 []
+const ARTICLE_PATTERNS_RAW = JSON.parse(
+  fs.readFileSync(path.join(__dirname, 'article-patterns.json'), 'utf8')
+);
+// 预编译为 { host: [RegExp, ...] }
+const ARTICLE_PATTERNS = {};
+for (const [host, patterns] of Object.entries(ARTICLE_PATTERNS_RAW)) {
+  ARTICLE_PATTERNS[host] = patterns.map(p => new RegExp(p));
+}
+function getArticlePatterns(pageUrl) {
   try {
     const host = new URL(pageUrl).hostname;
-    const found = ARTICLE_PATTERNS.find(p => host.includes(p.host));
-    return found ? found.re : null;
-  } catch { return null; }
+    const found = ARTICLE_PATTERNS[host];
+    return found || [];
+  } catch { return []; }
 }
 
 // 空标题时从 URL slug 生成占位标题
@@ -206,8 +187,8 @@ async function fetchSourceArticles(source) {
   }
   for (const l of extractMarkdownLinks(mdStr)) add(l.url, l.text);
 
-  const pattern = getArticlePattern(source.scrape_url);
-  const matched0 = pattern ? [...candidates.values()].filter(c => pattern.test(c.url)) : [];
+  const patterns = getArticlePatterns(source.scrape_url);
+  const matched0 = patterns.length > 0 ? [...candidates.values()].filter(c => patterns.some(re => re.test(c.url))) : [];
   const matched = matched0.filter(c => !isSpamTitle(c.title));
   for (const c of matched) if (!c.title) c.title = titleFromSlug(c.url);
 

@@ -22,6 +22,10 @@ module.exports = {
   CRAWL4AI_URL: process.env.CRAWL4AI_URL || 'http://localhost:11235',
   CRAWL4AI_API_TOKEN: process.env.CRAWL4AI_API_TOKEN || '',
 
+  // JS 重渲染站点：crawlPage 需等渲染完成再取链接，否则只拿到首屏骨架
+  JS_SOURCES: new Set(['mavsmoneyball.com', 'thesmokingcuban.com']),
+  JS_WAIT_MS: 5000,
+
   // Supabase
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_KEY: process.env.SUPABASE_KEY,
