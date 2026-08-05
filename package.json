@@ -12,5 +12,8 @@
     "dotenv": "^16.0.0",
     "node-cron": "^3.0.0",
     "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.62.1"
   }
 }

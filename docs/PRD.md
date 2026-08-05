@@ -26,7 +26,7 @@
 | scraper.js / reader.js | blog 类型：抓取博客文章列表 + 读正文（claude-blog 用） | axios, cheerio, config.js |
 | ai.js | getOpenAI 单例；summarizeArticle（blog）；analyzeResult（search）；parseAnalyzeResult（解析）；selectArticleLinks（共享链接精选） | openai SDK、config.js |
 | items.js | 抓取结果 → 入库 items 形状规整（toItem/sourceSlug，两通道共用） | — |
-| crosscheck.js | 交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记；CONFIDENCE_LABEL | — |
+| crosscheck.js | 交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记；`dedupeBySimilarity` 双信号去重（Phase9）；CONFIDENCE_LABEL | — |
 | report.js | 日报 buildReport（按 category_schema 分组） | crosscheck.js |
 | tiers.js | getTier(url)：域名 → Tier 映射 | source-tiers.json |
 
@@ -44,6 +44,7 @@ for each keyword (顺序处理):
   store.filterNewItems(items, keyword_id) → [新条目]
   ai.analyze items (并发, limit=15)  # score≥60 为相关；输出 event/category
   crosscheck.clusterByEvent + computeConfidence（本次运行内聚类，≥2源 high / 单源 medium / 与T0冲突 low+flag）
+  dedupeByEvent（Phase9）: 同批合并（每簇保留最高分代表行）+ 跨运行双信号去重（比对近 30 天已存事件，命中跳过）
   store.saveArticles(records)  ← 相关的有摘要+score+source_tier+event+category+confidence+corroboration_count+conflict_flag
   buildReport 按 category_schema 分组生成日报
 ```

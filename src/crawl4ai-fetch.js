@@ -250,13 +250,20 @@ async function fetchArticleBody(url) {
   const text = md.fit_markdown || md.raw_markdown;
   if (!text) return null;
 
-  // 按空行切段落：剥导航行，统计重复段落并剔除出现 ≥3 次的
+  // 按空行切段落：剥导航段（密集链接的段，如 Guardian 顶部 News/Opinion/Sport 导航）
+  // 与导航词，统计重复段落剔除 ≥3 次的。导航前奏会把 1500 字截断占满，正文反而被挤出。
   const counts = new Map();
   const paras = [];
   for (const p of text.split(/\n\s*\n/)) {
     const t = p.replace(/\s+/g, ' ').trim();
     if (!t) continue;
     if (/menu|sign in|subscribe|cookie/i.test(t)) continue;
+    const links = (t.match(/\[[^\]]*\]\([^)]*\)/g) || []).length;
+    // 导航段特征：≥3 个链接且剥掉链接后几乎无正文文字（如 Guardian 顶部/足球子导航）
+    if (links >= 3) {
+      const plain = t.replace(/\[[^\]]*\]\([^)]*\)/g, '').replace(/[^一-龥a-zA-Z0-9]+/g, '');
+      if (plain.length < 100) continue;
+    }
     const key = t.toLowerCase();
     counts.set(key, (counts.get(key) || 0) + 1);
     paras.push({ t, key });

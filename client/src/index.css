@@ -3,7 +3,14 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background-color: #f0f4ff;
-  color: #1e293b;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  background-color: #f5f6fa;
+  color: #16233d;
+}
+
+/* 编辑感衬线字面（Phase9）：仅用于板块空态标题与概览大数字，点缀用，勿滥用 */
+@layer utilities {
+  .font-display {
+    font-family: Georgia, 'Songti SC', 'Noto Serif SC', 'SimSun', serif;
+  }
 }

@@ -43,7 +43,7 @@ src/
 docs/               需求、决策、计划、验收、进度文档（见导航）
 reports/            每日报告 YYYY-MM-DD.md（运行时自动生成）
 client/             React SPA
-scripts/            运维脚本（test-scrape、update-sources 等）
+scripts/            运维脚本（test-scrape、update-sources、backfill-resummarize、dedup-existing、screenshot-ui 等）
 ```
 
 ## 文档导航
@@ -87,9 +87,12 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 - **cheerio 解析现代 SPA 页面**：页面内联 CSS/JS 会被误判为选择器（报 `Unknown pseudo-class` / `Unmatched selector`）。提取链接优先使用正则：`/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi`，再交给 DeepSeek 筛选
 - **Sky Sports / 90min**：AI 链接识别偶发返回空 JSON（非标准页面结构），单源失败自动跳过，不影响其他源
 - **Crawl4AI**：Docker 容器 `unclecode/crawl4ai` 跑在 `localhost:11235`，既是 Agent 交互式抓取 MCP（`crawl4ai`），也是**定时管线主抓取通道（Phase E，`src/crawl4ai-fetch.js`）**，带 `CRAWL4AI_API_TOKEN` 鉴权（token 存 `.crawl4ai-token`，已 gitignore）。用前需 `docker start crawl4ai`。**本机代理陷阱**：Windows 用户级 `HTTP_PROXY=127.0.0.1:7890` 会拦截 localhost 导致 502，已设用户级 `NO_PROXY=localhost,127.0.0.1`（新开终端才生效）
+- **Crawl4AI 持续并发过载陷阱（2026-08-05 实测）**：容器能扛短时并发（3 路 2 轮全成功），但**长时间持续并发（如 pool3 批量回填）会渐进性资源耗尽，正文抓取大面积失败（实测 66% 缺失）**。回填脚本 `backfill-resummarize.js` 必须 **pool 1 串行 + 正文重试**；正文缺失时 score 下限 60 保可见。单篇正文抓取 4-21s（容器空闲时）
 - **crawl4ai 信源可达性实测（2026-08-03）**：跨 Tier 均可抓——T0 manutd.com、T1 X 账号（Simon Stone/Ornstein 帖子+链接可提取）、T2 Sky/Guardian（Guardian Node 直连不可达但容器可达）/90min（跳转 si.com）。**不可用**：MEN 站点 404（文档 URL 失效）、ESPN 团队页 JS 重拿不到内容。**容器限制**：SSRF 保护使容器内浏览器无法访问宿主机 localhost / host.docker.internal（不能给本地 dev server 截图）；execute_js 端点默认禁用，需 `CRAWL4AI_EXECUTE_JS_ENABLED=true` 重建容器
 - **一次性验证脚本 `scripts/run-crawl4ai-demo.js`**：读 `scripts/_crawl4ai-items.json`（crawl4ai 抓取整理的真实 items）→ 复用 analyzeResult + crosscheck + saveArticles 跑通三 tier 交叉验证。仅验证用，不入生产管线
+- **⚠️ `scripts/dedup-existing.js` 的 `--keep-ids` 只认空格分隔**：`flag()` 解析 `--keep-ids ID1,ID2`，**不接受 `--keep-ids=ID1,ID2`（等号形式被静默忽略 → keep 集为空 → 全部行被删）**。2026-08-05 曾因此误删用户要求保留的 Cisse + Project Fetch 两行（Cisse 已恢复，Project Fetch 经用户确认弃留）。传参必须空格分隔；`--apply` 前务必先跑 `--dry-run` 核对清单
 - **`npm test` 不要用 `node --test src/`**：Node 22 会把 `src` 当作单个测试入口、误执行 `src/index.js`，触发一次真实管线运行（连 crawl4ai + DeepSeek + Supabase，写库并生成日报，耗时近 1 分钟）。2026-08-04 曾因此误跑一次。统一用 package.json 的 `node --test "src/*.test.js"`（只跑 4 个 *.test.js）
+- **前端视觉验证用 Playwright（Phase9）**：crawl4ai 容器 SSRF 保护无法访问 localhost（实测 `URL blocked (SSRF protection)`），前端截图改走 `scripts/screenshot-ui.js`（devDependency `playwright-core`，浏览器已装 `C:\Users\asus\AppData\Local\ms-playwright`，找不到时设 `PLAYWRIGHT_BROWSERS_PATH` 兜底）
 
 ### 网络访问
 - **BBC Sport / The Guardian**：Node 直连（axios）ETIMEDOUT 不可达；crawl4ai 容器可达 Guardian。管线抓取仍优先选国内可达站点
@@ -121,6 +124,7 @@ scripts/            运维脚本（test-scrape、update-sources 等）
 - **正文喂养**：`src/crawl4ai-fetch.js` 导出 `fetchArticleBody(url)→string|null`（正文片段，剥导航去重截 1500 字）；`src/index.js` 对 search 类型候选并发池 3 抓正文喂 `analyzeResult(..., body)`，失败回落标题-only。摘要质量（A4a 事实锚点）依赖此机制
 - **DMN 付费墙**：dallasnews.com 计量墙（10篇/30天），保留信源但前端 `PAYWALL_SOURCES` 标注"正文需订阅"角标，不删除（本地最强跟队 Townsend/Caplan 独家）
 - **Mavs Moneyball / Smoking Cuban**：JS 重渲染站点，crawl4ai 抓取需 `wait_for`（`JS_SOURCES` 命中自动 5s），否则 0 产出
+- **同事件去重（Phase9 起，v3 双信号 + seed-only）**：入库前同批 `collapseSameEvent`（seed-only 聚类，禁链式传递）保留最高分代表行；跨运行 `dedupeBySimilarity` 双规则比对近 30 天已存事件：**规则A**（evSim≥0.60 且 tSim≥0.45 且动作兼容）或 **规则B**（共享特有专名 + 同动作组 + evSim≥0.15），任一侧 event 为空不判重。⚠️ **重跑管线不会重算已入库文章的旧摘要**（`filterNewItems` URL 去重），历史数据修正须用 `scripts/backfill-resummarize.js`
 
 ### Agent 行为
 - **路径中的 "claude" 易被写成 "droid"**：使用 Windows 绝对路径（`E:\claude\...`）规避；Git Bash 必须用 `/e/claude/...`

@@ -2,13 +2,26 @@ import { Newspaper } from 'lucide-react';
 
 interface EmptyStateProps {
   message: string;
+  hint?: string;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
-export default function EmptyState({ message }: EmptyStateProps) {
+// 空态 = 行动引导，不是情绪占位（frontend-design：An empty screen is an invitation to act）
+export default function EmptyState({ message, hint, actionLabel, onAction }: EmptyStateProps) {
   return (
-    <div className="text-center py-16 text-slate-400">
-      <Newspaper className="w-10 h-10 mx-auto mb-3 opacity-25" />
-      <p className="text-sm">{message}</p>
+    <div className="text-center py-14 text-slate-500 bg-white rounded-2xl border border-dashed border-slate-300">
+      <Newspaper className="w-10 h-10 mx-auto mb-3 opacity-30" />
+      <p className="text-sm font-medium">{message}</p>
+      {hint && <p className="text-xs text-slate-400 mt-1.5">{hint}</p>}
+      {actionLabel && onAction && (
+        <button
+          onClick={onAction}
+          className="inline-flex items-center px-4 py-2 mt-4 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors"
+        >
+          {actionLabel}
+        </button>
+      )}
     </div>
   );
 }

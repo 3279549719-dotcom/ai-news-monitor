@@ -48,4 +48,22 @@ async function loadKeywordSources(keywordId) {
   });
 }
 
-module.exports = { loadKeywords, filterNewItems, saveArticles, loadKeywordSources };
+// 近 N 天 score≥60 的相关文章（Phase9 跨运行去重用：比对已存事件，避免同一事件重复入库）
+async function loadRecentRelevant(keywordId, days = 30) {
+  if (!keywordId) return [];
+  const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+  return withRetry(async () => {
+    const { data, error } = await getClient()
+      .from('articles')
+      .select('id, url, event, title, score, created_at')
+      .eq('keyword_id', keywordId)
+      .gte('score', 60)
+      .gte('created_at', cutoff)
+      .order('created_at', { ascending: false })
+      .limit(150);
+    if (error) throw new Error(`loadRecentRelevant: ${error.message}`);
+    return data || [];
+  });
+}
+
+module.exports = { loadKeywords, filterNewItems, saveArticles, loadKeywordSources, loadRecentRelevant };

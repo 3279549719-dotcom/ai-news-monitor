@@ -8,8 +8,8 @@ const { fetchArticleContent } = require('./reader');
 const { summarizeArticle, analyzeResult } = require('./ai');
 const crawl4ai = require('./crawl4ai-fetch');
 const { searchAll } = require('./search');
-const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources } = require('./store');
-const { crosscheck, CONFIDENCE_LABEL } = require('./crosscheck');
+const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources, loadRecentRelevant } = require('./store');
+const { crosscheck, collapseSameEvent, dedupeBySimilarity, CONFIDENCE_LABEL } = require('./crosscheck');
 const { buildReport } = require('./report');
 const { RESULT_LIMIT } = require('./config');
 
@@ -142,37 +142,82 @@ async function processKeyword(keyword) {
     console.log(`  [Crosscheck] ${crosschecked.length} 篇 → 高置信 ${high}，单源 ${crosschecked.length - high}，冲突 ${conflict}`);
   }
 
+  // Phase9 同批合并：按双信号同事件聚类，每簇保留最高分代表行。
+  // computeConfidence 已按簇给所有成员赋相同 corroboration_count，代表行自然携带多源印证。
+  let toSaveRelevant = crosschecked;
+  if (crosschecked.length > 0) {
+    const before = crosschecked.length;
+    toSaveRelevant = collapseSameEvent(crosschecked);
+    const dropped = before - toSaveRelevant.length;
+    if (dropped > 0) console.log(`  [Dedup] 同批合并: ${before} → ${toSaveRelevant.length}（丢弃 ${dropped} 条同事件重复）`);
+  }
+
+  // Phase9 跨运行防重：代表行 event 与近 30 天已存相关事件双信号比对，命中跳过
+  if (toSaveRelevant.length > 0) {
+    const existing = await loadRecentRelevant(keyword.id, 30);
+    if (existing.length > 0) {
+      const kept = [];
+      let dropped = 0;
+      for (const item of toSaveRelevant) {
+        if (!item.event) { kept.push(item); continue; }
+        const hit = existing.find(e => dedupeBySimilarity(item, e));
+        if (hit) {
+          dropped++;
+          console.log(`  [Dedup] 跨运行跳过: ${item.title.slice(0, 50)}（近30天已存在相似事件）`);
+        } else {
+          kept.push(item);
+        }
+      }
+      if (dropped > 0) console.log(`  [Dedup] 跨运行共跳过 ${dropped} 条`);
+      toSaveRelevant = kept;
+    }
+  }
+
   // category 越界清洗：AI 返回的分类不在关键词 schema 键内 → 置 null（前端"其他"兜底）。
   // schema 为数组（anthropic 历史脏数据）或空时，无法按键校验，同样置 null。
   const schemaKeys = keyword.category_schema && !Array.isArray(keyword.category_schema)
     ? Object.keys(keyword.category_schema)
     : [];
 
-  const toSave = newItems.slice(0, RESULT_LIMIT).map(item => {
-    const xc = crosschecked.find(r => r.url === item.url);
-    return {
-      keyword_id: keyword.id,
-      title: item.title,
-      url: item.url,
-      source: item.source || keyword.type,
-      snippet: item.snippet || null,
-      summary: xc?.summary ?? null,
-      score: xc?.score ?? 0,
-      published_at: item.publishedAt
-        ? new Date(item.publishedAt).toISOString()
-        : null,
-      source_tier: item.tier ?? null,
-      category: xc?.category && schemaKeys.includes(xc.category) ? xc.category : null,
-      event: xc?.event ?? null,
-      event_type: xc?.event_type ?? null,
-      confidence: xc?.confidence ?? null,
-      corroboration_count: xc?.corroboration_count ?? 0,
-      conflict_flag: xc?.conflict_flag ?? false,
-    };
+  // 相关行（去重后）入库；无关行（含被去重吞掉的重复行）score=0 标记已见，
+  // 避免下轮重抓重评（前端 gte score 60 不显示）。
+  const savedRelevant = new Set(toSaveRelevant.map(r => r.url));
+  const slice = newItems.slice(0, RESULT_LIMIT);
+  const buildRecord = (item, fields) => ({
+    keyword_id: keyword.id,
+    title: item.title,
+    url: item.url,
+    source: item.source || keyword.type,
+    snippet: item.snippet || null,
+    published_at: item.publishedAt ? new Date(item.publishedAt).toISOString() : null,
+    source_tier: item.tier ?? null,
+    ...fields,
   });
+  const toSave = [
+    ...toSaveRelevant.map(item => buildRecord(item, {
+      summary: item.summary ?? null,
+      score: item.score ?? 0,
+      category: item.category && schemaKeys.includes(item.category) ? item.category : null,
+      event: item.event ?? null,
+      event_type: item.event_type ?? null,
+      confidence: item.confidence ?? null,
+      corroboration_count: item.corroboration_count ?? 0,
+      conflict_flag: item.conflict_flag ?? false,
+    })),
+    ...slice.filter(i => !savedRelevant.has(i.url)).map(item => buildRecord(item, {
+      summary: null,
+      score: 0,
+      category: null,
+      event: null,
+      event_type: null,
+      confidence: null,
+      corroboration_count: 0,
+      conflict_flag: false,
+    })),
+  ];
 
   await saveArticles(toSave);
-  return crosschecked;
+  return toSaveRelevant;
 }
 
 async function run() {

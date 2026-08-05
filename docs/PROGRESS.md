@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-04 23:05（Phase 8 交付完成 — 假日期/付费墙/分类/体裁/时效窗口，验收 A4a 100%）
+> 最后更新：2026-08-05（Phase 9 交付完成 — 历史数据回填重算 + 同事件三层去重 + 前端空态重构 + Playwright 截图，验收全绿）
 
 ## 功能进度
 
@@ -15,6 +15,7 @@
 | F-010 | Dallas Mavericks 白名单信源 + 前端 BoardView — 8 源三 tier，导航垃圾过滤修复 | **已完成** | 2026-08-04 端到端 264条抓取→9篇入库（0垃圾） |
 | F-011 | Phase 7：AI 分析管线体验优化 — 三段式摘要 + 分类判别标准 + preFilter + 自动化验收 | **已完成** | 2026-08-04 端到端 11篇入库，无占位语，三段式 100%，22/22 test |
 | F-012 | Phase 8：信息获取与理解层优化 — 假日期修复 + AI 正文喂养 + 分类/体裁落地 + 付费墙标注 + 前端时效窗口 | **已完成** | 2026-08-04 端到端 4篇入库，A4a 事实锚点 100%，npm test 35/35，前端三件套全绿 |
+| F-013 | Phase 9：历史数据回填去重 + 前端空态 — 全量回填重算 + 同事件三层去重 + BoardView 空态重构 + Playwright 截图 | **已完成** | 2026-08-05 验收：Carrick 摘要修正(score 90)、Naji 4→1、npm test 42/42、前端三件套全绿（见 F-013 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -149,6 +150,34 @@
 
 **验收：** `node --check` ✅ ｜ `npm test` 35/35 ✅ ｜ 前端 type-check/lint/build ✅ ｜ 端到端 4 篇入库（Dallas 3 + Anthropic 1）✅ ｜ check-quality v2 **9 PASS**（A4a 100% / A2 / A3 / A4c / C1 / D1）· E4 假失败（MU 在上一轮管线已入库，DB 确认 score 90 rumour 存在）
 
+## F-013 Phase9 交付内容（2026-08-05）
+
+> 触发：Phase8 交付后用户复核发现 3 类遗留问题（旧摘要错误 / 同事件重复 / 前端大片空白）。文档：`docs/REQ-Phase9-历史数据回填去重与前端空态.md` + `docs/DECISION-Phase9-历史数据回填去重与前端空态.md`。
+
+**历史数据回填重算（Part A）：**
+- `scripts/backfill-resummarize.js`（新增，v2 重写）：pool 1-2 串行 + 正文重试 + **score 下限保护**（正文缺失时 `body ? model : max(current, model)`，不恶化已入库可见性）；`--lt60` 模式排除 google-news 死链源
+- v1 教训：crawl4ai pool3 **持续并发过载** → 正文缺失 66%（202/305）→ v2 严格判分把 score 压垮（305→95 可见，Carrick 被误判 0）。已落 CLAUDE.md 已知陷阱
+- **结果**：v2 修复模式 324 篇 0 失败，正文缺失 41（12.7%），**恢复可见 48 条**；240 篇 google-news 死链行清零（score=0 前端隐藏）
+- Carrick 文章（用户投诉①）修复：根因 `fetchArticleBody` 把 Guardian 顶部导航喂给 AI，patch 导航段剔除启发式后 **score 90**，摘要把 Carrick 正确识别为主教练（列五名中卫名单），不再说"踢中卫/防守型中场"
+
+**同事件去重（Part B，三层）：**
+- `src/crosscheck.js` 新增 `dedupeBySimilarity`（**双信号 v3**）+ `collapseSameEvent`（**seed-only 聚类**，禁链式传递）+ `distinctiveNouns`/`actionSignals` 辅助；`src/store.js` 新增 `loadRecentRelevant`；`src/index.js` 接线同批合并 + 跨运行防重
+- v3 双规则：**规则A**（evSim≥0.60 且 tSim≥0.45 且动作兼容）｜**规则B**（共享特有专名 + 同动作组 + evSim≥0.15）。实测校准：v1 单信号把 Anthropic 37→33 误删（共享 "Anthropic/Claude" 实体膨胀），v3 误删砍到 4，Naji 4→1
+- `scripts/dedup-existing.js`（新增）：`--dry-run` 默认预览"保留+待删"清单 → `--apply` 执行
+- **执行事故披露**：用户确认删 9 条明确重复、保留 Cisse + Project Fetch，但 `--keep-ids` 传参误用 `=` 号（`flag()` 只认空格分隔），11 行全被删。**Cisse 已恢复**（score 85）；**Project Fetch 经用户确认弃留**（不恢复）。最终删除：9 条明确重复 + Project Fetch 1 条
+
+**前端空态重构（Part C）+ 截图能力（Part D）：**
+- `BoardView.tsx`：空板块不渲染（结构性消灭空白）+ 行动导向空态 + Tier 左色条签名（T0 红/T1 琥珀/T2 灰）+ 板块数量徽章 + 今日概览移全宽底带
+- `KeywordsTab.tsx` "显示旧闻"开关、`EmptyState.tsx` 行动引导、`index.css` 衬线字面层次
+- `package.json` 加 `playwright-core` devDep + `scripts/screenshot-ui.js`（headless chromium 截图，`PLAYWRIGHT_BROWSERS_PATH` 兜底）
+- 截图：`screenshots/ui-board-dallas.png` / `screenshots/ui-board-mu.png`
+
+**验收：**
+- 后端 `node --check src/*.js scripts/*.js` ✅ ｜ `npm test` **42/42** ✅（新增 7 个去重用例：Naji 判重 / 受伤不判重 / 交易门 / 空 event / seed-only 聚类）
+- 前端 `cd client && npm run type-check && npm run lint && npm run build` ✅
+- 数据：Carrick 摘要修正（score 90，主帅认知正确）✅ ｜ Naji 续约 score≥60 4→1 ✅ ｜ 可见相关文章 **82 篇**（MU 29 / Anthropic 33 / Dallas 10 / blog 10）✅ ｜ Cisse 恢复 ✅
+- 管线回归 `node src/index.js` 端到端通过，无重复事件新增 ✅
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：
@@ -176,6 +205,7 @@
 - [ ] Sky Sports / 90min AI 链接识别稳定性优化
 - [x] GitHub 远程仓库推送（2026-08-04 已推送 `origin/master` 至 32801e5，含全部历史提交 + 临时文件清理）
 - [ ] RLS 策略收紧（从宽松模式改为认证模式）
+- [x] **Phase9 历史数据回填去重与前端空态（2026-08-05 完成）** — 全量回填重算（v2 修复模式 324 篇 0 失败）+ 同事件三层去重（Naji 4→1，去重 v3 双信号）+ BoardView 空态重构 + playwright-core 截图。见 `docs/REQ-Phase9-历史数据回填去重与前端空态.md` / `docs/DECISION-Phase9-历史数据回填去重与前端空态.md` / PROGRESS F-013
 - [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）
 - [x] 四板块分类报告（方案C）— 2026-08-03 板块视图 + 日报按板块分组完成
 - [x] crawl4ai 接入生产管线（Phase E）— 2026-08-03 落地并回归，见 F-008

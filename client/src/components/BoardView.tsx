@@ -31,11 +31,26 @@ export const GENERIC_BOARDS: { key: string; label: string; emoji: string; offici
   { key: 'other', label: '其他', emoji: '📄' },
 ];
 
+// 卡片左色条 = Tier（Phase9 签名元素：把可信度编码进视觉，T0 官方红 / T1 琥珀 / T2 石板灰）
+const TIER_RULE: Record<number, string> = {
+  0: 'border-l-[#c63b3b]',
+  1: 'border-l-[#c9851f]',
+  2: 'border-l-[#5b6b7d]',
+};
+function tierRule(tier?: number | null) {
+  return tier != null && TIER_RULE[tier] ? TIER_RULE[tier] : 'border-l-[#a7b0bd]';
+}
+
 function ArticleCard({ article }: { article: Article }) {
   const paywallLabel = PAYWALL_SOURCES[article.source];
   return (
-    <div className="border border-slate-100 bg-[#fafbfc] rounded-lg p-3 mb-2 hover:shadow-sm transition-shadow">
-      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5">
+    <div
+      className={cn(
+        'bg-white border border-slate-200 border-l-4 rounded-lg p-3 mb-2 hover:shadow-sm transition-shadow',
+        tierRule(article.source_tier)
+      )}
+    >
+      <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-1.5 flex-wrap">
         <span className="font-medium text-slate-500">{article.source}</span>
         <TierBadge tier={article.source_tier} className="font-bold text-[10px] text-white" />
         <ConfidenceBadge confidence={article.confidence} />
@@ -60,7 +75,7 @@ function ArticleCard({ article }: { article: Article }) {
         </a>
       </h4>
       {article.summary && (
-        <p className="text-[11px] text-slate-500 leading-relaxed mb-1.5">{article.summary}</p>
+        <p className="text-xs text-slate-500 leading-relaxed mb-1.5">{article.summary}</p>
       )}
       <div className="flex items-center justify-between">
         {article.category ? (
@@ -82,9 +97,11 @@ interface BoardViewProps {
   articles: Article[];
   keywordId: string;
   keywordName: string;
+  includeOld?: boolean;
+  onToggleOld?: () => void;
 }
 
-export default function BoardView({ articles, keywordId, keywordName }: BoardViewProps) {
+export default function BoardView({ articles, keywordId, keywordName, includeOld, onToggleOld }: BoardViewProps) {
   const isMU = keywordId === MU_KEYWORD_ID;
   const isDAL = keywordId === DAL_KEYWORD_ID;
   const boards = isMU ? MU_BOARDS : isDAL ? DAL_BOARDS : GENERIC_BOARDS;
@@ -100,23 +117,69 @@ export default function BoardView({ articles, keywordId, keywordName }: BoardVie
   const highCount = articles.filter(a => a.confidence === 'high').length;
   const conflictCount = articles.filter(a => a.conflict_flag).length;
 
+  // 空态：无任何相关文章 → 行动导向面板（非白卡占位）
+  if (articles.length === 0) {
+    return (
+      <div>
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">{keywordName}</h2>
+          <p className="text-xs text-slate-400">白名单信源 · AI 评分 · Tier 可信度分级</p>
+        </div>
+        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 px-6 text-center">
+          <div className="font-display text-4xl mb-3">🗞️</div>
+          <h3 className="font-display text-lg font-bold text-slate-700 mb-1.5">
+            {includeOld ? '暂无相关新闻' : '近 30 天暂无相关新闻'}
+          </h3>
+          <p className="text-sm text-slate-500 mb-5">
+            {includeOld
+              ? '白名单信源还没有抓到任何相关的文章。'
+              : '白名单信源这段时间没有抓到足够相关的文章，看看更早的旧闻？'}
+          </p>
+          {!includeOld && onToggleOld && (
+            <button
+              onClick={onToggleOld}
+              className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-700 text-white text-sm font-medium hover:bg-blue-800 transition-colors"
+            >
+              查看历史旧闻
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // 只渲染有内容的板块（结构性消灭空白：空板块不再占位成白卡）
+  const boardsWithItems = boards.filter(b => byCategory(b.key).length > 0);
+
   return (
     <div>
-      {/* 顶部筛选已由 FilterSortBar 提供，这里仅展示标题 */}
-      <div className="mb-4">
-        <h2 className="text-lg font-bold text-slate-800">{keywordName}</h2>
-        <p className="text-xs text-slate-400">白名单信源 · AI 评分 · Tier 可信度分级</p>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+        <div>
+          <h2 className="text-lg font-bold text-slate-800">{keywordName}</h2>
+          <p className="text-xs text-slate-400">白名单信源 · AI 评分 · Tier 可信度分级</p>
+        </div>
+        {includeOld != null && onToggleOld && (
+          <label className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs text-slate-500 cursor-pointer select-none hover:text-blue-700 transition-colors bg-white border border-blue-100">
+            <input
+              type="checkbox"
+              checked={includeOld}
+              onChange={onToggleOld}
+              className="w-3.5 h-3.5 accent-blue-700 cursor-pointer"
+            />
+            显示旧闻
+          </label>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {boards.map(board => {
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+        {boardsWithItems.map(board => {
           const items = byCategory(board.key);
           return (
             <section
               key={board.key}
               className={cn(
                 'bg-white rounded-xl p-4 shadow-sm border self-start',
-                board.official ? 'border-2 border-red-500' : 'border-slate-100'
+                board.official ? 'border-red-200' : 'border-slate-200'
               )}
             >
               <div className="flex items-center gap-2 mb-3">
@@ -125,58 +188,57 @@ export default function BoardView({ articles, keywordId, keywordName }: BoardVie
                 {board.official && (
                   <span className="text-[10px] bg-red-500 text-white rounded-full px-2 py-0.5 font-bold">置顶 Tier0</span>
                 )}
-                {items.length > 0 && (
-                  <span className="ml-auto text-[11px] text-slate-400">{items.length} 条</span>
-                )}
+                <span className="ml-auto inline-flex items-center text-[11px] text-slate-400 font-semibold bg-slate-50 border border-slate-200 rounded-full px-2 py-0.5">
+                  {items.length} 条
+                </span>
               </div>
-              {items.length === 0 ? (
-                <p className="text-[11px] text-slate-300 text-center py-4">暂无内容</p>
-              ) : (
-                items.slice(0, 4).map(a => <ArticleCard key={a.id} article={a} />)
-              )}
+              {items.slice(0, 4).map(a => <ArticleCard key={a.id} article={a} />)}
             </section>
           );
         })}
 
         {/* 兜底「其他」板：未匹配到任何板块定义的分类 */}
         {unmatched.length > 0 && (
-          <section className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 self-start">
+          <section className="bg-white rounded-xl p-4 shadow-sm border border-slate-200 self-start">
             <div className="flex items-center gap-2 mb-3">
               <span className="text-base">📄</span>
               <h3 className="text-sm font-bold text-slate-800">其他</h3>
-              <span className="ml-auto text-[11px] text-slate-400">{unmatched.length} 条</span>
+              <span className="ml-auto inline-flex items-center text-[11px] text-slate-400 font-semibold bg-slate-50 border border-slate-200 rounded-full px-2 py-0.5">
+                {unmatched.length} 条
+              </span>
             </div>
             {unmatched.slice(0, 4).map(a => <ArticleCard key={a.id} article={a} />)}
           </section>
         )}
 
-        {/* 今日概览卡 */}
-        <section className="bg-white rounded-xl p-4 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base">📊</span>
-            <h3 className="text-sm font-bold text-slate-800">今日概览</h3>
-          </div>
-          <div className="flex gap-2">
-            <div className="flex-1 bg-[#fafbfc] rounded-lg p-3 text-center border border-slate-100">
-              <div className="text-xl font-extrabold text-slate-800">{articles.length}</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">相关文章</div>
-            </div>
-            <div className="flex-1 bg-[#fafbfc] rounded-lg p-3 text-center border border-slate-100">
-              <div className="text-xl font-extrabold text-blue-600">{highCount}</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">高置信</div>
-            </div>
-            <div className="flex-1 bg-[#fafbfc] rounded-lg p-3 text-center border border-slate-100">
-              <div className="text-xl font-extrabold text-red-500">{conflictCount}</div>
-              <div className="text-[10px] text-slate-400 mt-0.5">冲突</div>
-            </div>
-          </div>
-          {conflictCount > 0 && (
-            <div className="mt-3 text-[11px] text-red-600 bg-red-50 rounded-lg p-2.5 leading-relaxed">
-              ⚠️ 有 {conflictCount} 条内容与官方信息存在冲突，请注意甄别
-            </div>
-          )}
-        </section>
       </div>
+
+      {/* 今日概览：全宽底带（放网格外，避免尾行右侧留白） */}
+      <section className="mt-4 bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-base">📊</span>
+          <h3 className="text-sm font-bold text-slate-800">今日概览</h3>
+        </div>
+        <div className="flex gap-2">
+          <div className="flex-1 bg-[#fafbfc] rounded-lg p-3 text-center border border-slate-100">
+            <div className="font-display text-xl font-extrabold text-slate-800">{articles.length}</div>
+            <div className="text-[10px] text-slate-400 mt-0.5">相关文章</div>
+          </div>
+          <div className="flex-1 bg-[#fafbfc] rounded-lg p-3 text-center border border-slate-100">
+            <div className="font-display text-xl font-extrabold text-blue-600">{highCount}</div>
+            <div className="text-[10px] text-slate-400 mt-0.5">高置信</div>
+          </div>
+          <div className="flex-1 bg-[#fafbfc] rounded-lg p-3 text-center border border-slate-100">
+            <div className="font-display text-xl font-extrabold text-red-500">{conflictCount}</div>
+            <div className="text-[10px] text-slate-400 mt-0.5">冲突</div>
+          </div>
+        </div>
+        {conflictCount > 0 && (
+          <div className="mt-3 text-[11px] text-red-600 bg-red-50 rounded-lg p-2.5 leading-relaxed">
+            ⚠️ 有 {conflictCount} 条内容与官方信息存在冲突，请注意甄别
+          </div>
+        )}
+      </section>
     </div>
   );
 }
