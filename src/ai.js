@@ -1,5 +1,16 @@
 'use strict';
 
+/**
+ * AI / LLM module.
+ *
+ * Wraps the DeepSeek endpoint (OpenAI SDK compatible) behind a single client
+ * and provides the shared analysis helpers used across the pipeline:
+ *   - analyzeResult: relevance score + summary + event + category for search items
+ *   - selectArticleLinks: pick real article links out of a scraped link list
+ *   - summarizeArticle: LEGACY full-text summarization for the blog type
+ * Prompts are externalized under src/prompts/.
+ */
+
 const OpenAI = require('openai');
 const { DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, MIN_SCORE } = require('./config');
 const { SYSTEM_PROMPT } = require('./prompts/analyze-prompt');
@@ -7,7 +18,10 @@ const { buildSelectLinksPrompt } = require('./prompts/select-links-prompt');
 
 let _openai = null;
 
-// DeepSeek（openai 兼容）客户端唯一单例，全库共用
+/**
+ * Get the shared DeepSeek (OpenAI-compatible) client singleton.
+ * @returns {OpenAI} OpenAI SDK client.
+ */
 function getOpenAI() {
   if (!_openai) {
     _openai = new OpenAI({ apiKey: DEEPSEEK_API_KEY, baseURL: DEEPSEEK_BASE_URL });
@@ -15,8 +29,14 @@ function getOpenAI() {
   return _openai;
 }
 
-// LEGACY: 仅供 blog 类型源使用（全文摘要），search 类型已走 analyzeResult 流程。
-// 如需扩展 blog 通道的评分/分类能力，应迁移到 analyzeResult options 模式。
+/**
+ * LEGACY: full-text summarization for blog-type sources only. Search-type
+ * sources go through analyzeResult instead. If the blog channel ever needs
+ * scoring/classification, migrate it to the analyzeResult options mode.
+ * @param {string} title - Article title.
+ * @param {string} content - Full article text.
+ * @returns {Promise<string>} Chinese summary of the article.
+ */
 async function summarizeArticle(title, content) {
   const response = await getOpenAI().chat.completions.create({
     model: DEEPSEEK_MODEL,
@@ -38,8 +58,12 @@ async function summarizeArticle(title, content) {
 }
 
 /**
- * Build category hint with rules for AI classification.
- * Supports both old format {"transfer":"转会&合同动态"} and new format with rules.
+ * Build the category/board hint injected into the analyze prompt.
+ * Supports both the old format {"transfer":"转会&合同动态"} and the new format
+ * with per-category rules (label / match / ok / not). Prepends genre-precedence
+ * rules so the model classifies genre (interview/match/rumour/...) before board.
+ * @param {Object|Array|null} categorySchema - Keyword board schema.
+ * @returns {string} Prompt hint text (empty when no schema is provided).
  */
 function buildCategoryHint(categorySchema) {
   // 兼容 anthropic 历史脏数据：category_schema 是 JSON 数组（["official","product",...]）时转成对象，避免数字键
@@ -78,7 +102,14 @@ function buildCategoryHint(categorySchema) {
   return '\n' + lines.join('\n');
 }
 
-// For search sources: title + snippet + body → relevance score + summary + event + event_type + category
+/**
+ * Analyze a single search-type item: title + snippet + (optional) body →
+ * relevance score, summary, event, event_type and category.
+ * @param {{query:string, title:string, snippet?:string, tier?:number|null,
+ *          categorySchema?:Object|null, body?:string|null}} options - Item context.
+ * @returns {Promise<{relevant:boolean, score:number, summary:string,
+ *          event:string, event_type:string, category:string}>} Parsed AI result.
+ */
 async function analyzeResult(options) {
   const { query, title, snippet, tier = null, categorySchema = null, body = null } = options;
 
@@ -108,6 +139,12 @@ async function analyzeResult(options) {
   return parseAnalyzeResult(response.choices[0].message.content.trim());
 }
 
+/**
+ * Assemble the user prompt for analyzeResult from the item context.
+ * @param {{query:string, title:string, snippet?:string, tierHint?:string,
+ *          categoryHint?:string, body?:string|null}} options - Prompt inputs.
+ * @returns {string} Full prompt text.
+ */
 function buildAnalyzePrompt(options) {
   const { query, title, snippet, tierHint, categoryHint, body } = options;
   return [
@@ -169,7 +206,14 @@ function buildAnalyzePrompt(options) {
   ].join('\n');
 }
 
-// 纯函数：解析 analyzeResult 的 AI 返回文本（markdown 围栏/脏前缀/score 越界都容错）
+/**
+ * Pure function: parse the AI's JSON response text into a normalized result.
+ * Tolerates markdown fences, dirty prefixes and out-of-range scores.
+ * @param {string} text - Raw AI output.
+ * @returns {{relevant:boolean, score:number, summary:string, event:string,
+ *          event_type:string, category:string}} Normalized result; on parse
+ *          failure returns score 0 / relevant false with empty strings.
+ */
 function parseAnalyzeResult(text) {
   try {
     const match = text.match(/\{[\s\S]*\}/);
@@ -188,7 +232,15 @@ function parseAnalyzeResult(text) {
   }
 }
 
-// 共享：从链接列表让 AI 挑文章（crawl4ai 与 scraper-direct 两通道共用）。
+/**
+ * Shared helper: ask the AI to pick real article links out of a scraped link
+ * list. Used by both the crawl4ai and scraper-direct channels.
+ * @param {Array} links - Links as [{title, text, url}].
+ * @param {string} sourceName - Source display name (for the prompt).
+ * @param {string} pageUrl - Page the links came from.
+ * @param {string} [logPrefix=''] - Console log prefix, e.g. 'Crawl4ai' / 'Direct'.
+ * @returns {Promise<Array>} Selected [{title, url}] (url guaranteed non-empty).
+ */
 async function selectArticleLinks(links, sourceName, pageUrl, logPrefix = '') {
   const list = links.map((l, i) => `[${i}] ${l.title || l.text || ''}\n  URL: ${l.url}`).join('\n');
 

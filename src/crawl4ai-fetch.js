@@ -1,16 +1,19 @@
 'use strict';
 
 /**
- * crawl4ai 抓取通道（Phase E，2026-08-03）
+ * crawl4ai fetch channel (Phase E).
  *
- * 替代/前置 Firecrawl 与 scraper-direct 的信源页面抓取。
- * 通过 REST 调本地 Docker 容器（unclecode/crawl4ai, localhost:11235）。
+ * Primary source-page fetcher that supersedes/prefixes Firecrawl and
+ * scraper-direct. Talks via REST to the local Docker container
+ * (unclecode/crawl4ai at localhost:11235), gated by an API token.
  *
- * 用法：每个信源调 fetchSourceArticles(source)，返回与 scraper-direct 相同形状的 items：
+ * Usage: call fetchSourceArticles(source) per source; it returns items in the
+ * same shape as scraper-direct:
  *   { title, url, snippet, publishedAt, source_name, source, tier }
  *
- * 降级：容器不可用 / 请求失败时抛错，由 search.js 回退 scraper-direct。
- * X 账号信源：用 links.external（t.co 短链 + 帖子标题），无需 AI 筛选。
+ * Degradation: when the container is down / the request fails it throws, and
+ * search.js falls back to scraper-direct. X/Twitter accounts use
+ * links.external (t.co short links + post titles) without AI filtering.
  */
 
 const axios = require('axios');
@@ -73,7 +76,11 @@ async function crawlPage(url, waitMs = 0) {
   return r;
 }
 
-// X / Twitter 页面判断
+/**
+ * Detect X / Twitter page URLs.
+ * @param {string} url - URL to test.
+ * @returns {boolean} True for x.com / twitter.com links.
+ */
 function isXUrl(url) {
   return /^(https?:\/\/)?(www\.)?(x\.com|twitter\.com)/i.test(url || '');
 }
@@ -140,8 +147,11 @@ function titleFromSlug(url) {
 }
 
 /**
- * 抓取单个信源，返回 items 数组（与 scraper-direct.fetchSource 相同形状）。
- * 容器不可用 / 请求失败时抛错（上层降级）；页面无结果时返回 []。
+ * Fetch a single source, returning an items array (same shape as
+ * scraper-direct.fetchSource). Throws when the container is unavailable / the
+ * request fails (caller degrades); returns [] when the page has no results.
+ * @param {Object} source - Source row (scrape_url, source_name, tier).
+ * @returns {Promise<Array>} Normalized items from the source.
  */
 async function fetchSourceArticles(source) {
   if (!source || !source.scrape_url) return [];

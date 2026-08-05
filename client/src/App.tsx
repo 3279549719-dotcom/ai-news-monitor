@@ -16,6 +16,10 @@ const TABS = [
   { id: 'search' as Tab, label: '搜索', Icon: SearchIcon },
 ];
 
+/**
+ * Root application shell: header + tab navigation (All / By keyword / Search)
+ * and the matching view for the active tab.
+ */
 export default function App() {
   const [tab, setTab] = useState<Tab>('all');
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);

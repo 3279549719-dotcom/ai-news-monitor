@@ -1,12 +1,56 @@
 {
   "name": "ai-news-monitor",
   "version": "1.0.0",
+  "description": "AI 驱动的多关键词信息监控工具（Node CommonJS 后端 + React 前端）",
+  "private": true,
   "main": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node src/index.js",
-    "test": "node --test \"src/*.test.js\""
+    "run:cron": "cross-env CRON_SCHEDULE=\"0 8 * * *\" node src/index.js",
+    "run:mu": "node scripts/run-mu-only.js",
+
+    "dev": "npm run dev:client",
+    "dev:client": "npm --prefix client run dev",
+    "preview": "npm --prefix client run preview",
+
+    "prebuild": "npm run type-check",
+    "build": "npm run build:client",
+    "build:client": "npm --prefix client run build",
+
+    "test": "node --test \"src/*.test.js\"",
+    "test:watch": "node --test --watch \"src/*.test.js\"",
+
+    "lint": "npm run lint:backend && npm run lint:client",
+    "lint:backend": "node scripts/check-syntax.js",
+    "lint:client": "npm --prefix client run lint",
+
+    "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.js\" \"client/src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"scripts/**/*.js\" \"client/src/**/*.{ts,tsx}\"",
+
+    "type-check": "npm --prefix client run type-check",
+
+    "check": "npm run lint && npm run type-check && npm test",
+
+    "ops:backfill": "node scripts/backfill-resummarize.js",
+    "ops:dedup": "node scripts/dedup-existing.js",
+    "ops:screenshot": "node scripts/screenshot-ui.js",
+    "ops:quality": "node scripts/check-quality.js",
+
+    "ops:run-auto": "node scripts/run-pipeline.js",
+    "ops:schedule": "node scripts/install-schedule.js",
+    "ops:schedule:info": "node scripts/install-schedule.js --info",
+    "ops:unschedule": "node scripts/install-schedule.js --remove",
+
+    "serve": "npm run build:client && npm --prefix client run preview -- --host 127.0.0.1 --port 5173",
+
+    "clean": "rimraf client/dist",
+    "clean:all": "npm run clean && rimraf node_modules client/node_modules"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
     "axios": "^1.7.0",
     "cheerio": "^1.0.0",
     "dotenv": "^16.0.0",
@@ -14,6 +58,9 @@
     "openai": "^4.0.0"
   },
   "devDependencies": {
-    "playwright-core": "^1.62.1"
+    "cross-env": "^7.0.3",
+    "playwright-core": "^1.62.1",
+    "prettier": "^3.3.0",
+    "rimraf": "^5.0.0"
   }
 }

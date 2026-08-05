@@ -2,18 +2,65 @@ import { supabase } from '../lib/supabase';
 import { useSupabaseQuery } from './useSupabaseQuery';
 import type { Article, FilterState } from '../types';
 
+/** Number of articles per page in the paginated list view. */
 export const PAGE_SIZE = 20;
-// 评分门槛，与后端 ai.js 的 MIN_SCORE 保持一致（score>=60 视为相关）
+/** Relevance threshold, kept in sync with backend ai.js MIN_SCORE (>=60 = relevant). */
 export const MIN_SCORE = 60;
 
-// 默认 recency 窗口：只看 30 天内发布的文章（T0 信源与无发布日期的文章豁免）
+// Default recency window: only show articles published within the last 30 days
+// (T0 sources and articles without a publish date are exempt).
 const RECENT_WINDOW_DAYS = 30;
 
 function recentCutoffIso(): string {
   return new Date(Date.now() - RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000).toISOString();
 }
 
-export function useArticles(filters: FilterState, page: number) {
+/**
+ * 将用户搜索词安全地包成 PostgREST `.or()` 逻辑树里可直接使用的值（含 `%...%` 包裹与引号）。
+ * `.eq()`/`.ilike()` 等链式方法会自动转义参数，但 `.or()` 接收的是原始过滤字符串：
+ * 未转义的 `,` `(` `)` 会破坏 or 语法（逗号拆分 or 列表、括号是分组符 → PostgREST 400），
+ * `%` `_` 则是 LIKE 通配符 → 匹配语义错误。
+ * PostgREST 的 or 语法不支持反斜杠转义逗号（实测 `\,` 会解析失败），文档规定用双引号
+ * 包裹整个值（`or=(col.ilike."%a,b%")`）。但引号内 PostgREST 会把 `\x` 折叠成 `x`
+ * （`\\`→`\`），因此 LIKE 通配符需写双反斜杠（`\\%`→解码为 `\%`→Postgres 字面量），
+ * 字面反斜杠需写四反斜杠（`\\\\`→解码为 `\\`→Postgres 字面量），否则 `carr\ick` 会被
+ * Postgres 当作 `carrick` 误匹配。
+ */
+function escapeOrValue(value: string): string {
+  const inner = value
+    .replace(/\\/g, '\\\\\\\\')
+    .replace(/%/g, '\\\\%')
+    .replace(/_/g, '\\\\_')
+    .replace(/\*/g, '\\\\*')
+    .replace(/"/g, '""');
+  return `"%${inner}%"`;
+}
+
+/** Return contract of useArticles (paginated list view). */
+export interface UseArticlesResult {
+  articles: Article[];
+  total: number;
+  loading: boolean;
+  error: string | null;
+}
+
+/** Return contract of useBoardArticles (board grid view, no pagination). */
+export interface UseBoardArticlesResult {
+  articles: Article[];
+  loading: boolean;
+  error: string | null;
+}
+
+/**
+ * Fetch a paginated article list filtered/sorted by the given filters.
+ * Applies MIN_SCORE, an optional keyword/source/tier/search filter, and the 30
+ * day recency window (unless includeOld is set). Query re-runs only when a
+ * scalar filter field or the page changes.
+ * @param filters - Filter/sort state (keyword, source, tier, search, includeOld).
+ * @param page - 1-based page number.
+ * @returns {UseArticlesResult} Articles + total count + loading/error.
+ */
+export function useArticles(filters: FilterState, page: number): UseArticlesResult {
   const { data, count, loading, error } = useSupabaseQuery<Article>(() => {
     let query = supabase
       .from('articles')
@@ -24,7 +71,7 @@ export function useArticles(filters: FilterState, page: number) {
     if (filters.source) query = query.eq('source', filters.source);
     if (filters.tier !== null && filters.tier !== undefined) query = query.eq('source_tier', filters.tier);
     if (filters.search.trim()) {
-      const term = `%${filters.search.trim()}%`;
+      const term = escapeOrValue(filters.search.trim());
       query = query.or(`title.ilike.${term},summary.ilike.${term}`);
     }
 
@@ -49,11 +96,16 @@ export function useArticles(filters: FilterState, page: number) {
 }
 
 /**
- * 板块视图专用：取最近 N 条（不分页），用于 BoardView 网格展示。
- * keywordId 为 null 时不发请求。默认应用 30 天 recency 窗口（T0/null 豁免），
- * 按 published_at 降序（null 靠后）排列。
+ * Fetch the most recent N articles for one keyword (no pagination) for the
+ * board grid view. Sends no request when keywordId is null. Applies the 30 day
+ * recency window by default (T0 / null publish date exempt) and orders by
+ * published_at descending (nulls last).
+ * @param keywordId - Keyword id, or null to skip fetching.
+ * @param limit - Max number of articles to load.
+ * @param includeOld - When true, ignore the recency window and include older items.
+ * @returns {UseBoardArticlesResult} Articles + loading/error.
  */
-export function useBoardArticles(keywordId: string | null, limit = 60, includeOld = false) {
+export function useBoardArticles(keywordId: string | null, limit = 60, includeOld = false): UseBoardArticlesResult {
   const { data, loading, error } = useSupabaseQuery<Article>(() => {
     if (!keywordId) return Promise.resolve({ data: [], error: null });
     let query = supabase

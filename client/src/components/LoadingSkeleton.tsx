@@ -1,3 +1,7 @@
+/**
+ * Placeholder skeleton rendered while articles are loading.
+ * @param count - Number of skeleton cards to render (default 5).
+ */
 export default function LoadingSkeleton({ count = 5 }: { count?: number }) {
   return (
     <div className="flex flex-col gap-3">

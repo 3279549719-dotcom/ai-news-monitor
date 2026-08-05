@@ -8,8 +8,13 @@ AI 驱动的多关键词信息监控工具。从用户配置的白名单信源�
 
 ```bash
 node src/index.js              # 手动运行一次
-CRON_SCHEDULE="0 8 * * *" node src/index.js  # 每天8点定时运行
+npm run ops:run-auto           # 手动模拟定时（含拉起 crawl4ai + 落日志）
+npm run ops:schedule           # 注册 Windows 任务计划：每日 08:00 自动跑（默认时间，--time HH:MM 覆盖）
+npm run ops:schedule:info      # 查看定时任务；npm run ops:unschedule 卸载
+CRON_SCHEDULE="0 8 * * *" node src/index.js  # 备选：常驻进程内 node-cron（需手动起进程，重启即停）
 ```
+
+> 定时日志：`logs/pipeline-YYYY-MM-DD.log`；前端线上：`https://ai-news-monitor-silk.vercel.app`（Vercel 部署，详见 [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md)）
 
 ## 技术栈
 
@@ -46,7 +51,7 @@ src/
 docs/               需求、决策、计划、验收、进度文档（见导航）
 reports/            每日报告 YYYY-MM-DD.md（运行时自动生成）
 client/             React SPA
-scripts/            运维脚本（test-scrape、update-sources、backfill-resummarize、dedup-existing、screenshot-ui 等）
+scripts/            运维脚本（run-pipeline/install-schedule 定时自动化、test-scrape、update-sources、backfill-resummarize、dedup-existing、screenshot-ui 等）
 ```
 
 ## 文档导航
@@ -54,6 +59,7 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 | 内容 | 路径 | 何时读 |
 |------|------|--------|
 | 路径总索引 | [DOCUMENT_MAP.md](DOCUMENT_MAP.md) | 每次任务开始前 |
+| 本地运行指南 | [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) | 新环境跑起 / 定时自动化 / 前端访问 |
 | Agent 行为规范 | [AGENTS.md](AGENTS.md) | 编码前 |
 | 技术规范 / 数据模型 | [docs/PRD.md](docs/PRD.md) | 改表结构或了解 pipeline |
 | 功能进度 / Bug | [docs/PROGRESS.md](docs/PROGRESS.md) | 了解状态或更新进度 |
@@ -70,7 +76,7 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 - **白名单信源**：只抓取 `keyword_sources` 表中 `fetch_type='firecrawl'` 且 `enabled=true` 的信源页面。无白名单的关键词走 HackerNews 兜底
 - 当前关键词覆盖：MU（7 源三 tier）、Anthropic（6 源二 tier）、Dallas Mavericks（8 源三 tier），详见各 REQ 文档
 - 信源页面选择实测可达站点：优先 crawl4ai 容器（可过墙），Node 直连不可达但容器可达的站点（Guardian、claude.com/blog）仍可纳入白名单
-- RLS 当前宽松模式（`USING (true)`），上线前须收紧
+- **RLS 已收紧（Phase10）**：anon 仅 SELECT（articles/keywords/keyword_sources），后端写库用 `.env` 的 `SUPABASE_SERVICE_KEY`（service role 绕过 RLS，`src/db.js` 单例优先 service key、缺省回退 `SUPABASE_KEY`）；前端仍用 publishable key 匿名读
 - Windows 路径统一使用 `E:\claude\ai-news-monitor`（Git Bash 用 `/e/claude/...`）
 
 ## 代码规范
@@ -79,7 +85,7 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 - 前端数据访问统一走 Supabase JS SDK（`client/src/hooks/`），不引入后端 Node 模块
 - 前端评分门槛常量 `MIN_SCORE = 60` 定义在 `client/src/hooks/useArticles.ts`，前后端保持一致
 - `useArticles` 的 effect 依赖使用标量字段（`filters.keywordId`、`filters.source`、`filters.search`、`filters.sortBy`、`filters.tier`），不传 `filters` 对象本身（对象引用每次渲染都变，会触发无效重请求）
-- 提交前运行检查：后端 `node --check src/*.js` + `npm test`（node:test）；前端 `cd client && npm run type-check && npm run lint && npm run build`
+- 提交前运行检查：一条 `npm run check` 搞定（= `lint` + `type-check` + `npm test`，含 `lint:backend` 对 src/scripts 全量 `node --check`）；需出构建产物再 `npm run build`（`prebuild` 自动先跑 type-check）。单项命令：后端 `npm test`；前端 `cd client && npm run type-check && npm run lint && npm run build`。格式化 `npm run format`（prettier，src/scripts/client/src）
 - 只暂存本次任务涉及的文件；`.env*`、node_modules、本地产物不入库
 - 新增信源时同步更新 `source-tiers.json` 域名映射（如无映射则 AI 评分不获 tier 提示）+ `article-patterns.json` 站点文章 URL 模式（如无模式命中则退回 DeepSeek 链接精选）
 
@@ -97,6 +103,7 @@ scripts/            运维脚本（test-scrape、update-sources、backfill-resum
 - **`npm test` 不要用 `node --test src/`**：Node 22 会把 `src` 当作单个测试入口、误执行 `src/index.js`，触发一次真实管线运行（连 crawl4ai + DeepSeek + Supabase，写库并生成日报，耗时近 1 分钟）。2026-08-04 曾因此误跑一次。统一用 package.json 的 `node --test "src/*.test.js"`（只跑 4 个 *.test.js）
 - **前端视觉验证用 Playwright（Phase9）**：crawl4ai 容器 SSRF 保护无法访问 localhost（实测 `URL blocked (SSRF protection)`），前端截图改走 `scripts/screenshot-ui.js`（devDependency `playwright-core`，浏览器已装 `C:\Users\asus\AppData\Local\ms-playwright`，找不到时设 `PLAYWRIGHT_BROWSERS_PATH` 兜底）。✅ **已跑通**（2026-08-05 产出 `screenshots/ui-board-dallas-final.png` / `screenshots/ui-board-mu-final.png`）
 - **Phase9 最终交付（2026-08-05）**：历史数据回填去重 + 前端空态验收全绿（npm test 42/42、前端三件套、Carrick score 90、Naji 4→1），已 commit 并 push `origin/master`（caa4808 + 文档收尾提交）
+- **Windows 定时任务 `ai-news-monitor-daily`（Phase10）**：`npm run ops:schedule` 注册每日 08:00 跑 `scripts/run-pipeline.js`（chdir 仓库根 → 幂等 `docker start crawl4ai` → `node src/index.js` → 追加 `logs/pipeline-YYYY-MM-DD.log`）。任务以当前用户**登录时**运行（无需管理员），机器休眠/未登录不触发；卸载 `npm run ops:unschedule`。前端已部署 Vercel（`ai-news-monitor-silk.vercel.app`），本地兜底 `npm run serve`
 
 ### 网络访问
 - **BBC Sport / The Guardian**：Node 直连（axios）ETIMEDOUT 不可达；crawl4ai 容器可达 Guardian。管线抓取仍优先选国内可达站点

@@ -6,6 +6,12 @@ function parseDate(dateStr: string | null | undefined): Date | null {
 }
 
 // 注：client 已引入 date-fns，如需替换请先对齐输出文案（如 '5 分钟前'/'刚刚'），避免 UI 文本漂移。
+/**
+ * Relative time label in Chinese ("刚刚" / "X 分钟前" / "X 天前" / ...).
+ * Returns '' for null/undefined/unparseable dates.
+ * @param dateStr - ISO date string.
+ * @returns Relative label, or ''.
+ */
 export function relativeTime(dateStr: string | null | undefined): string {
   const date = parseDate(dateStr);
   if (!date) return '';
@@ -25,6 +31,12 @@ export function relativeTime(dateStr: string | null | undefined): string {
   return `${years} 年前`;
 }
 
+/**
+ * Format a date as an absolute Chinese date-time string ("YYYY/MM/DD HH:mm").
+ * Returns '' for null/undefined/unparseable dates.
+ * @param dateStr - ISO date string.
+ * @returns Formatted string, or ''.
+ */
 export function formatDateTime(dateStr: string | null | undefined): string {
   const date = parseDate(dateStr);
   if (!date) return '';
@@ -41,10 +53,13 @@ export function formatDateTime(dateStr: string | null | undefined): string {
 const RECENT_MS = 30 * 24 * 60 * 60 * 1000;
 
 /**
- * 文章卡片日期展示：
- * - published_at ≤30 天 → relativeTime（X分钟前/X小时前/X天前）
- * - published_at >30 天 → formatDateTime（绝对日期）
- * - published_at 为 null → 「发现于 {relativeTime(created_at)}」
+ * Article-card date label:
+ * - published_at within 30 days  → relativeTime ("X 分钟前" / "X 小时前" / "X 天前")
+ * - published_at older than 30 days → formatDateTime (absolute date)
+ * - published_at null → 「发现于 {relativeTime(created_at)}」
+ * @param publishedAt - Article publish date (may be null).
+ * @param createdAt - Article discovery date (fallback when publish date is null).
+ * @returns Display label.
  */
 export function formatArticleDate(publishedAt: string | null | undefined, createdAt: string | null | undefined): string {
   const published = parseDate(publishedAt);

@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../lib/utils';
 
+/** Props of Pagination. */
 interface PaginationProps {
   page: number;
   total: number;
@@ -8,6 +9,10 @@ interface PaginationProps {
   onChange: (page: number) => void;
 }
 
+/**
+ * Pagination control with a compact page-number window. Renders nothing when
+ * there is only one page.
+ */
 export default function Pagination({ page, total, pageSize, onChange }: PaginationProps) {
   const totalPages = Math.ceil(total / pageSize);
   if (totalPages <= 1) return null;

@@ -4,7 +4,16 @@ const crawl4ai = require('./crawl4ai-fetch');
 const { getTier } = require('./tiers');
 const { toItem, normalizeUrlKey } = require('./items');
 
-// HackerNews via Algolia API — best for tech topics, free
+/**
+ * Search orchestration for the search keyword type.
+ *
+ * When a keyword has whitelist sources configured, fetches each source in
+ * sequence (crawl4ai first, degrading to scraper-direct on failure); otherwise
+ * falls back to HackerNews. All results are URL-deduped keeping the most
+ * trusted tier.
+ */
+
+// HackerNews via Algolia API — best for tech topics, free.
 async function searchHackerNews(query) {
   try {
     const since = Math.floor(Date.now() / 1000) - 7 * 24 * 3600;
@@ -23,7 +32,7 @@ async function searchHackerNews(query) {
           url: h.url,
           publishedAt: h.created_at ? new Date(h.created_at) : null,
         });
-        // HN 特有字段补充
+        // HN-specific field enrichment
         item.snippet = (h.story_text || '').replace(/<[^>]+>/g, '').slice(0, 300);
         item.source = 'hackernews';
         item.tier = getTier(h.url);
@@ -35,7 +44,12 @@ async function searchHackerNews(query) {
   }
 }
 
-// Deduplicate by normalized URL, keeping the entry with the lower (more trusted) tier.
+/**
+ * Deduplicate items by normalized URL, keeping the entry with the lower
+ * (more trusted) tier. Items without a tier rank last (treated as Infinity).
+ * @param {Array} results - Items with `url` and `tier`.
+ * @returns {Array} Deduplicated items.
+ */
 function deduplicateByUrl(results) {
   const tierOf = r => (r.tier === null || r.tier === undefined) ? Infinity : r.tier;
   const map = new Map();
@@ -74,6 +88,14 @@ async function fetchSourceWithFallback(source) {
   }
 }
 
+/**
+ * Main search entry: gather candidate items for a keyword query.
+ * Uses whitelist sources when present (per-source sequential fetch to avoid
+ * overloading the crawl4ai container), else HackerNews. Final URL dedupe.
+ * @param {string} query - Search query.
+ * @param {Array} [keywordSources=[]] - Whitelist sources for the keyword.
+ * @returns {Promise<Array>} Deduplicated candidate items.
+ */
 async function searchAll(query, keywordSources = []) {
   const configuredSources = keywordSources.filter(s => s.fetch_type === 'firecrawl' && s.scrape_url);
 
@@ -82,7 +104,7 @@ async function searchAll(query, keywordSources = []) {
   if (configuredSources.length === 0) {
     combined.push(...await searchHackerNews(query));
   } else {
-    // 逐源顺序抓取（避免并发压垮 crawl4ai 容器）
+    // Fetch sources one at a time to avoid crushing the crawl4ai container.
     for (const source of configuredSources) {
       combined.push(...await fetchSourceWithFallback(source));
     }

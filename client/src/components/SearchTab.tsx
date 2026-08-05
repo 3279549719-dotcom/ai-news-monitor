@@ -3,6 +3,10 @@ import ArticleFeed from './ArticleFeed';
 import EmptyState from './EmptyState';
 import { DEFAULT_FILTERS } from '../lib/constants';
 
+/**
+ * "Search" tab: text input that submits a free-text filter over article
+ * titles/summaries and renders the results via ArticleFeed.
+ */
 export default function SearchTab() {
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');

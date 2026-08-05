@@ -1,10 +1,12 @@
 'use strict';
 
 /**
- * 关键词词根映射表 — 用于 preFilter 和 C1 验收。
+ * Keyword root-token map.
  *
- * 每个关键词对应一组词根：标题含任一词根即视为候选，否则前置过滤跳过。
- * 词根不区分大小写；中英文均可。
+ * Maps each keyword to a set of root tokens used by preFilter and the C1
+ * acceptance check: a title containing any root is treated as a candidate,
+ * otherwise it is skipped by the pre-filter to save DeepSeek calls. Matching
+ * is case-insensitive and supports both Chinese and English tokens.
  */
 
 const KEYWORD_ROOTS = {
@@ -13,6 +15,11 @@ const KEYWORD_ROOTS = {
   'Dallas Mavericks': ['maverick', 'mavs', 'dallas', 'doncic', 'luka', 'kyrie', 'irving', 'cuban'],
 };
 
+/**
+ * Get the root tokens for a keyword name.
+ * @param {string} name - Keyword display name.
+ * @returns {string[]} Root tokens (empty array when unknown).
+ */
 function getKeywordRoots(name) {
   return KEYWORD_ROOTS[name] || [];
 }

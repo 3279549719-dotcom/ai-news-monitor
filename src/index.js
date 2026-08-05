@@ -267,7 +267,6 @@ async function processKeyword(keyword) {
 
   // 阶段 2：分析 + 交叉验证
   const toSaveRelevant = await analyzeAndCrosscheck(keyword, newItems);
-  if (toSaveRelevant.length === 0 && newItems.length === 0) return [];
 
   // 阶段 3：跨运行去重
   const deduped = await dedupeAgainstRecent(toSaveRelevant, keyword.id, 30);

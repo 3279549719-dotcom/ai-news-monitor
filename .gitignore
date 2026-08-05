@@ -8,6 +8,8 @@ client/node_modules/
 client/dist/
 data/seen.json
 reports/
+logs/
+.playwright-mcp/
 *.log
 .DS_Store
 .crawl4ai-token

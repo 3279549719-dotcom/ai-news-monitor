@@ -1,5 +1,13 @@
 'use strict';
 
+/**
+ * URL -> source-tier resolution.
+ *
+ * Maps a URL's hostname to its reliability tier (0 = most trusted) using the
+ * external source-tiers.json table. Used to give the AI a credibility hint and
+ * to compute corroboration in crosscheck.
+ */
+
 const { URL } = require('url');
 const tiers = require('./source-tiers.json');
 

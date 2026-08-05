@@ -1,6 +1,19 @@
 'use strict';
 
-// 共享：selectArticleLinks 的 system prompt（crawl4ai 与 scraper-direct 两通道共用）。
+/**
+ * System prompt for link selection.
+ *
+ * Shared by the crawl4ai and scraper-direct channels: instructs the model to
+ * pick only real news articles from a raw link list and exclude navigation /
+ * stats / tickets / etc.
+ */
+
+/**
+ * Build the system prompt for selectArticleLinks.
+ * @param {string} sourceName - Source display name.
+ * @param {string} pageUrl - Page the links came from.
+ * @returns {string} System prompt text.
+ */
 function buildSelectLinksPrompt(sourceName, pageUrl) {
   return [
     `You are a web scraping assistant. From a list of links extracted from "${sourceName}" (page: ${pageUrl}), identify which are NEWS ARTICLES (editorial content with a specific story or report).`,

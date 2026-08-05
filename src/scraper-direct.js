@@ -1,5 +1,13 @@
 'use strict';
 
+/**
+ * Direct-scrape fallback channel.
+ *
+ * axios fetch of a source page HTML → regex link extraction → DeepSeek picks
+ * the real article links. Used by search.js when the crawl4ai container fails
+ * or returns nothing for a source.
+ */
+
 const axios = require('axios');
 const { selectArticleLinks } = require('./ai');
 const { HTTP_USER_AGENT, HTTP_TIMEOUT_MS } = require('./config');
@@ -62,7 +70,12 @@ async function scrapeSourceUrl(pageUrl, sourceName) {
   }
 }
 
-// 抓单个信源，返回 items 数组（供 search.js 逐源降级调用）
+/**
+ * Fetch a single source and return pipeline items. Entry point used by
+ * search.js for per-source degradation.
+ * @param {Object} source - Source row (scrape_url, source_name, tier).
+ * @returns {Promise<Array>} Normalized items (empty on failure).
+ */
 async function fetchSource(source) {
   console.log(`  [Direct] 抓取 ${source.source_name}...`);
   const articles = await scrapeSourceUrl(source.scrape_url, source.source_name);

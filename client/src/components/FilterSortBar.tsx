@@ -2,11 +2,11 @@ import { ArrowDownUp, RotateCcw } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { SOURCE_OPTIONS } from '../lib/sources';
 import { DEFAULT_FILTERS } from '../lib/constants';
-import type { FilterState } from '../types';
+import type { FilterState, Tier } from '../types';
 
 const SOURCES = [{ value: '', label: '全部来源' }, ...SOURCE_OPTIONS];
 
-const TIERS = [
+const TIERS: { value: Tier | null; label: string }[] = [
   { value: null, label: '全部层级' },
   { value: 0, label: 'T0 官方' },
   { value: 1, label: 'T1 顶级' },
@@ -20,11 +20,16 @@ const SORTS: { value: FilterState['sortBy']; label: string }[] = [
   { value: 'score', label: '最高相关' },
 ];
 
+/** Props of FilterSortBar. */
 interface FilterSortBarProps {
   filters: FilterState;
   onChange: (filters: FilterState) => void;
 }
 
+/**
+ * Filter / sort / reset toolbar for the list view: sort order, source, tier,
+ * the "show old news" toggle, and a reset button when any filter is active.
+ */
 export default function FilterSortBar({ filters, onChange }: FilterSortBarProps) {
   const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     onChange({ ...filters, [key]: value });

@@ -10,6 +10,7 @@
 |------|------|---------|
 | 项目总览 + Hook | [CLAUDE.md](CLAUDE.md) | 每次新会话第一件事 |
 | Agent 行为规范 | [AGENTS.md](AGENTS.md) | 编码前 |
+| 本地运行指南 | [docs/LOCAL_SETUP.md](docs/LOCAL_SETUP.md) | 新环境跑起 / 定时自动化 / 前端访问 |
 
 ## 需求与决策
 

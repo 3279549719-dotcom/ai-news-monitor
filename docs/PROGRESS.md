@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-05（Phase 9 最终交付 + 重构第一批 P0①/P1③⑥⑦ 完成 — 已 push origin/master，本地与远端完全同步）
+> 最后更新：2026-08-05（Phase 10：管线自动化 + Vercel 部署 + RLS 安全收尾）
 
 ## 功能进度
 
@@ -16,6 +16,7 @@
 | F-011 | Phase 7：AI 分析管线体验优化 — 三段式摘要 + 分类判别标准 + preFilter + 自动化验收 | **已完成** | 2026-08-04 端到端 11篇入库，无占位语，三段式 100%，22/22 test |
 | F-012 | Phase 8：信息获取与理解层优化 — 假日期修复 + AI 正文喂养 + 分类/体裁落地 + 付费墙标注 + 前端时效窗口 | **已完成** | 2026-08-04 端到端 4篇入库，A4a 事实锚点 100%，npm test 35/35，前端三件套全绿 |
 | F-013 | Phase 9：历史数据回填去重 + 前端空态 — 全量回填重算 + 同事件三层去重 + BoardView 空态重构 + Playwright 截图 | **已完成（最终交付）** | 2026-08-05 验收全绿：Carrick 摘要修正(score 90)、Naji 4→1、npm test 42/42、前端三件套全绿、管线回归通过、**已 push origin/master**（见 F-013 交付内容） |
+| F-014 | Phase 10：管线自动化 + Vercel 部署 + RLS 安全收尾 — Windows 任务计划每日定时 + 前端公网部署 + 后端改 service key/RLS 收紧 anon 只读 | **已完成** | 2026-08-05 定时任务已注册（每日 08:00）、线上 URL 验证 88 条渲染正常、RLS anon 写被拒/service 读写 ✅、npm run check 全绿（见 F-014 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -44,8 +45,8 @@
 
 ## 安全备注
 
-- `allow_all_keywords` / `allow_all_articles` RLS 策略当前为宽松模式（个人项目）
-- 上线前需改为基于 `auth.uid()` 的细粒度策略
+- ✅ **已收紧（F-014，2026-08-05）**：anon 仅 SELECT（articles/keywords/keyword_sources），后端写库改用 `SUPABASE_SERVICE_KEY`（service role 绕过 RLS）
+- 表 `bookmarks/chapters/comments/likes/manga/pages/profiles` 属同 Supabase 项目内另一应用，本次未触碰
 
 ## F-004 交付内容（2026-08-02）
 
@@ -196,13 +197,37 @@
 - URL 去重键统一走 `normalizeUrlKey`（剥协议/www/查询串/尾斜杠），新去重逻辑复用，勿另写
 - 关键词词根（preFilter + C1 验收用）改 `src/keyword-roots.js` 的 `KEYWORD_ROOTS`，勿在 index.js 内联
 
+## F-014 Phase10 交付内容（2026-08-05）
+
+> 触发：用户提出"收集纯手动、前端要手动开"。定位缺口：无 OS 级自动化、前端无交付方式、RLS 未收紧（唯一安全风险）。未提交 git（待用户决定提交时机）。
+
+**管线自动化（Windows 任务计划）：**
+- `scripts/run-pipeline.js`（包装层）：chdir 仓库根 → 幂等 `docker start crawl4ai` → `node src/index.js` → 追加 `logs/pipeline-YYYY-MM-DD.log`
+- `scripts/install-schedule.js`：schtasks 注册每日任务 `ai-news-monitor-daily`（默认 08:00，`--time HH:MM` / `SCHEDULE_TIME` 覆盖；`--remove`/`--info`）
+- npm scripts：`ops:schedule` / `ops:schedule:info` / `ops:unschedule` / `ops:run-auto`；`serve`（build + vite preview 本地兜底）
+- **已注册**：每日 08:00（下次 2026-08-06 08:00），以当前用户登录时运行
+
+**前端 Vercel 部署：**
+- 项目 `ai-news-monitor`（team patrick-wen），生产 URL `https://ai-news-monitor-silk.vercel.app`
+- 纯静态 SPA 直连 Supabase；`VITE_SUPABASE_URL`/`VITE_SUPABASE_KEY` 已持久化到项目环境变量（production/preview/development）
+- 线上验证：Playwright 打开线上 URL，88 条结果、Tier/体裁/三段式摘要/分页正常渲染
+
+**安全收尾（RLS + 密钥拆分）：**
+- 后端写库 publishable key → `SUPABASE_SERVICE_KEY`（`src/config.js`/`src/db.js`/`scripts/update-sources.js`）；`db.js` 单例优先 service key，兼容回退
+- RLS 迁移 `tighten_rls_anon_readonly`：删 `allow_all_articles`/`allow_all_keywords` 宽开策略；anon 仅 SELECT（articles/keywords/keyword_sources，后者新启用 RLS）；REVOKE anon 写权限
+- 实测验证：anon SELECT ✅ / anon INSERT 被拒（permission denied）✅ / service key 读写+清理 ✅
+
+**文档：** `docs/LOCAL_SETUP.md`（路线图阶段 0 闭环）+ PROGRESS/CLAUDE/DOCUMENT_MAP 同步
+
+**验收：** `npm run check` 全绿（39 文件语法 OK + 前端 lint/type-check + **42/42** 单测）
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：
 
 | 阶段 | 内容 | 状态 |
 |------|------|------|
-| 0 | 本地运行指南（docs/LOCAL_SETUP.md） | 待补充 |
+| 0 | 本地运行指南（docs/LOCAL_SETUP.md） | **已完成（F-014）** |
 | 1 | 需求分析（docs/PRD.md） | 已完成 |
 | 2 | 方案设计 + 开发 + 测试（F-001~F-004） | 已完成 |
 | 3 | 优化前端页面 | 已完成（F-004） |
@@ -222,7 +247,7 @@
 - [x] `rss.js` + `keywords.json` 已删除
 - [ ] Sky Sports / 90min AI 链接识别稳定性优化
 - [x] GitHub 远程仓库推送（2026-08-04 已推送 `origin/master` 至 32801e5，含全部历史提交 + 临时文件清理）
-- [ ] RLS 策略收紧（从宽松模式改为认证模式）
+- [x] RLS 策略收紧（从宽松模式改为认证模式）— **F-014 完成**：anon 仅 SELECT，后端改 `SUPABASE_SERVICE_KEY` 写库（2026-08-05）
 - [x] **Phase9 历史数据回填去重与前端空态（2026-08-05 完成）** — 全量回填重算（v2 修复模式 324 篇 0 失败）+ 同事件三层去重（Naji 4→1，去重 v3 双信号）+ BoardView 空态重构 + playwright-core 截图。见 `docs/REQ-Phase9-历史数据回填去重与前端空态.md` / `docs/DECISION-Phase9-历史数据回填去重与前端空态.md` / PROGRESS F-013
 - [x] **第一批重构（2026-08-05 完成，已 push）** — P0① crawl4ai 模式表外置 `src/article-patterns.json`（修 si.com 双条目）+ P1⑥ ai.js options 对象 + 提示词外置 `src/prompts/` + P1⑦ search HN 走 toItem + `normalizeUrlKey` 统一 + P1③ index.js 阶段函数拆分 / `toArticleRecord` / `keyword-roots.js` 词根外置 / `dedupeAgainstExisting` 导出。详见本节"重构第一批"段落与 `docs/PLAN-重构计划.md`
 - [x] 交叉校验打分引擎（方案B）— 2026-08-03 crawl4ai demo 验证通过（Tielemans 3源聚类 high）

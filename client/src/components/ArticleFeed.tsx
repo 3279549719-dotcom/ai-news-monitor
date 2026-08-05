@@ -5,12 +5,17 @@ import EmptyState from './EmptyState';
 import { useArticles, PAGE_SIZE } from '../hooks/useArticles';
 import type { FilterState } from '../types';
 
+/** Props of ArticleFeed. */
 interface ArticleFeedProps {
   filters: FilterState;
   page: number;
   onPageChange: (p: number) => void;
 }
 
+/**
+ * Paginated article feed: loads articles via useArticles and renders a list of
+ * ArticleCards with an EmptyState / LoadingSkeleton and a Pagination control.
+ */
 export default function ArticleFeed({ filters, page, onPageChange }: ArticleFeedProps) {
   const { articles, total, loading, error } = useArticles(filters, page);
 

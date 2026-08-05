@@ -1,6 +1,8 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
-const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+// Writes keyword_sources, so it needs the service-role key once RLS restricts
+// anon to read-only (see db.js).
+const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY);
 
 async function main() {
   // 1. Delete existing MU sources

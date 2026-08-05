@@ -1,0 +1,14 @@
+node_modules
+client/node_modules
+client/dist
+dist
+package-lock.json
+client/package-lock.json
+reports
+screenshots
+data
+*.png
+*.log
+.env
+.env.local
+.crawl4ai-token

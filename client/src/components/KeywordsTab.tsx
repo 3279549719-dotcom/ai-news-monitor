@@ -8,6 +8,11 @@ import { useBoardArticles } from '../hooks/useArticles';
 import { useKeywords } from '../hooks/useKeywords';
 import { DEFAULT_FILTERS, MU_KEYWORD_ID, DAL_KEYWORD_ID } from '../lib/constants';
 
+/**
+ * "By keyword" tab: keyword chips on top; selecting one shows the BoardView for
+ * keywords with a board schema (MU / Dallas) and a paginated ArticleFeed for
+ * the rest. Includes the "show old news" toggle feeding the board view.
+ */
 export default function KeywordsTab() {
   const [selectedId, setSelectedId] = useState('');
   const [page, setPage] = useState(1);

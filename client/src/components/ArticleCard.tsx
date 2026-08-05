@@ -26,10 +26,15 @@ function ScoreBadge({ score }: { score: number }) {
   );
 }
 
+/** Props of ArticleCard. */
 interface ArticleCardProps {
   article: Article;
 }
 
+/**
+ * Compact article card used in the paginated list view: score badge, source
+ * label, tier badge, paywall / genre markers and the AI summary.
+ */
 export default function ArticleCard({ article }: ArticleCardProps) {
   const { label: sourceLabel, color: sourceColor } = SOURCE_CONFIG[article.source] ?? {
     label: article.source,

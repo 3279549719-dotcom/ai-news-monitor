@@ -3,10 +3,10 @@ import { cn } from '../lib/utils';
 import { formatArticleDate } from '../utils/relativeTime';
 import { TierBadge, ConfidenceBadge } from './badges';
 import { MU_KEYWORD_ID, DAL_KEYWORD_ID, PAYWALL_SOURCES } from '../lib/constants';
-import type { Article } from '../types';
+import type { Article, BoardDef } from '../types';
 
-// 曼联板块定义（顺序即展示顺序）
-export const MU_BOARDS: { key: string; label: string; emoji: string; official?: boolean }[] = [
+// Manchester United board definitions (order = display order).
+export const MU_BOARDS: BoardDef[] = [
   { key: 'official', label: '官方公告', emoji: '🔴', official: true },
   { key: 'transfer', label: '转会 & 合同动态', emoji: '🟡' },
   { key: 'injury', label: '伤病 & 停赛', emoji: '🏥' },
@@ -14,8 +14,8 @@ export const MU_BOARDS: { key: string; label: string; emoji: string; official?: 
   { key: 'match', label: '赛事竞技资讯', emoji: '⚽' },
 ];
 
-// Dallas Mavericks 板块定义（顺序即展示顺序）
-export const DAL_BOARDS: { key: string; label: string; emoji: string; official?: boolean }[] = [
+// Dallas Mavericks board definitions (order = display order).
+export const DAL_BOARDS: BoardDef[] = [
   { key: 'official', label: '官方公告', emoji: '🔵', official: true },
   { key: 'trade', label: '交易签约', emoji: '🔄' },
   { key: 'injury', label: '伤病报告', emoji: '🏥' },
@@ -23,8 +23,8 @@ export const DAL_BOARDS: { key: string; label: string; emoji: string; official?:
   { key: 'match', label: '赛事战报', emoji: '🏀' },
 ];
 
-// 通用板块（非曼联/独行侠关键词）
-export const GENERIC_BOARDS: { key: string; label: string; emoji: string; official?: boolean }[] = [
+// Generic boards for keywords without a dedicated board schema.
+export const GENERIC_BOARDS: BoardDef[] = [
   { key: 'official', label: '官方公告', emoji: '🔴' },
   { key: 'product', label: '产品发布', emoji: '🚀' },
   { key: 'research', label: '研究进展', emoji: '🔬' },
@@ -93,6 +93,7 @@ function ArticleCard({ article }: { article: Article }) {
   );
 }
 
+/** Props of BoardView. */
 interface BoardViewProps {
   articles: Article[];
   keywordId: string;
@@ -101,6 +102,12 @@ interface BoardViewProps {
   onToggleOld?: () => void;
 }
 
+/**
+ * Board grid view (Phase9): groups articles by board category for a keyword,
+ * shows an action-oriented empty state when there is nothing, hides empty
+ * boards, and renders a full-width "today overview" strip below the grid.
+ * T0/T1/T2 cards carry a tier color bar on their left border.
+ */
 export default function BoardView({ articles, keywordId, keywordName, includeOld, onToggleOld }: BoardViewProps) {
   const isMU = keywordId === MU_KEYWORD_ID;
   const isDAL = keywordId === DAL_KEYWORD_ID;

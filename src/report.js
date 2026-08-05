@@ -1,8 +1,20 @@
 'use strict';
 
+/**
+ * Daily report builder.
+ *
+ * Groups each keyword's results by its board schema (category_schema) and
+ * renders a markdown report with confidence / corroboration-count / conflict
+ * markers. Written to reports/YYYY-MM-DD.md by the pipeline.
+ */
+
 const { CONFIDENCE_LABEL } = require('./crosscheck');
 
-// 日报（方案C）：按关键词板块模板(category_schema)分组，附带置信度/印证数/冲突标记
+/**
+ * Build the daily markdown report from per-keyword result sections.
+ * @param {Array<{keyword:Object, results:Array}>} sections - Per-keyword results.
+ * @returns {string} Markdown report text.
+ */
 function buildReport(sections) {
   const date = new Date().toLocaleString('zh-CN');
   const total = sections.reduce((n, s) => n + s.results.length, 0);

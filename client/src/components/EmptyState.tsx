@@ -1,5 +1,6 @@
 import { Newspaper } from 'lucide-react';
 
+/** Props of EmptyState. */
 interface EmptyStateProps {
   message: string;
   hint?: string;
@@ -8,6 +9,10 @@ interface EmptyStateProps {
 }
 
 // 空态 = 行动引导，不是情绪占位（frontend-design：An empty screen is an invitation to act）
+/**
+ * Action-oriented empty state (not a passive placeholder): shows a message,
+ * optional hint, and an optional call-to-action button.
+ */
 export default function EmptyState({ message, hint, actionLabel, onAction }: EmptyStateProps) {
   return (
     <div className="text-center py-14 text-slate-500 bg-white rounded-2xl border border-dashed border-slate-300">

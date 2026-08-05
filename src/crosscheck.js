@@ -32,7 +32,13 @@ function bigrams(str) {
   return set;
 }
 
-// 相似度：两个事件描述共享 bigram 的比例
+/**
+ * Similarity between two event descriptions: fraction of shared bigrams over
+ * the smaller set (avoids dilution by long descriptions).
+ * @param {string} ev1 - Normalized event A.
+ * @param {string} ev2 - Normalized event B.
+ * @returns {number} Similarity in [0, 1].
+ */
 function eventSimilarity(ev1, ev2) {
   const a = bigrams(ev1);
   const b = bigrams(ev2);
@@ -125,6 +131,9 @@ function distinctiveNouns(title) {
 }
 
 /**
+ * Cross-run same-event detection (Phase9 v3: dual-rule, paired with seed-only
+ * clustering). Decides whether a candidate and a stored article are the same
+ * event. 中文详细说明：
  * 跨运行同事件判重（Phase9 v3：双规则 + seed-only 聚类配套）。
  * 候选与已存文章是否算同一事件：
  *   规则A：事件相似度 ≥ 0.60 且 标题相似度 ≥ 0.45 → 文本高度相似的明确同事件
@@ -169,9 +178,10 @@ function dedupeBySimilarity(candidate, existing) {
 }
 
 /**
- * 聚类：把文章按事件描述分组。
- * 简单做法：完全相同的 event 归一组；不同但高度相似的（编辑距离小）合并。
- * 轻量版：先用完全匹配 + 关键词重叠阈值。
+ * Cluster articles by event description. Groups share the exact same event,
+ * then merges highly similar ones via the event-similarity threshold.
+ * @param {Array} articles - Articles with an `event` field.
+ * @returns {Array<{event:string, items:Array}>} Clusters.
  */
 function clusterByEvent(articles) {
   const clusters = [];
@@ -199,10 +209,14 @@ function clusterByEvent(articles) {
 }
 
 /**
- * 同批合并（Phase9）：对本次运行的相关文章按"双信号同事件"聚类，
- * 每簇保留 score 最高一篇（代表行）。computeConfidence 已按簇给所有成员赋相同
- * corroboration_count，代表行自然携带多源印证；其余成员丢弃不入库。
- * 注意：event 为空的文章不参与聚类，各自保留。
+ * Same-batch collapse (Phase9): cluster the run's relevant articles by
+ * "dual-signal same event" and keep the highest-score row per cluster as the
+ * representative. Since computeConfidence already assigned the same
+ * corroboration_count to all members, the representative carries the
+ * multi-source corroboration; the rest are dropped (not persisted).
+ * Items with an empty event are never clustered and are always kept.
+ * @param {Array} articles - Relevant articles with score/event/title.
+ * @returns {Array} Collapsed representatives.
  */
 function collapseSameEvent(articles) {
   if (!articles || articles.length === 0) return [];
@@ -229,14 +243,20 @@ function collapseSameEvent(articles) {
 }
 
 /**
- * 计算置信度：
- * - 组内不同来源数 >= 2 → high（≥2 独立信源印证）
- * - 组内来源数 == 1 → medium（单源，待核实）
- * - 与 Tier0 冲突 → low + conflict_flag
+ * Compute confidence for a cluster:
+ *   - ≥2 distinct sources in cluster → high (independently corroborated)
+ *   - exactly 1 source → medium (single source, to be verified)
+ *   - conflict with a Tier0 official source → low + conflict_flag
  */
-// 置信度中文标签（日报 buildReport 使用；前端 ConfidenceBadge 有对应映射）
+// Chinese confidence labels (used by report.js; the frontend ConfidenceBadge
+// has a matching mapping).
 const CONFIDENCE_LABEL = { high: '高置信', medium: '待核实', low: '存疑' };
 
+/**
+ * Confidence + corroboration + conflict computation for one event cluster.
+ * @param {{items:Array}} cluster - Items sharing one event.
+ * @returns {{confidence:string, corroborationCount:number, conflictFlag:boolean}}
+ */
 function computeConfidence(cluster) {
   const sources = new Set(cluster.items.map(a => a.source || ''));
   const sourceCount = sources.size;
@@ -259,9 +279,10 @@ function computeConfidence(cluster) {
 }
 
 /**
- * 主入口：给每篇文章附加交叉验证结果
- * @param {Array} articles - 含 event/tier/source/title 的文章数组
- * @returns {Array} 附加 confidence/corroboration_count/conflict_flag
+ * Cross-verification main entry: cluster articles by event and attach
+ * confidence / corroboration_count / conflict_flag to each item.
+ * @param {Array} articles - Articles carrying event/tier/source/title.
+ * @returns {Array} Articles enriched with confidence metadata.
  */
 function crosscheck(articles) {
   if (!articles || articles.length === 0) return [];
@@ -284,11 +305,10 @@ function crosscheck(articles) {
 }
 
 /**
- * 跨运行去重：将本次运行的相关文章与近 N 天已存文章比对，
- * 命中（同一事件）则跳过，未命中则保留。
- *
- * @param {Array} items  - 本次运行的相关文章（含 event/title）
- * @param {Array} existing - 近 N 天已存相关文章（含 event/title）
+ * Cross-run dedupe: compare this run's relevant articles against articles
+ * stored in the last N days; keep those not matching an existing event.
+ * @param {Array} items    - This run's relevant articles (with event/title).
+ * @param {Array} existing - Recent stored articles (with event/title).
  * @returns {{ kept: Array, dropped: Array }}
  */
 function dedupeAgainstExisting(items, existing) {

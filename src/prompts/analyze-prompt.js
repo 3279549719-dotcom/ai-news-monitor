@@ -1,6 +1,12 @@
 'use strict';
 
-// 摘要 6 铁律（Phase8 理解层 v2）。buildAnalyzePrompt 的摘要区块引用本常量，勿在两处重复维护。
+/**
+ * System prompt for article analysis.
+ *
+ * Contains the "6 hard rules" for summary writing (Phase8 comprehension layer
+ * v2). Referenced by buildAnalyzePrompt's summary block — keep in sync here
+ * only, never duplicated elsewhere.
+ */
 const SYSTEM_PROMPT = [
   '你是信息筛选助手。只输出JSON，不要任何其他文字。',
   '',
