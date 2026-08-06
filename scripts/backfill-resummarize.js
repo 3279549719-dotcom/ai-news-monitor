@@ -79,14 +79,14 @@ async function fetchBodyWithRetry(url, retries = 1) {
 // 正文缺失时 score 取 max(当前, 模型)：不盲目抬到 60（避免复活垃圾），也不恶化已入库行。
 async function reprocess(row, keyword) {
   const body = await fetchBodyWithRetry(row.url);
-  const r = await analyzeResult(
-    keyword.query,
-    row.title,
-    row.snippet || null,
-    row.source_tier ?? null,
-    keyword.category_schema,
-    body
-  );
+  const r = await analyzeResult({
+    query: keyword.query,
+    title: row.title,
+    snippet: row.snippet || null,
+    tier: row.source_tier ?? null,
+    categorySchema: keyword.category_schema,
+    body,
+  });
   const score = body ? r.score : Math.max(row.score || 0, r.score);
   return {
     id: row.id,
