@@ -13,7 +13,11 @@ module.exports = {
   // AI relevance threshold (search-type score>=60 counts as relevant) and the
   // maximum number of items processed per keyword.
   MIN_SCORE: 60,
-  RESULT_LIMIT: 15,
+  RESULT_LIMIT: 30,
+
+  // 单源产出上限（仅非 T0 源）：防单源淹没分析预算，保证多源（尤其 T1 X 记者）
+  // 都能进入 feed。T0 官方源不设限。
+  MAX_PER_SOURCE: 5,
 
   // Shared HTTP (axios) user-agent and timeout for scraping.
   HTTP_USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',

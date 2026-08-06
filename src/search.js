@@ -4,6 +4,7 @@ const crawl4ai = require('./crawl4ai-fetch');
 const xFetch = require('./x-fetch');
 const { getTier } = require('./tiers');
 const { toItem, normalizeUrlKey } = require('./items');
+const { MAX_PER_SOURCE } = require('./config');
 
 /**
  * Search orchestration for the search keyword type.
@@ -69,6 +70,31 @@ function deduplicateByUrl(results) {
   return Array.from(map.values());
 }
 
+/**
+ * Sort whitelist sources by credibility tier (ascending): T0 official first,
+ * then T1 (X journalists), then T2 media. Sources without a tier rank last.
+ * Non-mutating. Ensures high-trust sources consume the analysis budget first.
+ * @param {Array} sources - keyword_sources rows (each with `tier`).
+ * @returns {Array} New array sorted by tier.
+ */
+function sortSourcesByTier(sources) {
+  const tierOf = s => (s.tier === null || s.tier === undefined) ? Infinity : s.tier;
+  return [...sources].sort((a, b) => tierOf(a) - tierOf(b));
+}
+
+/**
+ * Cap a single source's contribution to the candidate pool (non-T0 sources).
+ * Keeps one source from flooding the pool and starving others (e.g. X tweets
+ * behind a media wall), while T0 official stays uncapped.
+ * @param {Array} items - Items fetched for one source.
+ * @param {number} maxPerSource - Upper bound.
+ * @returns {Array} At most `maxPerSource` items (or the original when shorter).
+ */
+function capSourceItems(items, maxPerSource) {
+  if (!Array.isArray(items) || items.length === 0) return items;
+  return items.slice(0, maxPerSource);
+}
+
 // crawl4ai 优先；失败/空结果降级 scraper-direct；X 源走 x-fetch（twikit 主 + crawl4ai 兜底，不降 Direct）
 async function fetchSourceWithFallback(source) {
   if (crawl4ai.isXUrl(source.scrape_url)) {
@@ -104,13 +130,18 @@ async function searchAll(query, keywordSources = []) {
   if (configuredSources.length === 0) {
     combined.push(...await searchHackerNews(query));
   } else {
-    // Fetch sources one at a time to avoid crushing the crawl4ai container.
-    for (const source of configuredSources) {
-      combined.push(...await fetchSourceWithFallback(source));
+    // 高可信源优先（T0→T1→T2），保证 X 记者等 T1 推文先吃分析预算；
+    // 非 T0 源每源上限 MAX_PER_SOURCE 条，防单源淹没、保证多源覆盖。
+    const ordered = sortSourcesByTier(configuredSources);
+    for (const source of ordered) {
+      let items = await fetchSourceWithFallback(source);
+      const tier = source.tier ?? Infinity;
+      if (tier > 0) items = capSourceItems(items, MAX_PER_SOURCE);
+      combined.push(...items);
     }
   }
 
   return deduplicateByUrl(combined);
 }
 
-module.exports = { searchAll, deduplicateByUrl };
+module.exports = { searchAll, deduplicateByUrl, sortSourcesByTier, capSourceItems };
