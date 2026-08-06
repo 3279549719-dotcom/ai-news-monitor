@@ -34,9 +34,11 @@ src/
   config.js         环境变量与常量集中读取（MIN_SCORE/RESULT_LIMIT/HTTP/DeepSeek/crawl4ai/Supabase）
   db.js             Supabase client 单例 + withRetry 工具
   store.js          数据访问层：loadKeywords、loadKeywordSources、filterNewItems、saveArticles、loadRecentRelevant
-  search.js         search 类型：白名单信源逐源调度（crawl4ai 优先 → 降级 scraper-direct）+ HackerNews 兜底；HN 走 toItem + normalizeUrlKey 去重
+  search.js         search 类型：白名单信源逐源调度（按 tier 升序 + 非 T0 单源上限 MAX_PER_SOURCE，crawl4ai 优先 → 降级 scraper-direct）+ HackerNews 兜底；HN 走 toItem + normalizeUrlKey 去重
   keyword-roots.js  关键词词根映射表（KEYWORD_ROOTS / getKeywordRoots，供 preFilter + C1 验收；词根外置直接编辑本文件）
-  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章 URL 模式筛选（模式表外置 article-patterns.json）；X 账号走 external t.co 链
+  x-fetch.js        X 账号编排（twikit 主 → crawl4ai 兜底 → []）：runTwikit spawn `scripts/x-fetch-tweets.py` 60s 超时 + parseTwikitRows；X 不降级 Direct
+  x-tweet-parse.js  X 推文卡纯解析模块（extractTweetsFromMarkdown 雪花 ID 解码时间 / parseTwikitRows / handleFromProfileUrl）
+  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章 URL 模式筛选（模式表外置 article-patterns.json）；X 账号仅作兜底（markdown 推文卡提取）
   article-patterns.json 站点 → 文章 URL 模式表（按 host 分组多模式，新增信源/改模式直接编辑本文件不动代码）
   scraper-direct.js 信源直抓降级：axios 拉 HTML → 正则提取链接 → AI 精选文章
   scraper.js/reader.js blog 类型：claude-blog 抓列表 + 读正文
@@ -51,7 +53,7 @@ src/
 docs/               需求、决策、计划、验收、进度文档（见导航）
 reports/            每日报告 YYYY-MM-DD.md（运行时自动生成）
 client/             React SPA
-scripts/            运维脚本（run-pipeline/install-schedule 定时自动化、test-scrape、update-sources、backfill-resummarize、dedup-existing、screenshot-ui 等）
+scripts/            运维脚本（run-pipeline/install-schedule 定时自动化、test-scrape、update-sources、backfill-resummarize、dedup-existing、screenshot-ui 等）；x-fetch-tweets.py 为 twikit 桥接（读 .env 凭证，stdout 推文 JSON）
 ```
 
 ## 文档导航
@@ -72,9 +74,9 @@ scripts/            运维脚本（run-pipeline/install-schedule 定时自动化
 
 - 关键词统一从 Supabase `keywords` 表读取（`keywords.json` 已删除）
 - search 类型：AI 评分 ≥60 视为相关（`MIN_SCORE=60`）；blog 类型已下线（`claude-blog` 关键词停用，官方内容由 anthropic 关键词的 T0 信源覆盖）
-- **抓取通道（Phase E）**：`src/search.js` 逐源调用 `src/crawl4ai-fetch.js`（REST 调本地 crawl4ai 容器）→ 失败/空结果自动降级 `src/scraper-direct.js`（axios + DeepSeek 识别链接）。Firecrawl API 已停用。**定时管线依赖 Docker 容器 `crawl4ai` 在线**（`docker start crawl4ai`）；容器不可用时自动逐源降级，不影响其余源。X 账号信源仅走 crawl4ai（axios 抓 X 无意义），失败直接跳过
+- **抓取通道（Phase E）**：`src/search.js` 逐源调用 `src/crawl4ai-fetch.js`（REST 调本地 crawl4ai 容器）→ 失败/空结果自动降级 `src/scraper-direct.js`（axios + DeepSeek 识别链接）。Firecrawl API 已停用。**定时管线依赖 Docker 容器 `crawl4ai` 在线**（`docker start crawl4ai`）；容器不可用时自动逐源降级，不影响其余源。**X 账号信源（Phase F 起）走 twikit 主通道**：`src/x-fetch.js` spawn `scripts/x-fetch-tweets.py`（.env 凭证）→ 失败回退 crawl4ai guest 推文卡 → 全败跳过（axios 抓 X 无意义，不降 Direct）；推文卡直入 feed（title=推文正文 / url=原推状态链 / 时间=真实发推时刻）
 - **白名单信源**：只抓取 `keyword_sources` 表中 `fetch_type='firecrawl'` 且 `enabled=true` 的信源页面。无白名单的关键词走 HackerNews 兜底
-- 当前关键词覆盖：MU（7 源三 tier）、Anthropic（6 源二 tier）、Dallas Mavericks（8 源三 tier），详见各 REQ 文档
+- 当前关键词覆盖：MU（9 源三 tier，含 4 个 X 记者：Stone/Ornstein/Whitwell/Mitten）、Anthropic（6 源二 tier）、Dallas Mavericks（8 源三 tier，含 Marc Stein X），详见各 REQ 文档
 - 信源页面选择实测可达站点：优先 crawl4ai 容器（可过墙），Node 直连不可达但容器可达的站点（Guardian、claude.com/blog）仍可纳入白名单
 - **RLS 已收紧（Phase10）**：anon 仅 SELECT（articles/keywords/keyword_sources），后端写库用 `.env` 的 `SUPABASE_SERVICE_KEY`（service role 绕过 RLS，`src/db.js` 单例优先 service key、缺省回退 `SUPABASE_KEY`）；前端仍用 publishable key 匿名读
 - Windows 路径统一使用 `E:\claude\ai-news-monitor`（Git Bash 用 `/e/claude/...`）
@@ -98,6 +100,8 @@ scripts/            运维脚本（run-pipeline/install-schedule 定时自动化
 - **Crawl4AI**：Docker 容器 `unclecode/crawl4ai` 跑在 `localhost:11235`，既是 Agent 交互式抓取 MCP（`crawl4ai`），也是**定时管线主抓取通道（Phase E，`src/crawl4ai-fetch.js`）**，带 `CRAWL4AI_API_TOKEN` 鉴权（token 存 `.crawl4ai-token`，已 gitignore）。用前需 `docker start crawl4ai`。**本机代理陷阱**：Windows 用户级 `HTTP_PROXY=127.0.0.1:7890` 会拦截 localhost 导致 502，已设用户级 `NO_PROXY=localhost,127.0.0.1`（新开终端才生效）
 - **Crawl4AI 持续并发过载陷阱（2026-08-05 实测）**：容器能扛短时并发（3 路 2 轮全成功），但**长时间持续并发（如 pool3 批量回填）会渐进性资源耗尽，正文抓取大面积失败（实测 66% 缺失）**。回填脚本 `backfill-resummarize.js` 必须 **pool 1 串行 + 正文重试**；正文缺失时 score 下限 60 保可见。单篇正文抓取 4-21s（容器空闲时）
 - **crawl4ai 信源可达性实测（2026-08-03）**：跨 Tier 均可抓——T0 manutd.com、T1 X 账号（Simon Stone/Ornstein 帖子+链接可提取）、T2 Sky/Guardian（Guardian Node 直连不可达但容器可达）/90min（跳转 si.com）。**不可用**：MEN 站点 404（文档 URL 失效）、ESPN 团队页 JS 重拿不到内容。**容器限制**：SSRF 保护使容器内浏览器无法访问宿主机 localhost / host.docker.internal（不能给本地 dev server 截图）；execute_js 端点默认禁用，需 `CRAWL4AI_EXECUTE_JS_ENABLED=true` 重建容器
+- **twikit 抓 X（Phase F，2026-08-07）**：`scripts/x-fetch-tweets.py` 走宿主 venv `.venv-x/`（gitignored）。⚠️ **fork 选择**：上游 `d60/twikit` 2026-03 起 KEY_BYTE indices 错误；PyPI `twifork` 2.3.5 的 ondemand.s 解析也落后于 X 前端；用维护中 **`unclecode/twikit`**（`pip install git+https://github.com/unclecode/twikit.git`，含 2026-05-17 两段式正则补丁）。⚠️ **必须显式传 `proxy=`**（读 `X_PROXY`/`HTTP(S)_PROXY`，国内直连 x.com ConnectTimeout）。⚠️ twikit 2.x 是 **async API**（全部 await）；`get_user_tweets(user_id, tweet_type='Tweets', count=N)`。⚠️ Windows stdout 需 `reconfigure(encoding='utf-8')`（推文 emoji 撞 GBK）。凭证键名必须下划线（`.env` 里 `X cto=` 等空格键读不到）
+- **X 推文分析预算（Phase F）**：`src/search.js` 信源按 tier 升序 + 非 T0 源每源上限 `MAX_PER_SOURCE=5`，保证 T1 X 推文先吃 `RESULT_LIMIT=30` 预算，不被 T2 媒体挤出。改这两个常量在 `src/config.js`
 - **一次性验证脚本 `scripts/run-crawl4ai-demo.js`**：读 `scripts/_crawl4ai-items.json`（crawl4ai 抓取整理的真实 items）→ 复用 analyzeResult + crosscheck + saveArticles 跑通三 tier 交叉验证。仅验证用，不入生产管线
 - **⚠️ `scripts/dedup-existing.js` 的 `--keep-ids` 只认空格分隔**：`flag()` 解析 `--keep-ids ID1,ID2`，**不接受 `--keep-ids=ID1,ID2`（等号形式被静默忽略 → keep 集为空 → 全部行被删）**。2026-08-05 曾因此误删用户要求保留的 Cisse + Project Fetch 两行（Cisse 已恢复，Project Fetch 经用户确认弃留）。传参必须空格分隔；`--apply` 前务必先跑 `--dry-run` 核对清单
 - **`npm test` 不要用 `node --test src/`**：Node 22 会把 `src` 当作单个测试入口、误执行 `src/index.js`，触发一次真实管线运行（连 crawl4ai + DeepSeek + Supabase，写库并生成日报，耗时近 1 分钟）。2026-08-04 曾因此误跑一次。统一用 package.json 的 `node --test "src/*.test.js"`（只跑 4 个 *.test.js）

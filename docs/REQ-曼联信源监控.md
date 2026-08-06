@@ -89,9 +89,9 @@ X 账号独立建模（见 §6），不混入普通 URL。
 |---|---|---|---|
 | David Ornstein | `x.com/David_Ornstein` | 转会、董事会、管理层 | ✅ 可达；当日内容偏其他俱乐部，靠相关性过滤 |
 | Fabrizio Romano | `x.com/FabrizioRomano` | 转会最快消息、Agent 网络；需区分 confirmed / here we go / interest / monitoring 等级 | ⚠️ 原文档误配 `fabrizioromano.com`（意大利艺术家站点），正确是 X 账号 |
-| Simon Stone | `x.com/sistoney67` | 官方关系、管理层、教练、伤病 | ✅ 可达；帖子正文 + BBC 链接可提取 |
-| Laurie Whitwell | `x.com/lauriewhitwell` | Carrington、训练、球员状态 | 未接入生产白名单（远期） |
-| Andy Mitten | `x.com/AndyMitten` | 更衣室文化、球迷生态、长周期判断（非最快消息源） | 未接入生产白名单（远期） |
+| Simon Stone | `x.com/sistoney67` | 官方关系、管理层、教练、伤病 | ✅ 已接入（twikit 主通道）；帖子正文作推文卡 |
+| Laurie Whitwell | `x.com/lauriewhitwell` | Carrington、训练、球员状态 | ✅ 已接入（twikit 主通道，2026-08-07） |
+| Andy Mitten | `x.com/AndyMitten` | 更衣室文化、球迷生态、长周期判断（非最快消息源） | ✅ 已接入（twikit 主通道，2026-08-07） |
 | Manchester Evening News | `manchestereveningnews.co.uk/.../manchester-united-fc/` | Carrington、本地采访、球迷反馈 | ❌ 文档 URL 404，需确认新栏目路径后重试 |
 
 ### 5.3 Tier2 — 主流媒体（Verification Layer）
@@ -107,13 +107,15 @@ X 账号独立建模（见 §6），不混入普通 URL。
 | The Times | `thetimes.co.uk/topic/manchester-united` | 未接入（远期） |
 | The Athletic MUFC | `theathletic.com/football/manchester-united/` | ❌ paywall 跳转 NYT 登录墙；Ornstein/Whitwell 的 X 账号可作 T1 替代 |
 
-### 5.4 生产白名单（当前实际配置，7 源三 tier）
+### 5.4 生产白名单（当前实际配置，9 源三 tier）
 
 | 信源 | 抓取页面 | Tier | fetch_type | 备注 |
 |---|---|---|---|---|
 | Man Utd Official | `manutd.com/en/news` | 0 | firecrawl | 官方唯一 |
-| Simon Stone (X) | `x.com/sistoney67` | 1 | firecrawl | 走 crawl4ai external t.co 链 |
+| Simon Stone (X) | `x.com/sistoney67` | 1 | firecrawl | twikit 主 → crawl4ai 兜底；推文卡直入 feed |
 | David Ornstein (X) | `x.com/David_Ornstein` | 1 | firecrawl | 同上 |
+| Laurie Whitwell (X) | `x.com/lauriewhitwell` | 1 | firecrawl | 同上（2026-08-07 新增） |
+| Andy Mitten (X) | `x.com/AndyMitten` | 1 | firecrawl | 同上（2026-08-07 新增） |
 | Sky Sports | `skysports.com/manchester-united` | 2 | firecrawl | |
 | ESPN | `espn.com/soccer/team/_/id/360/manchester-united` | 2 | firecrawl | crawl4ai 空页 → 自动降级 scraper-direct |
 | 90min | `90min.com/teams/manchester-united` | 2 | firecrawl | 跳转 si.com |
@@ -135,7 +137,23 @@ X 账号独立建模（见 §6），不混入普通 URL。
 
 ## 六、X 账号信源模型
 
-X 不作为普通 URL 处理，单独建模。生产实现上：crawl4ai 抓账号页 → 取 `links.external` 的 t.co 链（即文章）→ 帖子标题作标题，无需 AI。axios 抓 X 无意义，X 源失败直接跳过不降级。
+X 不作为普通 URL 处理，单独建模。**推文卡形态（2026-08-07 起）**：X 记者的**原帖推文直接进 feed**——`title`=推文正文、`url`=原推状态链接（`x.com/<acct>/status/<id>`，天然唯一）、`published_at`=真实发推时刻。纯文字爆料不再漏（不再只取 t.co 文章链）。
+
+**抓取通道（主 → 兜底）**：
+
+```
+X 账号（Stone / Ornstein / Whitwell / Mitten）
+  ├─【主】twikit（宿主 Python venv）
+  │    scripts/x-fetch-tweets.py   ← 读 .env 凭证（X_AUTH_TOKEN/X_CT0 cookie 优先，X_USERNAME/X_PASSWORD 后备）
+  │    src/x-fetch.js              ← child_process.spawn → JSON → toItem 推文卡
+  ├─【兜底】crawl4ai guest
+  │    crawl4ai-fetch.js X 分支 → extractTweetsFromMarkdown()（雪花 ID 解码时间）
+  └─ 都失败 → 跳过该源（X 不降级 Direct）
+```
+
+- **凭证**：cookie（`auth_token`+`ct0`）优先，密码登录可能撞 Cloudflare 验证码作后备；只进 `.env`（gitignored）。
+- **twikit fork**：用维护中 fork `unclecode/twikit`（`pip install git+https://github.com/unclecode/twikit.git`）。上游 `d60/twikit` 已坏（2026-03 起 KEY_BYTE indices 错误）；PyPI `twifork` 2.3.5 的 ondemand.s 解析也落后于 X 前端。⚠️ 需显式传 `proxy=`（读 `X_PROXY`/`HTTP(S)_PROXY`），否则国内直连 x.com 超时。
+- **分析预算保证**：`src/search.js` 按 tier 排序信源 + 非 T0 源每源上限 `MAX_PER_SOURCE`，确保 T1 X 推文先吃 `RESULT_LIMIT` 预算，不被 T2 媒体（ESPN/90min 等）挤出。
 
 ```sql
 -- 远期模型（journalists / social_sources 表），当前用 keyword_sources + source-tiers.json 近似实现

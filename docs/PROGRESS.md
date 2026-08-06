@@ -221,6 +221,24 @@
 
 **验收：** `npm run check` 全绿（39 文件语法 OK + 前端 lint/type-check + **42/42** 单测）
 
+## F-015 X 记者推文进 feed（2026-08-07，对应 `docs/superpowers/plans/2026-08-07-x-journalist-feed.md`）
+
+> 触发：用户反馈前端被 ESPN/卫报/90min 占据，David Ornstein、Simon Stone 当天发的消息监控里看不到（guest 视图只取 t.co 文章链，纯文字爆料整条漏）。目标：X 记者**原帖推文直接进 feed**（title=推文正文、url=原推状态链接、time=真实发推时刻），纯文字突发推文不再漏。
+
+**抓取通道（twikit 主 + crawl4ai 兜底）：**
+- `scripts/x-fetch-tweets.py`：twikit 桥接，读 `.env` 凭证（`X_AUTH_TOKEN`/`X_CT0` cookie 优先，`X_USERNAME`/`X_PASSWORD` 后备），stdout JSON `[{handle,status_id,text,created_at,url}]`；退出码 0/1/2
+- `src/x-fetch.js`：Node 编排（`runTwikit` spawn 60s 超时 → `parseTwikitRows` → toItem；失败回退 `crawl4ai.fetchSourceArticles`；X 不降 Direct）
+- `src/x-tweet-parse.js`：纯解析模块（`extractTweetsFromMarkdown` 雪花 ID 解码时间 / `parseTwikitRows` / `handleFromProfileUrl`，+6 单测）
+- `src/search.js`：X 源先走 x-fetch（twikit 主）→ crawl4ai 兜底；`src/index.js` 推文卡跳过正文抓取（省 4-21s/篇）
+- **凭证坑**：cookie 键名带空格读不到（`X cto=`→`X_CT0=`）；twikit 2.x 是 async API（需 await）；需显式 `proxy=`（国内直连 x.com 超时）；stdout 需强制 UTF-8（推文 emoji 撞 GBK）
+- **fork 选择**：上游 `d60/twikit` 2026-03 起 KEY_BYTE indices 错误；PyPI `twifork` 2.3.5 的 ondemand.s 解析也落后于 X 前端；用维护中 **`unclecode/twikit`**（`pip install git+https://github.com/unclecode/twikit.git`，含 2026-05-17 两段式正则补丁）
+
+**信源扩容（T1 +2）：** `keyword_sources` INSERT Laurie Whitwell + Andy Mitten（tier=1，rss_url=scrape_url 过 NOT NULL），MU 现 9 源三 tier
+
+**分析预算修复（`3a24502`）：** 发现 X 推文虽能抓取但被 `RESULT_LIMIT=15` + 源 DB 顺序挤出（T2 媒体排在 X 前）。修复：`search.js` 信源按 tier 升序（T0→T1→T2）+ 非 T0 源每源上限 `MAX_PER_SOURCE=5`；`config.js` `RESULT_LIMIT` 15→30。实测 Whitwell（Bayindir 租借 score 85）/Mitten（Rooney 90）/Stone（3 条相关）进 feed，Ornstein 别队消息（Real Madrid/West Ham/Baleba/Fulham）score 0 正确过滤
+
+**验收：** `npm run check` 全绿（**53/53** 单测）+ 前端 type-check/lint/build 通过；E2E 管线 exit 0，`logs/pipeline-2026-08-07.log` 记录 5 个 X 源全部 `[Twikit]`（Stone 19/Ornstein 20/Whitwell 20/Mitten 20/Stein 20 条）；Supabase 4 个 X 账号推文卡入库
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：

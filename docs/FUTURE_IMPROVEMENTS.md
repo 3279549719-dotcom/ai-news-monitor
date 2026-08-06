@@ -22,10 +22,13 @@
 
 **问题**：前端被 T2 媒体边角料淹没（近 40 天 90min 72 / 卫报 19 / ESPN 11 / Sky 20），X 记者 T1 信息被稀释。
 
-**候选方案**（未选型）：
-- 90min 等高量源加单源产出上限 / 提高其入库门槛
+**已落地（部分，2026-08-07 Phase F `3a24502`）**：
+- `src/search.js` 信源按 tier 升序（T0→T1→T2）+ 非 T0 源每源上限 `MAX_PER_SOURCE=5`（`src/config.js`），通用防单源淹没，X 推文不再被挤出。Dallas 的 Yahoo/BR/SI 等 T2 高量源同样受益。
+
+**仍未实现**：
+- 90min 等个别源更高门槛 / 特判
 - 前端按 Tier 排序权重调整（T1 > T2）
-- 单源日上限（per-source daily cap）
+- 单源日上限（per-source daily cap，跨运行累计而非单轮截断）
 
 ### 3. Fabrizio Romano 扩容
 
