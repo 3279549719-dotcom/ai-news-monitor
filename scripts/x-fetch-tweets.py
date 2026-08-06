@@ -2,14 +2,27 @@
 """twikit 桥接：拉取 X 账号最近推文，输出结构化 JSON 到 stdout。
 用法: python x-fetch-tweets.py <handle> [<handle>...]
 凭证: 环境变量 X_AUTH_TOKEN/X_CT0（cookie，优先）或 X_USERNAME/X_PASSWORD（密码）。
+twikit 2.x 为 async API，全部 await。
 """
+import asyncio
 import json
 import os
 import sys
 
-def build_client():
+# Windows 控制台默认 GBK，推文含 emoji 会 UnicodeEncodeError；强制 UTF-8 输出（Node 侧按 utf8 读）
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+async def build_client():
     from twikit import Client
-    client = Client("en-US")
+    # 国内网络需走代理：X_PROXY 优先，回退环境 HTTP(S)_PROXY（Node 侧 dotenv + spawn 会透传）
+    proxy = (
+        os.environ.get("X_PROXY")
+        or os.environ.get("HTTPS_PROXY")
+        or os.environ.get("HTTP_PROXY")
+        or None
+    )
+    client = Client("en-US", proxy=proxy)
     cookie_file = os.environ.get("X_COOKIES_FILE", "")
     auth_token = os.environ.get("X_AUTH_TOKEN", "")
     ct0 = os.environ.get("X_CT0", "")
@@ -23,7 +36,7 @@ def build_client():
         if cookie_file:
             client.save_cookies(cookie_file)
     elif username and password:
-        client.login(auth_info_1=username, password=password)
+        await client.login(auth_info_1=username, password=password)
         if cookie_file:
             client.save_cookies(cookie_file)
     else:
@@ -31,10 +44,10 @@ def build_client():
         sys.exit(2)
     return client
 
-def fetch_handle(client, handle, limit=20):
+async def fetch_handle(client, handle, limit=20):
     try:
-        user = client.get_user_by_screen_name(handle)
-        tweets = client.get_user_tweets(user.id, count=limit)
+        user = await client.get_user_by_screen_name(handle)
+        tweets = await client.get_user_tweets(user.id, tweet_type="Tweets", count=limit)
         rows = []
         for t in tweets or []:
             rows.append({
@@ -46,19 +59,19 @@ def fetch_handle(client, handle, limit=20):
             })
         return rows
     except Exception as e:
-        print(f"WARN {handle}: {e}", file=sys.stderr)
+        print(f"WARN {handle}: {type(e).__name__}: {e}", file=sys.stderr)
         return []
 
-def main():
+async def main():
     handles = sys.argv[1:]
     if not handles:
         print("usage: python x-fetch-tweets.py <handle>...", file=sys.stderr)
         sys.exit(1)
-    client = build_client()
+    client = await build_client()
     out = []
     for h in handles:
-        out.extend(fetch_handle(client, h))
+        out.extend(await fetch_handle(client, h))
     print(json.dumps(out, ensure_ascii=False))
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
