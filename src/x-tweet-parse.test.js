@@ -37,11 +37,12 @@ test('从 crawl4ai markdown 提取推文卡（含卡片与纯文字）', () => {
 [@David_Ornstein](https://x.com/David_Ornstein)
 [1h](https://x.com/David_Ornstein/status/2085376698753655092)
 🚨 West Ham United talks with Tottenham Hotspur over Manor Solomon currently off for financial reasons. [#WHUFC](https://x.com/hashtag/WHUFC) [@TheAthleticFC](https://x.com/TheAthleticFC)
-[ ![...](x)West Ham card ](https://t.co/fAe1PyA69M)[From nytimes.com](https://t.co/fAe1PyA69M)
+[ ![](https://pbs.twimg.com/card_img/xxx)West Ham card ](https://t.co/fAe1PyA69M)[From nytimes.com](https://t.co/fAe1PyA69M)
 463
 568
 10K
 992K
+  * [![user avatar](https://pbs.twimg.com/profile_images/1178558529105530880/Qvy-hv3O_normal.jpg)](https://x.com/David_Ornstein)
 [David Ornstein](https://x.com/David_Ornstein)
 [@David_Ornstein](https://x.com/David_Ornstein)
 [3h](https://x.com/David_Ornstein/status/2085342639696527389)
@@ -53,8 +54,11 @@ test('从 crawl4ai markdown 提取推文卡（含卡片与纯文字）', () => {
   assert.equal(tweets[0].url, 'https://x.com/David_Ornstein/status/2085376698753655092');
   assert.ok(tweets[0].publishedAt instanceof Date);
   assert.ok(tweets[1].title.includes('Carlos Baleba'));
-  // 卡片标题与 t.co 链接不进 title/url
+  // 卡片标题 / t.co 链接 / 头像残留 不进 title
   assert.ok(!tweets[0].title.includes('West Ham card'));
+  assert.ok(!tweets[0].title.includes('t.co/'));
+  assert.ok(!tweets[0].title.includes('user avatar'));
+  assert.ok(!tweets[1].title.includes('user avatar'));
 });
 
 test('extractTweetsFromMarkdown：无状态链接返回空', () => {

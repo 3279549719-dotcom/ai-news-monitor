@@ -59,22 +59,30 @@ function extractTweetsFromMarkdown(md, handle) {
     const cur = matches[i];
     const end = i + 1 < matches.length ? matches[i + 1].index : md.length;
     let block = md.slice(cur.index, end);
-    // 剥掉状态链接自身的 markdown
-    block = block.replace(/\[[^\]]*\]\([^)]*\/status\/\d+\)/, '');
-    // 剥 [text](url) → 保留 text
-    block = block.replace(/\[([^\]]*)\]\([^)]*\)/g, (_, txt) => txt || '');
     const text = block
       .split('\n')
       .map(l => l.trim())
+      // 纯链接行（卡片/头像/导航）整行丢弃，正文行保留
+      .filter(l => l && !/^(!?\[[^\]]*\]\([^)]*\))+/.test(l))
+      // 互动数 / 页脚 / 头像残留
       .filter(l =>
-        l &&
-        !/^[\d.,KMB+]+$/.test(l) && // 互动数（463/568/10K）
-        !/^Log in|^Sign up|^Terms|^Privacy|^Cookie|^Ads|^©/.test(l) && // 页脚
+        !/^[\d.,KMB+]+$/.test(l) &&
+        !/^Log in|^Sign up|^Terms|^Privacy|^Cookie|^Ads|^©/.test(l) &&
         !/^(Follow|Mention|Posts|Replies|Media)$/.test(l) &&
-        !/^!?\[/.test(l) // 残留图链
+        !/user avatar|profile_images|header_photo|hero_photo/.test(l)
       )
+      // 正文行内：剥图片链 + [text](url)→text + 清残留括号
+      .map(l =>
+        l
+          .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+          .replace(/\[([^\]]*)\]\([^)]*\)/g, (_, txt) => txt || '')
+          .replace(/\]\([^)\s]+\)/g, ' ')
+          .replace(/[\[\]()]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+      )
+      .filter(Boolean)
       .join(' ')
-      .replace(/\s+/g, ' ')
       .trim();
     if (text.length >= 15) {
       const ts = snowflakeTimestamp(cur.id);

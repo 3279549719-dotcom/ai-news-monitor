@@ -23,6 +23,7 @@ const { selectArticleLinks } = require('./ai');
 const { CRAWL4AI_URL, CRAWL4AI_API_TOKEN, JS_SOURCES, JS_WAIT_MS } = require('./config');
 const { toItem } = require('./items');
 const { extractPublishDateFromUrl } = require('./dates');
+const { extractTweetsFromMarkdown, handleFromProfileUrl } = require('./x-tweet-parse');
 
 // 命中 JS_SOURCES 时返回等待毫秒数，否则 0（不等待）
 function jsWaitMsFor(pageUrl) {
@@ -162,17 +163,13 @@ async function fetchSourceArticles(source) {
 
   const links = r.links || {};
 
-  // X 账号：external 链接即文章（t.co 短链 + 帖子标题）
+  // X 账号：从 markdown 解析推文卡（状态链接+正文+雪花时间戳）；纯文字爆料也可见
   if (isXUrl(source.scrape_url)) {
-    const exts = (links.external || [])
-      .filter(l => l.href && /t\.co\//.test(l.href))
-      .filter(l => (l.title || l.text || '').trim().length >= 15)
-      .slice(0, 15);
-    return exts.map(l => toItem(source, {
-      title: (l.title || l.text || '').trim().substring(0, 200),
-      url: l.href,
-      publishedAt: extractPublishDateFromUrl(l.href),
-    }));
+    const md = r.markdown || {};
+    const mdStr = [md.fit_markdown, md.raw_markdown].filter(Boolean).join('\n');
+    const handle = handleFromProfileUrl(source.scrape_url);
+    return extractTweetsFromMarkdown(mdStr, handle)
+      .map(t => toItem(source, { title: t.title, url: t.url, publishedAt: t.publishedAt }));
   }
 
   // 普通信源：候选合并 → 站点文章 URL 模式筛选（≥3 直接用标题）；不足退回 DeepSeek 精选
