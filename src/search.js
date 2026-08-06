@@ -1,6 +1,7 @@
 const axios = require('axios');
 const { fetchSource } = require('./scraper-direct');
 const crawl4ai = require('./crawl4ai-fetch');
+const xFetch = require('./x-fetch');
 const { getTier } = require('./tiers');
 const { toItem, normalizeUrlKey } = require('./items');
 
@@ -68,18 +69,17 @@ function deduplicateByUrl(results) {
   return Array.from(map.values());
 }
 
-// crawl4ai 优先；失败/空结果降级 scraper-direct；X 账号仅走 crawl4ai（axios 抓 X 无意义）
+// crawl4ai 优先；失败/空结果降级 scraper-direct；X 源走 x-fetch（twikit 主 + crawl4ai 兜底，不降 Direct）
 async function fetchSourceWithFallback(source) {
+  if (crawl4ai.isXUrl(source.scrape_url)) {
+    return xFetch.fetchXSourceArticles(source);
+  }
   try {
     const items = await crawl4ai.fetchSourceArticles(source);
     if (items.length === 0) throw new Error('crawl4ai 空结果');
     console.log(`  [Crawl4ai] ${source.source_name}: ${items.length} 篇`);
     return items;
   } catch (err) {
-    if (crawl4ai.isXUrl(source.scrape_url)) {
-      console.log(`  [Crawl4ai] X 源 ${source.source_name} 无结果，跳过降级: ${err.message}`);
-      return [];
-    }
     console.log(`  [Crawl4ai] ${source.source_name} → 降级 Direct: ${err.message}`);
     try { return await fetchSource(source); } catch (e) {
       console.error(`  [Direct] ${source.source_name} 降级也失败: ${e.message}`);

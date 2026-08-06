@@ -70,6 +70,11 @@ async function feedArticleBodies(items, poolSize = 3) {
     while (idx < items.length) {
       const i = idx++;
       const item = items[i];
+      // 推文卡跳过正文抓取（正文即推文内容，且 X 页抓取昂贵 4-21s/篇）
+      if (/(x\.com|twitter\.com)\/.+\/status\//.test(item.url || '')) {
+        item.body = null;
+        continue;
+      }
       try {
         const body = await crawl4ai.fetchArticleBody(item.url);
         item.body = typeof body === 'string' && body.trim() ? body : null;

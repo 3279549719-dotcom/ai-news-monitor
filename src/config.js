@@ -33,6 +33,15 @@ module.exports = {
   JS_SOURCES: new Set(['mavsmoneyball.com', 'thesmokingcuban.com']),
   JS_WAIT_MS: 5000,
 
+  // X/Twitter 抓取（twikit 主 + crawl4ai 兜底）。凭证仅在 .env 提供。
+  X_PYTHON: process.env.X_PYTHON || 'python',
+  X_TWIKIT_ENABLED: process.env.X_TWIKIT_ENABLED !== '0',
+  X_AUTH_TOKEN: process.env.X_AUTH_TOKEN || '',
+  X_CT0: process.env.X_CT0 || '',
+  X_USERNAME: process.env.X_USERNAME || '',
+  X_PASSWORD: process.env.X_PASSWORD || '',
+  X_COOKIES_FILE: process.env.X_COOKIES_FILE || '',
+
   // Supabase connection.
   SUPABASE_URL: process.env.SUPABASE_URL,
   SUPABASE_KEY: process.env.SUPABASE_KEY,
