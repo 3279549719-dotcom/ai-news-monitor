@@ -13,3 +13,4 @@
 | `CHECKLIST-方案A验收清单.md` | 方案A 验收清单 | 2026-08-04 | 已落地，见 `docs/PROGRESS.md` F-005 |
 | `specs/001-expand-search-sources/` | spec-001：Tier 基础设施设计 | 2026-08-04 | 已落地，见 `docs/PROGRESS.md` |
 | `specs/002-firecrawl-mcp-tiered-fetch/` | spec-002：Firecrawl 直抓设计（API 已停用） | 2026-08-04 | 已被 crawl4ai 替代（Phase E） |
+| `DISK-CLEANUP-2026-08-06.md` + `disk-cleanup-2026-08-06/` | C 盘整治记录 + 一次性清理脚本（disk-cleanup-admin*.bat ×3） | 2026-08-06 | 已完成，C 盘 32G 可用；运维工具 `scripts/restart-docker-engine.ps1` 保留 |

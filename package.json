@@ -40,6 +40,7 @@
     "ops:quality": "node scripts/check-quality.js",
 
     "ops:run-auto": "node scripts/run-pipeline.js",
+    "ops:docker-restart": "powershell -ExecutionPolicy Bypass -File scripts/restart-docker-engine.ps1",
     "ops:schedule": "node scripts/install-schedule.js",
     "ops:schedule:info": "node scripts/install-schedule.js --info",
     "ops:unschedule": "node scripts/install-schedule.js --remove",

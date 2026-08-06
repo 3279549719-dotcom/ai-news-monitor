@@ -80,9 +80,18 @@ npm run serve    # 生产构建 + 静态预览 → http://127.0.0.1:5173（本�
 |---|---|
 | 前端白屏 | `client/.env` 缺失（`supabase.ts` 启动即 throw）；Vercel 上检查项目环境变量 |
 | 管线某源 0 产出 | crawl4ai 容器未启动 → `docker start crawl4ai`；单源失败自动跳过 |
+| **UI 显示 Engine running，但 `docker ps` 挂起 / 11235 不通** | **僵尸 backend**：只跑了 `wsl --shutdown` + 再开 Desktop，旧的 `com.docker.backend` 仍活着，管道还在、引擎已死。不要只杀 WSL。运行：`powershell -ExecutionPolicy Bypass -File scripts\restart-docker-engine.ps1`（会杀光 Docker 进程 → shutdown WSL → 干净启动 → 等到 `docker version` 有 Server 版本 → `docker start crawl4ai`） |
 | 定时任务没跑 | `npm run ops:schedule:info` 看状态；确认机器当时登录、Docker 在线 |
 | 定时日志去哪了 | `logs/pipeline-YYYY-MM-DD.log` |
 | 依赖本机代理 | Windows 用户级 `HTTP_PROXY=127.0.0.1:7890` 会拦 localhost → 设 `NO_PROXY=localhost,127.0.0.1` |
+
+快速自检（区分「UI 假 running」与真引擎）：
+
+```powershell
+wsl -l -v                                          # docker-desktop 必须 Running
+docker version --format "{{.Server.Version}}"      # 应立刻返回版本号；>10s 即引擎未就绪
+curl http://127.0.0.1:11235/health                 # crawl4ai：应 HTTP 200
+```
 
 ## 6. 运维脚本速查
 

@@ -27,6 +27,7 @@
 | ✅ Phase9 需求（回填去重+空态，已交付） | [docs/REQ-Phase9-历史数据回填去重与前端空态.md](docs/REQ-Phase9-历史数据回填去重与前端空态.md) | 历史数据回填/去重/前端空态验收 |
 | ✅ Phase9 决策纪要（已交付） | [docs/DECISION-Phase9-历史数据回填去重与前端空态.md](docs/DECISION-Phase9-历史数据回填去重与前端空态.md) | 回填/去重/空态选型 + 执行结果偏差 |
 | 前端原型 | [docs/prototype-board.html](docs/prototype-board.html) | 板块视图 UI 参照 |
+| 产品流程介绍 | [docs/pipeline-flowchart.html](docs/pipeline-flowchart.html) | 对外客户版流程图（无技术细节，浏览器打开，附 PNG 导出版） |
 
 ## 进度与归档
 
