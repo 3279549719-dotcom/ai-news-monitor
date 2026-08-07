@@ -63,7 +63,21 @@ npm run ops:unschedule               # 卸载
 ### 线上（推荐，已部署 Vercel）
 
 - 地址：`https://ai-news-monitor-silk.vercel.app`（项目 `ai-news-monitor`，team `patrick-wen`）
-- 纯静态 SPA 直连 Supabase；更新前端后需重新部署：`npm run build` 后 `vercel deploy client --prod`（构建环境变量已持久化在项目上）
+- 纯静态 SPA 直连 Supabase；更新前端后需重新部署（构建环境变量已持久化在项目上）
+
+**部署命令（2026-08-07 实测标准流程，一条成功）：**
+
+```bash
+# ① 确认链接到正确项目（不是误建的 `client` 项目）
+cat client/.vercel/project.json          # 应含 "projectName":"ai-news-monitor"
+# 若链接错误：修复
+cd client && vercel link --project ai-news-monitor --yes
+
+# ② 从 client/ 目录部署到 production
+cd client && vercel deploy --prod
+```
+
+> ⚠️ **勿用仓库根 `vercel deploy client --prod`**：该写法在 `.vercel` 链接错乱时会把 `client` 当项目名误建 `patrick-wen/client`（2026-08-07 实测）。正确姿势是从 `client/` 目录内 `vercel deploy --prod`，或先 `vercel link` 再部署。
 
 ### 本地调试
 
