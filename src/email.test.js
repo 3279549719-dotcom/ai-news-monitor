@@ -19,37 +19,53 @@ const SECTIONS = [
   },
 ];
 
-test('buildDigestText：按关键词分组，跳过空结果组', () => {
-  const text = buildDigestText(SECTIONS);
-  assert.match(text, /【MU - 曼联信源监控】\(2\)/);
-  assert.match(text, /\[T0\] Man Utd 官宣续约 \(90分\)/);
-  assert.match(text, /https:\/\/www\.manutd\.com\/a/);
-  assert.match(text, /\[T1\] Ornstein 转会消息 \(80分\)/);
-  assert.doesNotMatch(text, /【Anthropic】/); // 空结果组不渲染
-  assert.match(text, /【Dallas】\(1\)/);
+const FULL_SECTIONS = [
+  {
+    keyword: {
+      name: 'MU',
+      category_schema: { official: '官方公告', match: '赛事竞技资讯', other: '其他' },
+    },
+    results: [
+      { title: 'Confirmed: United squad for PSG', url: 'https://www.manutd.com/a', score: 90, tier: 0, category: 'official', event: '曼联确认对阵巴黎圣日耳曼的阵容', summary: '【事件】曼联官方确认对阵巴黎圣日耳曼的出征名单。【要点】标题未列出具体球员姓名。【为什么重要】曼联球迷可据此了解欧冠关键战的阵容选择。', confidence: 'medium', corroboration_count: 1, conflict_flag: false },
+      { title: 'Man Utd squad for PSG', url: 'https://x.com/ornstein/1', score: 80, tier: 1, category: 'match', event: '曼联公布对阵PSG大名单，多名主力回归', summary: '【事件】曼联公布明日对阵PSG大名单。【要点】1.蒂勒曼斯首次入选；2.外场青训球员仅剩5人。【为什么重要】球迷可据阵容判断对阵PSG的排兵布阵。', confidence: 'high', corroboration_count: 2, conflict_flag: true },
+    ],
+  },
+  { keyword: { name: 'Dallas', category_schema: {} }, results: [] },
+];
+
+test('buildDigestText：关键词→板块分组，事件+摘要+徽章', () => {
+  const text = buildDigestText(FULL_SECTIONS);
+  assert.match(text, /【MU】\(2\)/);
+  assert.match(text, /◆ 官方公告 \(1\)/);
+  assert.match(text, /曼联确认对阵巴黎圣日耳曼的阵容/);
+  assert.match(text, /T0 \| 待核实/); // medium → 待核实
+  assert.match(text, /标题未列出具体球员姓名。/);
+  assert.match(text, /◆ 赛事竞技资讯 \(1\)/);
+  assert.match(text, /T1 \| 高置信 \| 2源印证 \| ⚠️冲突/);
+  assert.match(text, /蒂勒曼斯首次入选/);
+  assert.doesNotMatch(text, /【Dallas】/); // 空结果组不渲染
 });
 
-test('buildDigestText：缺 score/tier 的项优雅降级', () => {
-  const text = buildDigestText(SECTIONS);
-  assert.match(text, /无评分无 tier 项/);
-  assert.doesNotMatch(text, /\(undefined分\)/);
-  assert.doesNotMatch(text, /\[Tundefined\]/);
+test('buildDigestText：summary 去掉【事件】段避免与加粗行重复', () => {
+  const text = buildDigestText(FULL_SECTIONS);
+  assert.doesNotMatch(text, /【事件】曼联官方确认对阵巴黎圣日耳曼的出征名单。/);
 });
 
-test('buildDigestText：空结果输出“今日无新增”文案', () => {
+test('buildDigestText：category 不在 schema 归「未分类」', () => {
+  const s = [{ keyword: { name: 'MU', category_schema: { official: '官方公告' } }, results: [{ title: 'x', url: 'https://x', tier: 0, category: 'unknown', event: '未知分类事件', summary: '【要点】要点内容。' }] }];
+  const text = buildDigestText(s);
+  assert.match(text, /◆ 未分类 \(1\)/);
+});
+
+test('buildDigestText：空结果输出"今日无值得关注"', () => {
   const text = buildDigestText([]);
-  assert.match(text, /相关新内容 0 条/);
-  assert.match(text, /今日无新增关注内容。/);
+  assert.match(text, /今日 0 件值得关注/);
+  assert.match(text, /今日无值得关注的新内容。/);
 });
 
-test('buildSubject：含日期与总条数', () => {
-  const subject = buildSubject(SECTIONS);
-  assert.match(subject, /每日摘要 · 相关 3 条/);
-  assert.match(subject, /20\d\d-\d\d-\d\d/);
-});
-
-test('buildSubject：空结果条数为 0', () => {
-  assert.match(buildSubject([]), /相关 0 条/);
+test('buildSubject：含日期与精选条数', () => {
+  assert.match(buildSubject(FULL_SECTIONS), /每日摘要 · 精选 2 条/);
+  assert.match(buildSubject(FULL_SECTIONS), /20\d\d-\d\d-\d\d/);
 });
 
 test('buildDigestHtml：按关键词分组渲染标题链接与 tier/score', () => {

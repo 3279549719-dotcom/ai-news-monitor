@@ -12,14 +12,10 @@
  */
 
 const config = require('./config');
+const { CONFIDENCE_LABEL } = require('./crosscheck');
 
 function todayIso() {
   return new Date().toISOString().split('T')[0];
-}
-
-function tierLabel(tier) {
-  if (tier == null) return '';
-  return `[T${tier}] `;
 }
 
 // 过滤规则：只推 T0/T1 信源（官方 + 一线记者）。T2 媒体不进邮件，
@@ -37,25 +33,63 @@ function filterDigestSections(sections) {
   return sections.map(s => ({ ...s, results: (s.results || []).filter(isNotable) }));
 }
 
-function formatDigestItem(item) {
-  const tier = tierLabel(item.tier);
-  const score = item.score != null ? ` (${item.score}分)` : '';
-  return `${tier}${item.title}${score}\n  ${item.url}`;
+/**
+ * Group a keyword's results into category boards using its category_schema
+ * (same source of truth as report.js). Items whose category is not a schema
+ * key fall into a trailing「未分类」board. Only non-empty boards returned.
+ * @param {Object} keyword - keyword row (uses keyword.category_schema)
+ * @param {Array} results - filtered items
+ * @returns {Array<{key:string,label:string,items:Array}>}
+ */
+function groupByBoards(keyword, results) {
+  const schema = (keyword && keyword.category_schema) || {};
+  const boards = Object.entries(schema).map(([key, label]) => ({ key, label, items: [] }));
+  boards.push({ key: '__uncat', label: '未分类', items: [] });
+  for (const item of results) {
+    const board = boards.find(b => b.key === item.category) || boards[boards.length - 1];
+    board.items.push(item);
+  }
+  return boards.filter(b => b.items.length > 0);
+}
+
+// summary 去掉【事件】段（该内容已由 event 加粗行呈现），保留【要点】【为什么重要】
+function summaryBody(summary) {
+  if (!summary) return '';
+  const m = summary.match(/^【事件】[^。]*。?\s*/);
+  return m ? summary.slice(m[0].length) : summary;
+}
+
+function textMeta(item) {
+  const meta = [];
+  if (item.tier != null) meta.push(`T${item.tier}`);
+  if (item.confidence) meta.push(CONFIDENCE_LABEL[item.confidence] || item.confidence);
+  if ((item.corroboration_count || 0) >= 2) meta.push(`${item.corroboration_count}源印证`);
+  if (item.conflict_flag) meta.push('⚠️冲突');
+  return meta.join(' | ');
 }
 
 function buildDigestText(sections) {
   const total = sections.reduce((n, s) => n + s.results.length, 0);
   const lines = [
     `AI News Monitor 每日摘要 — ${todayIso()}`,
-    `相关新内容 ${total} 条`,
+    `今日 ${total} 件值得关注（T0/T1 信源）`,
     '',
   ];
   for (const { keyword, results } of sections) {
-    if (!results || results.length === 0) continue;
+    if (results.length === 0) continue;
     lines.push(`【${keyword.name}】(${results.length})`, '');
-    for (const item of results) lines.push(formatDigestItem(item), '');
+    for (const board of groupByBoards(keyword, results)) {
+      lines.push(`◆ ${board.label} (${board.items.length})`, '');
+      for (const item of board.items) {
+        const title = item.event || item.title;
+        lines.push(`- ${title}  ${textMeta(item)}`);
+        const body = summaryBody(item.summary);
+        if (body) lines.push(`  ${body}`);
+        lines.push(`  ${item.url}`, '');
+      }
+    }
   }
-  if (total === 0) lines.push('今日无新增关注内容。', '');
+  if (total === 0) lines.push('今日无值得关注的新内容。', '');
   return lines.join('\n');
 }
 
@@ -107,7 +141,7 @@ function buildDigestHtml(sections) {
 
 function buildSubject(sections) {
   const total = sections.reduce((n, s) => n + s.results.length, 0);
-  return `【AI News Monitor】${todayIso()} 每日摘要 · 相关 ${total} 条`;
+  return `【AI News Monitor】${todayIso()} 每日摘要 · 精选 ${total} 条`;
 }
 
 function isEmailConfigured(cfg = config) {
