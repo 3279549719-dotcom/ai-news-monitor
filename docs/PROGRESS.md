@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-08（F-016 Harness 加固：反馈验证闭环 + 架构约束）
+> 最后更新：2026-08-08（F-018 邮件升级 v2：T0/T1 精选 · 事件+中文摘要 HTML 卡片）
 
 ## 功能进度
 
@@ -19,6 +19,7 @@
 | F-014 | Phase 10：管线自动化 + Vercel 部署 + RLS 安全收尾 — Windows 任务计划每日定时 + 前端公网部署 + 后端改 service key/RLS 收紧 anon 只读 | **已完成** | 2026-08-05 定时任务已注册（每日 08:00）、线上 URL 验证 88 条渲染正常、RLS anon 写被拒/service 读写 ✅、npm run check 全绿（见 F-014 交付内容） |
 | F-016 | Harness 加固（反馈验证闭环+架构约束）— PostToolUse 检查分流 / Stop 收尾门禁 / PreToolUse 危险操作拦截 / pre-commit 把关 / 证据化交付 | **已完成** | 2026-08-08 B1 分支测试 8/8 + .env 拦截实测 + npm run check 全绿（见 F-016 交付内容） |
 | F-017 | Email 每日摘要通知（管线内直发，SMTP 精简列表，空结果照发） | **已完成** | 2026-08-08 冒烟验证（见 F-017 交付内容） |
+| F-018 | 邮件升级 v2：T0/T1 精选 · 事件+中文摘要 HTML 卡片（T0/T1 过滤 + 板块分组 + 双格式 + 空结果照发，冒烟已验） | **已完成** | 2026-08-08 冒烟验证 72/72（commit `4cd0376`，见 F-018 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -270,6 +271,27 @@
 **接线（`src/index.js`）：** `run()` 末尾**无条件**调用 `sendDailyDigest(sections)`——空结果照发；日报 `reports/YYYY-MM-DD.md` 仅在 `hasResults` 时写盘（移入 else 分支）。依赖 `nodemailer ^9.0.5`
 
 **交付验证：** `npm test` **64/64**（53 存量 + 11 新增 email.test.js 用例：正文分组/字段降级/空结果文案、主题行、isEmailConfigured 三态、sendDailyDigest 未配置与异常吞掉）✅ ｜ 真实发信冒烟 **exit 0** ✅ ｜ 提交前 `npm run check` 全绿（lint + type-check + 64/64）✅
+
+## F-018 邮件升级 v2 交付内容（2026-08-08）
+
+> 触发：F-017 v1（纯文本精简列表）经用户复核后升级——每日摘要**只推 T0/T1 信源**，每条含 AI 事件一句话 + 中文摘要【要点】【为什么重要】+ 彩色徽章，HTML 可扫读卡片。文档：`docs/superpowers/specs/2026-08-08-email-digest-design.md`（§4 邮件格式 + 验收决定 v2）+ `docs/superpowers/plans/2026-08-08-email-digest-v2.md`（6 任务 TDD 计划）。feature commits：`12cf3ab` → `975a888` → `b2f5aba` → `4cd0376`。
+
+**过滤（展示层，不动数据流）：**
+- `src/email.js` 新增 `isNotable(item)`（`tier === 0 || tier === 1`）+ `filterDigestSections(sections)`，在 `sendDailyDigest` 内统一过滤——T2 媒体及无 tier 的项不进邮件，但内容照常入库/进日报；`src/index.js` 零改动（sections 已带全字段）
+
+**内容与分组：**
+- 每条主体：`item.event || item.title` 事件加粗 + `summaryBody()` 剥离【事件】段后的中文摘要【要点】【为什么重要】
+- 外层关键词 → 内层 `groupByBoards(keyword, results)` 板块分组（复用 `keyword.category_schema`，与 report.js 同一数据源；category 不在 schema 键内的归「未分类」）
+- 彩色徽章：Tier 蓝 / 置信度黄（复用 `crosscheck.CONFIDENCE_LABEL` 高置信/待核实/存疑）/ 多源印证绿 / ⚠️ 冲突红
+
+**双格式：**
+- `buildDigestHtml(sections)`：深色头部卡片 + 关键词→板块 + 事件粗体 + 徽章 + 源域名链接，内联样式（邮件客户端剥外部 CSS）+ `escapeHtml` 转义
+- `buildDigestText(sections)`：纯文本回退（`◆ 板块标签 (N)` + `- 事件  T1 | 高置信` + 摘要 + URL）
+- `buildSubject`：`【AI News Monitor】YYYY-MM-DD 每日摘要 · 精选 N 条`
+- `sendDailyDigest` 同时携带 text + html 双 part；空结果照发（「今日无值得关注的新内容。」，subject 精选 0 条）；失败吞掉返回 `{sent:false}`，绝不影响管线退出码
+- `scripts/send-html-digest-now.js`：select 补全字段 + 传完整 keyword 行（含 `category_schema`）
+
+**交付验证：** `npm test` **72/72**（64 存量 + 8 新增 v2 用例：isNotable/filterDigestSections、关键词→板块事件+摘要、summary 去【事件】段、未分类归组、HTML 卡片断言、send 层过滤与空摘要）✅ ｜ 真实发信冒烟 **2026-08-08 15 条 T0/T1 实发** exit 0 ✅ ｜ `npm run check` 全绿 ✅ ｜ 一次性预览产物 `scripts/render-email-preview.js` / `docs/email-digest-preview.html` 已清理
 
 ## 项目开发路线图
 
