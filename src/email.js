@@ -101,41 +101,60 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
+function hostOf(url) {
+  try {
+    return String(url).replace(/^https?:\/\//, '').replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
+// 彩色徽章：Tier（蓝）/ 置信度（黄）/ 多源印证（绿）/ 冲突（红）
+function badgeHtml(item) {
+  const b = [];
+  if (item.tier != null) b.push(`<span style="display:inline-block;background:#eef2ff;color:#3730a3;border-radius:999px;padding:0 8px;margin-right:6px;font-size:11px;">T${item.tier}</span>`);
+  if (item.confidence) b.push(`<span style="display:inline-block;background:#fef3c7;color:#92400e;border-radius:999px;padding:0 8px;margin-right:6px;font-size:11px;">${escapeHtml(CONFIDENCE_LABEL[item.confidence] || item.confidence)}</span>`);
+  if ((item.corroboration_count || 0) >= 2) b.push(`<span style="display:inline-block;background:#dcfce7;color:#166534;border-radius:999px;padding:0 8px;margin-right:6px;font-size:11px;">${item.corroboration_count}源印证</span>`);
+  if (item.conflict_flag) b.push(`<span style="display:inline-block;background:#fee2e2;color:#991b1b;border-radius:999px;padding:0 8px;margin-right:6px;font-size:11px;">⚠️ 冲突</span>`);
+  return b.join('');
+}
+
 /**
- * Build a lightweight HTML version of the same digest. Inline styles only
- * (email clients strip <style>/external CSS). Sent alongside the text part;
- * clients render whichever they support.
+ * Build a lightweight HTML digest: dark header card + per-keyword boards with
+ * event-bold cards. Inline styles only (email clients strip <style>/external
+ * CSS). Sent alongside the text part; clients render whichever they support.
  */
 function buildDigestHtml(sections) {
   const total = sections.reduce((n, s) => n + s.results.length, 0);
   const parts = [
-    `<div style="font-family:-apple-system,'Segoe UI','Microsoft YaHei',sans-serif;max-width:640px;margin:0 auto;color:#111827;">`,
-    `<h2 style="margin:0 0 4px;font-size:18px;">AI News Monitor 每日摘要 — ${todayIso()}</h2>`,
-    `<p style="margin:0 0 16px;color:#6b7280;font-size:13px;">相关新内容 <b>${total}</b> 条</p>`,
+    `<div style="font-family:-apple-system,'Segoe UI','Microsoft YaHei',sans-serif;max-width:680px;margin:0 auto;color:#111827;padding:24px 16px;">`,
+    `<div style="background:#111827;color:#fff;border-radius:12px;padding:20px 24px;">`,
+    `<div style="font-size:12px;letter-spacing:1px;opacity:.65;">AI NEWS MONITOR · 每日摘要</div>`,
+    `<div style="font-size:22px;font-weight:600;margin-top:4px;">${todayIso()}</div>`,
+    `<div style="margin-top:10px;font-size:14px;opacity:.9;">今日 <b style="color:#60a5fa;">${total}</b> 件值得关注（T0/T1 信源）</div>`,
+    `</div>`,
   ];
   for (const { keyword, results } of sections) {
-    if (!results || results.length === 0) continue;
-    parts.push(
-      `<h3 style="margin:20px 0 8px;padding-left:8px;border-left:3px solid #2563eb;font-size:15px;">${escapeHtml(keyword.name)} <span style="color:#6b7280;font-weight:normal;">(${results.length})</span></h3>`
-    );
-    for (const item of results) {
-      const meta = [];
-      if (item.tier != null) meta.push(`T${item.tier}`);
-      if (item.score != null) meta.push(`${item.score}分`);
-      const metaHtml = meta.length
-        ? `<div style="margin-top:2px;color:#6b7280;font-size:12px;">${meta.map(escapeHtml).join(' · ')}</div>`
-        : '';
-      parts.push(
-        `<div style="padding:10px 0;border-bottom:1px solid #e5e7eb;">` +
-          `<a href="${escapeHtml(item.url)}" style="color:#2563eb;text-decoration:none;font-size:14px;">${escapeHtml(item.title)}</a>${metaHtml}` +
+    if (results.length === 0) continue;
+    parts.push(`<h3 style="margin:24px 0 4px;font-size:16px;color:#111827;">${escapeHtml(keyword.name)} <span style="color:#9ca3af;font-weight:normal;font-size:13px;">(${results.length})</span></h3>`);
+    for (const board of groupByBoards(keyword, results)) {
+      parts.push(`<div style="margin-top:14px;font-size:13px;font-weight:600;color:#2563eb;">◆ ${escapeHtml(board.label)} <span style="color:#9ca3af;font-weight:normal;">(${board.items.length})</span></div>`);
+      for (const item of board.items) {
+        const title = item.event || item.title;
+        const body = summaryBody(item.summary);
+        parts.push(
+          `<div style="margin:10px 0 0;padding:12px 14px;background:#fff;border-radius:10px;border:1px solid #eef0f3;">` +
+          `<div style="font-size:14px;font-weight:600;color:#111827;">${escapeHtml(title)}</div>` +
+          `<div style="margin-top:6px;">${badgeHtml(item)}</div>` +
+          (body ? `<div style="margin-top:8px;font-size:13px;color:#374151;line-height:1.6;">${escapeHtml(body)}</div>` : '') +
+          `<a href="${escapeHtml(item.url)}" style="display:inline-block;margin-top:8px;font-size:12px;color:#9ca3af;text-decoration:none;">${escapeHtml(hostOf(item.url))} ↗</a>` +
           `</div>`
-      );
+        );
+      }
     }
   }
-  if (total === 0) {
-    parts.push(`<p style="color:#6b7280;font-size:13px;">今日无新增关注内容。</p>`);
-  }
-  parts.push(`<p style="margin:16px 0 0;color:#9ca3af;font-size:12px;">— AI News Monitor 自动生成</p>`, `</div>`);
+  if (total === 0) parts.push(`<p style="color:#6b7280;font-size:13px;">今日无值得关注的新内容。</p>`);
+  parts.push(`</div>`);
   return parts.join('\n');
 }
 

@@ -68,38 +68,42 @@ test('buildSubject：含日期与精选条数', () => {
   assert.match(buildSubject(FULL_SECTIONS), /20\d\d-\d\d-\d\d/);
 });
 
-test('buildDigestHtml：按关键词分组渲染标题链接与 tier/score', () => {
-  const html = buildDigestHtml(SECTIONS);
-  assert.match(html, />MU - 曼联信源监控 <span/);
-  assert.match(html, /<a href="https:\/\/www\.manutd\.com\/a"/);
-  assert.match(html, /Man Utd 官宣续约/);
-  assert.match(html, /T0 · 90分/);
-  assert.match(html, /Ornstein 转会消息/);
-  assert.match(html, /T1 · 80分/);
-  assert.doesNotMatch(html, /Anthropic/); // 空结果组不渲染
+test('buildDigestHtml：头部卡片 + 板块分组 + 事件粗体 + 徽章', () => {
+  const html = buildDigestHtml(FULL_SECTIONS);
+  assert.match(html, /今日 <b style="color:#60a5fa;">2<\/b> 件值得关注/);
+  assert.match(html, />MU <span/);
+  assert.match(html, /◆ 官方公告/);
+  assert.match(html, /曼联确认对阵巴黎圣日耳曼的阵容/);
+  assert.match(html, /T0<\/span>/);
+  assert.match(html, />待核实<\/span>/);
+  assert.match(html, /标题未列出具体球员姓名。/);
+  assert.match(html, />2源印证<\/span>/);
+  assert.match(html, /⚠️ 冲突<\/span>/);
+  assert.match(html, /href="https:\/\/www\.manutd\.com\/a"/);
+  assert.doesNotMatch(html, /Dallas/); // 空结果组不渲染
 });
 
-test('buildDigestHtml：标题特殊字符被转义', () => {
-  const html = buildDigestHtml([
-    { keyword: { name: 'A&B <X>' }, results: [{ title: '标题 <script>alert(1)</script>', url: 'https://x.com/?a=1&b=2' }] },
-  ]);
-  assert.match(html, /A&amp;B &lt;X&gt;/);
-  assert.match(html, /标题 &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+test('buildDigestHtml：标题/URL 转义，block 内不出现【事件】段', () => {
+  const s = [{ keyword: { name: 'A&B', category_schema: {} }, results: [{ title: '<script>', url: 'https://x.com/?a=1&b=2', tier: 0, event: 'E<&', summary: '【事件】E。【要点】P1。' }] }];
+  const html = buildDigestHtml(s);
+  assert.match(html, /A&amp;B/);
   assert.match(html, /https:\/\/x\.com\/\?a=1&amp;b=2/);
+  assert.match(html, /E&lt;&amp;/);
   assert.doesNotMatch(html, /<script>/);
+  assert.doesNotMatch(html, /【事件】/);
 });
 
-test('buildDigestHtml：缺 tier/score 不渲染 meta 行', () => {
-  const html = buildDigestHtml(SECTIONS);
-  assert.match(html, /无评分无 tier 项/);
-  assert.doesNotMatch(html, /Tundefined/);
-  assert.doesNotMatch(html, /undefined分/);
+test('buildDigestHtml：event/summary 缺失优雅降级为 title', () => {
+  const s = [{ keyword: { name: 'MU', category_schema: {} }, results: [{ title: '只有标题', url: 'https://x.com', tier: 1 }] }];
+  const html = buildDigestHtml(s);
+  assert.match(html, /只有标题/);
+  assert.doesNotMatch(html, /undefined/);
 });
 
-test('buildDigestHtml：空结果输出"今日无新增"', () => {
+test('buildDigestHtml：空结果输出"今日无值得关注"', () => {
   const html = buildDigestHtml([]);
-  assert.match(html, /相关新内容 <b>0<\/b> 条/);
-  assert.match(html, /今日无新增关注内容。/);
+  assert.match(html, /今日 <b style="color:#60a5fa;">0<\/b> 件值得关注/);
+  assert.match(html, /今日无值得关注的新内容。/);
 });
 
 const FULL_CFG = { EMAIL_ENABLED: true, SMTP_HOST: 'smtp.qq.com', EMAIL_USER: 'a@qq.com', EMAIL_AUTH_CODE: 'x', RECEIVER_EMAIL: 'b@qq.com' };
