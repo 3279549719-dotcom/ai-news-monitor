@@ -2,7 +2,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { buildDigestText, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest } = require('./email');
+const { buildDigestText, buildDigestHtml, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest } = require('./email');
 
 const SECTIONS = [
   {
@@ -50,6 +50,40 @@ test('buildSubject：含日期与总条数', () => {
 
 test('buildSubject：空结果条数为 0', () => {
   assert.match(buildSubject([]), /相关 0 条/);
+});
+
+test('buildDigestHtml：按关键词分组渲染标题链接与 tier/score', () => {
+  const html = buildDigestHtml(SECTIONS);
+  assert.match(html, />MU - 曼联信源监控 <span/);
+  assert.match(html, /<a href="https:\/\/www\.manutd\.com\/a"/);
+  assert.match(html, /Man Utd 官宣续约/);
+  assert.match(html, /T0 · 90分/);
+  assert.match(html, /Ornstein 转会消息/);
+  assert.match(html, /T1 · 80分/);
+  assert.doesNotMatch(html, /Anthropic/); // 空结果组不渲染
+});
+
+test('buildDigestHtml：标题特殊字符被转义', () => {
+  const html = buildDigestHtml([
+    { keyword: { name: 'A&B <X>' }, results: [{ title: '标题 <script>alert(1)</script>', url: 'https://x.com/?a=1&b=2' }] },
+  ]);
+  assert.match(html, /A&amp;B &lt;X&gt;/);
+  assert.match(html, /标题 &lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+  assert.match(html, /https:\/\/x\.com\/\?a=1&amp;b=2/);
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test('buildDigestHtml：缺 tier/score 不渲染 meta 行', () => {
+  const html = buildDigestHtml(SECTIONS);
+  assert.match(html, /无评分无 tier 项/);
+  assert.doesNotMatch(html, /Tundefined/);
+  assert.doesNotMatch(html, /undefined分/);
+});
+
+test('buildDigestHtml：空结果输出"今日无新增"', () => {
+  const html = buildDigestHtml([]);
+  assert.match(html, /相关新内容 <b>0<\/b> 条/);
+  assert.match(html, /今日无新增关注内容。/);
 });
 
 const FULL_CFG = { EMAIL_ENABLED: true, SMTP_HOST: 'smtp.qq.com', EMAIL_USER: 'a@qq.com', EMAIL_AUTH_CODE: 'x', RECEIVER_EMAIL: 'b@qq.com' };
