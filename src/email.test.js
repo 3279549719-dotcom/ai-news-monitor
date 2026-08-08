@@ -51,6 +51,16 @@ test('buildDigestText：summary 去掉【事件】段避免与加粗行重复', 
   assert.doesNotMatch(text, /【事件】曼联官方确认对阵巴黎圣日耳曼的出征名单。/);
 });
 
+test('buildDigestText：summaryBody 剥离含内部句号的整个【事件】段', () => {
+  const s = [{ keyword: { name: 'MU', category_schema: {} }, results: [
+    { title: 'x', url: 'https://x.com', tier: 0, event: '多句事件', summary: '【事件】句子一。句子二。【要点】关键要点。' },
+  ] }];
+  const text = buildDigestText(s);
+  assert.match(text, /关键要点。/);
+  assert.doesNotMatch(text, /句子二。/);
+  assert.doesNotMatch(text, /【事件】/);
+});
+
 test('buildDigestText：category 不在 schema 归「未分类」', () => {
   const s = [{ keyword: { name: 'MU', category_schema: { official: '官方公告' } }, results: [{ title: 'x', url: 'https://x', tier: 0, category: 'unknown', event: '未知分类事件', summary: '【要点】要点内容。' }] }];
   const text = buildDigestText(s);
@@ -84,11 +94,15 @@ test('buildDigestHtml：头部卡片 + 板块分组 + 事件粗体 + 徽章', ()
 });
 
 test('buildDigestHtml：标题/URL 转义，block 内不出现【事件】段', () => {
-  const s = [{ keyword: { name: 'A&B', category_schema: {} }, results: [{ title: '<script>', url: 'https://x.com/?a=1&b=2', tier: 0, event: 'E<&', summary: '【事件】E。【要点】P1。' }] }];
+  const s = [{ keyword: { name: 'A&B', category_schema: {} }, results: [
+    { title: '<script>', url: 'https://x.com/?a=1&b=2', tier: 0, event: 'E<&', summary: '【事件】E。【要点】P1。' },
+    { title: '<script>alert(1)</script>', url: 'https://x.com/title', tier: 1 },
+  ] }];
   const html = buildDigestHtml(s);
   assert.match(html, /A&amp;B/);
   assert.match(html, /https:\/\/x\.com\/\?a=1&amp;b=2/);
   assert.match(html, /E&lt;&amp;/);
+  assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.doesNotMatch(html, /<script>/);
   assert.doesNotMatch(html, /【事件】/);
 });

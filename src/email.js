@@ -55,8 +55,8 @@ function groupByBoards(keyword, results) {
 // summary 去掉【事件】段（该内容已由 event 加粗行呈现），保留【要点】【为什么重要】
 function summaryBody(summary) {
   if (!summary) return '';
-  const m = summary.match(/^【事件】[^。]*。?\s*/);
-  return m ? summary.slice(m[0].length) : summary;
+  const m = summary.match(/^【事件】.+?(?=【|$)/);
+  return m ? summary.slice(m[0].length).replace(/^\s+/, '') : summary;
 }
 
 function textMeta(item) {
@@ -102,11 +102,8 @@ function escapeHtml(s) {
 }
 
 function hostOf(url) {
-  try {
-    return String(url).replace(/^https?:\/\//, '').replace(/^www\./, '');
-  } catch {
-    return url;
-  }
+  if (!url) return '';
+  return String(url).replace(/^https?:\/\//, '').replace(/^www\./, '');
 }
 
 // 彩色徽章：Tier（蓝）/ 置信度（黄）/ 多源印证（绿）/ 冲突（红）
