@@ -12,6 +12,7 @@ const { loadKeywords, filterNewItems, saveArticles, loadKeywordSources, loadRece
 const { crosscheck, collapseSameEvent, dedupeAgainstExisting, CONFIDENCE_LABEL } = require('./crosscheck');
 const { getKeywordRoots } = require('./keyword-roots');
 const { buildReport } = require('./report');
+const { sendDailyDigest } = require('./email');
 const { RESULT_LIMIT } = require('./config');
 
 // ---------------------------------------------------------------------------
@@ -313,16 +314,21 @@ async function run() {
   const hasResults = sections.some(s => s.results.length > 0);
   if (!hasResults) {
     console.log('\n本次无相关新内容。');
-    return;
+  } else {
+    const report = buildReport(sections);
+    const reportsDir = path.join(__dirname, '../reports');
+    if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
+    const date = new Date().toISOString().split('T')[0];
+    const reportPath = path.join(reportsDir, `${date}.md`);
+    fs.writeFileSync(reportPath, report, 'utf8');
+    console.log(`\n报告已保存: ${reportPath}`);
   }
 
-  const report = buildReport(sections);
-  const reportsDir = path.join(__dirname, '../reports');
-  if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
-  const date = new Date().toISOString().split('T')[0];
-  const reportPath = path.join(reportsDir, `${date}.md`);
-  fs.writeFileSync(reportPath, report, 'utf8');
-  console.log(`\n报告已保存: ${reportPath}`);
+  // 每日摘要邮件：无条件发送（空结果走 buildDigestText 的"今日无新增"文案）。
+  // 发送失败在 sendDailyDigest 内部被吞掉，绝不影响管线退出码。
+  const digest = await sendDailyDigest(sections);
+  if (digest.sent) console.log(`\n摘要邮件已发送: ${digest.subject}`);
+  else console.log(`\n摘要邮件未发送: ${digest.reason}`);
 }
 
 if (require.main === module) {
