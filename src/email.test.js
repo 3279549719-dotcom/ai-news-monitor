@@ -2,7 +2,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { buildDigestText, buildSubject } = require('./email');
+const { buildDigestText, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest } = require('./email');
 
 const SECTIONS = [
   {
@@ -50,4 +50,38 @@ test('buildSubject：含日期与总条数', () => {
 
 test('buildSubject：空结果条数为 0', () => {
   assert.match(buildSubject([]), /相关 0 条/);
+});
+
+const FULL_CFG = { EMAIL_ENABLED: true, SMTP_HOST: 'smtp.qq.com', EMAIL_USER: 'a@qq.com', EMAIL_AUTH_CODE: 'x', RECEIVER_EMAIL: 'b@qq.com' };
+
+test('isEmailConfigured：配置齐则启用', () => {
+  assert.equal(isEmailConfigured(FULL_CFG), true);
+});
+
+test('isEmailConfigured：缺 SMTP_HOST 不启用', () => {
+  assert.equal(isEmailConfigured({ ...FULL_CFG, SMTP_HOST: '' }), false);
+});
+
+test('isEmailConfigured：EMAIL_ENABLED=false 不启用', () => {
+  assert.equal(isEmailConfigured({ ...FULL_CFG, EMAIL_ENABLED: false }), false);
+});
+
+test('sendDailyDigest：未配置返回 {sent:false} 且不抛错', async () => {
+  const noCfg = { EMAIL_ENABLED: true, SMTP_HOST: '', EMAIL_USER: '', EMAIL_AUTH_CODE: '', RECEIVER_EMAIL: '' };
+  const res = await sendDailyDigest([], { config: noCfg });
+  assert.equal(res.sent, false);
+  assert.match(res.reason, /未配置/);
+});
+
+test('sendDailyDigest：sender 抛异常被吞并返回 {sent:false}', async () => {
+  const res = await sendDailyDigest([], { sender: async () => { throw new Error('boom'); } });
+  assert.equal(res.sent, false);
+  assert.equal(res.reason, 'boom');
+});
+
+test('sendDailyDigest：sender 成功透传 subject', async () => {
+  const sections = [{ keyword: { name: 'MU' }, results: [{ title: 'x', url: 'https://x', score: 90, tier: 0 }] }];
+  const res = await sendDailyDigest(sections, { sender: async ({ subject }) => ({ sent: true, subject }) });
+  assert.equal(res.sent, true);
+  assert.match(res.subject, /每日摘要/);
 });

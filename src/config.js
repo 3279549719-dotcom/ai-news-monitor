@@ -53,4 +53,14 @@ module.exports = {
   // .env but never shipped to the client bundle; falls back to SUPABASE_KEY
   // when unset (legacy single-key setups).
   SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY || '',
+
+  // Email digest SMTP（管线 run() 末尾推送每日摘要）。EMAIL_AUTH_CODE 用
+  // QQ/163 的 SMTP 授权码（非登录密码）。EMAIL_ENABLED=0 可禁用（测试用）。
+  EMAIL_ENABLED: process.env.EMAIL_ENABLED !== '0',
+  SMTP_HOST: process.env.SMTP_HOST || '',
+  SMTP_PORT: Number(process.env.SMTP_PORT) || 465,
+  SMTP_SECURE: process.env.SMTP_SECURE !== '0' && process.env.SMTP_SECURE !== 'false',
+  EMAIL_USER: process.env.EMAIL_USER || '',
+  EMAIL_AUTH_CODE: process.env.EMAIL_AUTH_CODE || '',
+  RECEIVER_EMAIL: process.env.RECEIVER_EMAIL || '',
 };
