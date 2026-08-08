@@ -119,6 +119,7 @@ scripts/            运维脚本（run-pipeline/install-schedule 定时自动化
 - **⚠️ Vercel 构建 `npm install` 503 陷阱（2026-08-07）**：本机 `C:\Users\asus\.npmrc` 的 `registry=https://registry.npmmirror.com` 会被 Vercel 构建机继承，npmmirror 对美国节点不稳定（实测 `strip-ansi` 拉包 503 → 部署 Error）。**项目级加 `NPM_CONFIG_REGISTRY=https://registry.npmjs.org/` 环境变量强制官方源**（`vercel env add` 或 API 加）
 
 ### 网络访问
+- **⚠️ Git 推拉 GitHub 走代理（2026-08-08 实测）**：本机 GitHub HTTPS 443 直连不可达（`Connection reset` / `Could not connect`），SSH 22 端口通但本地 `id_rsa` 未被仓库所属 GitHub 账户授权（`Permission denied (publickey)`）。**解决**：`netstat -ano` 确认代理（Clash/V2Ray）监听 `127.0.0.1:7890` → `git config --global http.proxy http://127.0.0.1:7890` + `https.proxy` 同值。环境变量 `HTTP_PROXY`/`HTTPS_PROXY` 为空时，Git 不走进程继承，必须显式配 config 层。全局代理生效后对所有仓库生效，注意与 Crawl4AI 的 `NO_PROXY=localhost` 配合使用（两者不冲突：Git 走代理出站，crawl4ai 不走代理访问本地容器）
 - **BBC Sport / The Guardian**：Node 直连（axios）ETIMEDOUT 不可达；crawl4ai 容器可达 Guardian。管线抓取仍优先选国内可达站点
 - **claude.com/blog**：Node 直连超时（国内不可达），crawl4ai 容器可达（2026-08-04 实测 ✅）
 - **anthropic.com/news / anthropic.com/research**：crawl4ai 容器可达（2026-08-04 实测 ✅）
