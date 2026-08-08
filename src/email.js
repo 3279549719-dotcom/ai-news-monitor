@@ -196,9 +196,10 @@ async function sendEmail({ subject, text, html }, opts = {}) {
 
 async function sendDailyDigest(sections, opts = {}) {
   try {
-    const subject = buildSubject(sections);
-    const text = buildDigestText(sections);
-    const html = buildDigestHtml(sections);
+    const filtered = filterDigestSections(sections);
+    const subject = buildSubject(filtered);
+    const text = buildDigestText(filtered);
+    const html = buildDigestHtml(filtered);
     if (opts.sender) return await opts.sender({ subject, text, html });
     return await sendEmail({ subject, text, html }, opts);
   } catch (err) {

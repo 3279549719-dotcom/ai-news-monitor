@@ -156,3 +156,27 @@ test('filterDigestSections：保留 keyword 结构，只留 T0/T1', () => {
   assert.equal(out[0].results.length, 1);
   assert.equal(out[0].results[0].title, 'a');
 });
+
+test('sendDailyDigest：内部先过滤 T0/T1，sender 收到的条数已过滤', async () => {
+  const sections = [
+    { keyword: { name: 'MU' }, results: [
+      { title: 'keep', url: 'https://a', tier: 0, event: '保留事件' },
+      { title: 'drop', url: 'https://b', tier: 2, event: '丢弃事件' },
+    ] },
+  ];
+  let received;
+  const res = await sendDailyDigest(sections, { sender: async m => { received = m; return { sent: true }; } });
+  assert.equal(res.sent, true);
+  assert.match(received.text, /保留事件/);
+  assert.doesNotMatch(received.text, /丢弃事件/);
+  assert.doesNotMatch(received.html, /丢弃事件/);
+  assert.match(received.subject, /精选 1 条/);
+});
+
+test('sendDailyDigest：全部过滤后仍发空摘要', async () => {
+  const sections = [{ keyword: { name: 'MU' }, results: [{ title: 'drop', url: 'https://b', tier: 2 }] }];
+  let received;
+  await sendDailyDigest(sections, { sender: async m => { received = m; return { sent: true }; } });
+  assert.match(received.text, /今日无值得关注的新内容。/);
+  assert.match(received.subject, /精选 0 条/);
+});
