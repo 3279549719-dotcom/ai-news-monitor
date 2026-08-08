@@ -6,11 +6,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /e/claude/ai-news-monitor/client && npm run type-check 2>&1 | tail -20"
-          },
+            "command": "cd /e/claude/ai-news-monitor && node scripts/harness-check.js 2>&1 | tail -40"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
           {
             "type": "command",
-            "command": "cd /e/claude/ai-news-monitor/client && npm run lint 2>&1 | tail -20"
+            "command": "cd /e/claude/ai-news-monitor && node scripts/harness-pretooluse.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /e/claude/ai-news-monitor && node scripts/harness-stop.js"
           }
         ]
       }

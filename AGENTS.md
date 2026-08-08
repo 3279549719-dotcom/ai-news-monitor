@@ -35,9 +35,33 @@
 - 只修改当前任务范围，保留无关用户改动；不顺手重构，也不为未确认需求预建复杂能力。
 - 文档、决策和进度与实现同步更新。相关文档无需更新时，在需求或交付记录中写明理由。
 - 按风险运行相关检查，如实报告结果；跨模块需求逐项回填行为验收矩阵。未完成影响分析、未设计行为验收，或只验证接口/源码存在时，不得标记完成。
+- **出示证据（Harness A4）**：交付时附测试输出、命令结果或截图，不以"应该没问题/已通过"代替；未运行的检查明确说明。与收尾门禁（Stop hook 的 `npm run check`）联动——门禁保证检查确实跑过，A4 保证结果有据可查。
 - 真实平台、凭据或外部资源受限时，明确记录“待实机回归”的用户路径、受限原因和验证条件；lint、构建、静态断言或接口测试不能替代行为验证。
 - 提交前检查工作区、分支、远程与忽略规则，只暂存本次工作。未经用户明确授权，不推送、发布、部署或创建 PR。
 - 不提交密钥、`.env*`、本地数据库、备份、日志、依赖目录和构建产物，除非项目明确要求。
+
+# Execution Rules
+
+## Scope Control
+Only modify files explicitly required by the task. Do not refactor unrelated
+code, add features, improve architecture, update dependencies, or create
+documentation unless explicitly requested.
+
+## Conversation Scope
+Answer the question asked. Do not expand into adjacent topics, propose unasked
+work, or narrate options you won't pursue.
+
+## Suggestions
+Improvements **outside** the current task scope must not be implemented —
+append them to `docs/FUTURE_IMPROVEMENTS.md` (create on first use). In-scope
+doc sync (e.g. updating CLAUDE.md/AGENTS.md when a config change lands) is part
+of the task, not a suggestion.
+
+## Completion
+A task is complete only when:
+1. Requested functionality works
+2. Relevant checks pass (tests/lint/type-check), or a stated reason none apply
+3. No unrelated changes exist
 
 ## 前端（client/）
 

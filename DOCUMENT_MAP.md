@@ -26,6 +26,8 @@
 | 技术决策纪要 | [docs/DECISION-方案选型纪要.md](docs/DECISION-方案选型纪要.md) | 了解架构选型原因 |
 | ✅ Phase9 需求（回填去重+空态，已交付） | [docs/REQ-Phase9-历史数据回填去重与前端空态.md](docs/REQ-Phase9-历史数据回填去重与前端空态.md) | 历史数据回填/去重/前端空态验收 |
 | ✅ Phase9 决策纪要（已交付） | [docs/DECISION-Phase9-历史数据回填去重与前端空态.md](docs/DECISION-Phase9-历史数据回填去重与前端空态.md) | 回填/去重/空态选型 + 执行结果偏差 |
+| ✅ REQ：Harness 加固（反馈验证闭环+架构约束，Decided） | [docs/REQ-Harness加固-反馈验证闭环与架构约束.md](docs/REQ-Harness加固-反馈验证闭环与架构约束.md) | harness 自评 + 加固候选（用户已拍板均衡推荐） |
+| ✅ DECISION：Harness 加固（采纳均衡推荐 A1+A2+A4+B1+B2） | [docs/DECISION-Harness加固-反馈验证闭环与架构约束.md](docs/DECISION-Harness加固-反馈验证闭环与架构约束.md) | 决策依据 + 实现设计 + 风险回滚 |
 | 前端原型 | [docs/prototype-board.html](docs/prototype-board.html) | 板块视图 UI 参照 |
 | 产品流程介绍 | [docs/pipeline-flowchart.html](docs/pipeline-flowchart.html) | 对外客户版流程图（无技术细节，浏览器打开，附 PNG 导出版） |
 

@@ -1,6 +1,6 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-05（Phase 10：管线自动化 + Vercel 部署 + RLS 安全收尾）
+> 最后更新：2026-08-08（F-016 Harness 加固：反馈验证闭环 + 架构约束）
 
 ## 功能进度
 
@@ -17,6 +17,7 @@
 | F-012 | Phase 8：信息获取与理解层优化 — 假日期修复 + AI 正文喂养 + 分类/体裁落地 + 付费墙标注 + 前端时效窗口 | **已完成** | 2026-08-04 端到端 4篇入库，A4a 事实锚点 100%，npm test 35/35，前端三件套全绿 |
 | F-013 | Phase 9：历史数据回填去重 + 前端空态 — 全量回填重算 + 同事件三层去重 + BoardView 空态重构 + Playwright 截图 | **已完成（最终交付）** | 2026-08-05 验收全绿：Carrick 摘要修正(score 90)、Naji 4→1、npm test 42/42、前端三件套全绿、管线回归通过、**已 push origin/master**（见 F-013 交付内容） |
 | F-014 | Phase 10：管线自动化 + Vercel 部署 + RLS 安全收尾 — Windows 任务计划每日定时 + 前端公网部署 + 后端改 service key/RLS 收紧 anon 只读 | **已完成** | 2026-08-05 定时任务已注册（每日 08:00）、线上 URL 验证 88 条渲染正常、RLS anon 写被拒/service 读写 ✅、npm run check 全绿（见 F-014 交付内容） |
+| F-016 | Harness 加固（反馈验证闭环+架构约束）— PostToolUse 检查分流 / Stop 收尾门禁 / PreToolUse 危险操作拦截 / pre-commit 把关 / 证据化交付 | **已完成** | 2026-08-08 B1 分支测试 8/8 + .env 拦截实测 + npm run check 全绿（见 F-016 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -238,6 +239,21 @@
 **分析预算修复（`3a24502`）：** 发现 X 推文虽能抓取但被 `RESULT_LIMIT=15` + 源 DB 顺序挤出（T2 媒体排在 X 前）。修复：`search.js` 信源按 tier 升序（T0→T1→T2）+ 非 T0 源每源上限 `MAX_PER_SOURCE=5`；`config.js` `RESULT_LIMIT` 15→30。实测 Whitwell（Bayindir 租借 score 85）/Mitten（Rooney 90）/Stone（3 条相关）进 feed，Ornstein 别队消息（Real Madrid/West Ham/Baleba/Fulham）score 0 正确过滤
 
 **验收：** `npm run check` 全绿（**53/53** 单测）+ 前端 type-check/lint/build 通过；E2E 管线 exit 0，`logs/pipeline-2026-08-07.log` 记录 5 个 X 源全部 `[Twikit]`（Stone 19/Ornstein 20/Whitwell 20/Mitten 20/Stein 20 条）；Supabase 4 个 X 账号推文卡入库
+
+## F-016 Harness 加固交付内容（2026-08-08）
+
+> 触发：harness 自评（对照 Anthropic 官方《Agent Harness Design》4 组件：loop/tools/context management/guardrails）定位两短板（反馈验证闭环 + 架构约束）→ 决策工具 `docs/harness-hardening-options.html` → 用户拍板采纳「均衡推荐」A1+A2+A4+B1+B2。文档：`docs/REQ-Harness加固-反馈验证闭环与架构约束.md` + `docs/DECISION-Harness加固-反馈验证闭环与架构约束.md`（已登记 DOCUMENT_MAP）。
+
+**反馈验证闭环（组 A）：**
+- **A1 PostToolUse 检查分流**（`scripts/harness-check.js` + `.claude/settings.json`）：改 `client/` 前端 → `type-check`+`lint`；改 `src/`/`scripts/` 后端 `.js` → `node --check`+`npm test`；md/json 跳过。修掉原 hook"改后端白跑前端检查、后端零验证"。
+- **A2 Stop 收尾门禁**（`scripts/harness-stop.js`）：双门控（权限弹窗 stop 跳过 + git 无代码改动静默），有改动时收尾强制 `npm run check`，不过关 exit 2 阻止收尾。
+- **A4 证据化交付**（AGENTS.md）：交付须附测试输出/命令结果/截图，不以"应该没问题"代替。
+
+**架构约束（组 B）：**
+- **B1 PreToolUse 危险操作拦截**（`scripts/harness-pretooluse.js`）：拦 `dedup-existing --apply` 无 `--dry-run`、`--keep-ids=` 等号形式、`node --test src` 三个已知 footgun。分支测试 **8/8 通过**（含安全用例放行）。
+- **B2 pre-commit 把关**（`.githooks/pre-commit` + `scripts/harness-precommit.js` + `git config core.hooksPath .githooks`）：拦 `.env*` 入暂存（实测 `.env.test` 被拦 exit 1）+ 提交前跑 `npm run check`。
+
+**验收：** B1 分支测试 8/8 ✅ ｜ .env* 拦截实测 ✅ ｜ `npm run check` 全绿（53/53 单测 + type-check + lint + lint:backend）✅ ｜ 管线逻辑零改动（纯 harness 层）
 
 ## 项目开发路线图
 
