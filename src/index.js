@@ -13,7 +13,7 @@ const { crosscheck, collapseSameEvent, dedupeAgainstExisting, CONFIDENCE_LABEL }
 const { getKeywordRoots } = require('./keyword-roots');
 const { buildReport } = require('./report');
 const { sendDailyDigest } = require('./email');
-const { RESULT_LIMIT } = require('./config');
+const { RESULT_LIMIT, MIN_SCORE } = require('./config');
 
 // ---------------------------------------------------------------------------
 // 前置过滤：标题不含关键词词根的直接跳过（省 DeepSeek 调用）
@@ -25,6 +25,11 @@ function preFilter(items, keywordName) {
   const filtered = [];
   const skipped = [];
   for (const item of items) {
+    // T0 官方信源内容天然相关，免词根预筛（词根是为省 DeepSeek 调用；官方源量小且相关，标题未必含词根）
+    if (item.tier === 0) {
+      filtered.push(item);
+      continue;
+    }
     const t = (item.title || '').toLowerCase();
     if (roots.some(r => t.includes(r.toLowerCase()))) {
       filtered.push(item);
@@ -36,6 +41,20 @@ function preFilter(items, keywordName) {
     console.log(`  [PreFilter] ${skipped.length} 条跳过（标题不含词根）`);
   }
   return filtered;
+}
+
+// T0 官方信源相关性放行线：官方站内容天然相关（claude.com/anthropic.com/manutd.com/nba.com 等），
+// AI 评分被标题/正文噪声（"Read more" 标题、导航正文）带偏低于此线时抬到此线，保证官方内容必入库。
+const T0_FLOOR = 85;
+
+/**
+ * 对 T0 官方信源应用相关性放行：score 取下限 T0_FLOOR。非 T0 源原样返回。
+ * @param {number} score - AI 原始评分。
+ * @param {number|null} tier - 信源可信度层级。
+ * @returns {number} 放行后的评分。
+ */
+function applyTierFloor(score, tier) {
+  return tier === 0 ? Math.max(score, T0_FLOOR) : score;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,8 +123,10 @@ async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
       console.error(`  分析失败 (${item.title.slice(0, 30)}): ${r.reason?.message}`);
       return acc;
     }
-    const { relevant, score, summary, event, event_type, category } = r.value;
-    return relevant ? [...acc, { ...item, score, summary, event, event_type, category }] : acc;
+    const { score, summary, event, event_type, category } = r.value;
+    // T0 官方源抬到放行线；非 T0 维持 AI 原分
+    const finalScore = applyTierFloor(score, item.tier);
+    return finalScore >= MIN_SCORE ? [...acc, { ...item, score: finalScore, summary, event, event_type, category }] : acc;
   }, []);
 }
 
@@ -349,4 +370,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord };
+module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord, applyTierFloor, T0_FLOOR };

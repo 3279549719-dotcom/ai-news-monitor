@@ -293,6 +293,22 @@
 
 **交付验证：** `npm test` **72/72**（64 存量 + 8 新增 v2 用例：isNotable/filterDigestSections、关键词→板块事件+摘要、summary 去【事件】段、未分类归组、HTML 卡片断言、send 层过滤与空摘要）✅ ｜ 真实发信冒烟 **2026-08-08 15 条 T0/T1 实发** exit 0 ✅ ｜ `npm run check` 全绿 ✅ ｜ 一次性预览产物 `scripts/render-email-preview.js` / `docs/email-digest-preview.html` 已清理
 
+## F-020 Anthropic 官方 T0 内容被 AI 误杀修复（2026-08-08）
+
+> 触发：用户发现 Anthropic 关键词持续空窗——日志「找到 68 条 / 未处理: 0 / 本次无相关新内容」，误以为 68 条全被 AI <60。实测诊断：**「未处理: 0」= 68 条候选全部已入库**（历史跑过被判 0 分标已见），真正杀伤发生在**历史评分时**——DB 近 30 天 anthropic 关键词 `score<60`：**claude-blog 26/31、techcrunch 49/52、wired 30/33、venturebeat 14/16、anthropic-news 8、anthropic-research 9**。官方 Anthropic 内容被系统性误杀（claude.com 最新官方公告 "Auto mode is now the default…" 都判 0 分）。
+
+**三层根因（全部实测闭环）：**
+1. **标题层**：claude.com/blog 首页 markdown 是 `## 真实标题 | 日期 | [Read more](url)` 卡片式，`extractMarkdownLinks` 只抓锚文本 → **25 条里 10 条 title="Read more"**，AI 无信息可评 → 0 分。
+2. **正文层**：`fetchArticleBody` 用 `fit_markdown || raw_markdown`，claude.com 文章 fit 为空回落 raw，raw 开头是 2700+ 字符站点导航（"Meet Claude Products…"），导航段链接剥离后纯文本仍 >100 字符 → 逃过旧导航过滤 → **占满 1500 字预算、真正文被挤出**。实测：同一标题 title-only=85 分，喂导航垃圾正文=0 分。
+3. **产品逻辑**：T0 官方源（claude.com/anthropic.com/manutd.com 等）内容天然相关，却仍走 `score≥60` 相关性门，被 1+2 反复误杀。
+
+**修复（三层，`src/crawl4ai-fetch.js` + `src/index.js`）：**
+- **标题**：`extractMarkdownLinks` 加①卡片式 `## 标题 | 日期 | [CTA](url)` 行级匹配（先于通用链接去重，真实标题赢下 URL）；`fetchSourceArticles` 的 `add()` 将 CTA 锚文本（`isGenericCta`，Read more/Learn more 等）视为空标题 → `titleFromSlug` 兜底。
+- **正文**：抽出纯函数 `cleanArticleBody(text)` + `isNavBlock(t)`（链接密度/每链接纯文字比检测导航菜单段）+ 头部仍链接密集时**最长正文段锚定**兜底；`fetchArticleBody` 复用。
+- **评分**：`applyTierFloor(score, tier)`——T0 源 `score=max(AI, 85)` 放行；`preFilter` 对 `tier===0` 项免词根预筛（官方内容天然相关，标题未必含词根）。
+
+**交付验证：** 新增 `src/crawl4ai-fetch.test.js`（10 例：CTA/卡片标题/Guardian 兼容/导航段/正文清理）+ `src/index.test.js`（4 例：T0 floor/preFilter 免词根），**npm run check 87/87 全绿** ✅ ｜ 真实数据端到端：claude-blog 25 条 **"Read more" 0 条**、auto-mode 正文**不含导航**、三篇官方文章 AI 分 85/80/0 → T0 floor 后全 **85 放行** ✅ ｜ 清理 43 行误杀数据（claude-blog 26 + news 8 + research 9，SQL DELETE 已确认）→ 管线排空重入 ✅ ｜ 修正自引入 bug：index.js 漏引 `MIN_SCORE`（首跑运行时暴露，`const { RESULT_LIMIT, MIN_SCORE } = require('./config')`）
+
 ## 项目开发路线图
 
 参考 yupi-hot-monitor 教程体系，本项目按以下顺序推进：

@@ -39,7 +39,7 @@ src/
   keyword-roots.js  关键词词根映射表（KEYWORD_ROOTS / getKeywordRoots，供 preFilter + C1 验收；词根外置直接编辑本文件）
   x-fetch.js        X 账号编排（twikit 主 → crawl4ai 兜底 → []）：runTwikit spawn `scripts/x-fetch-tweets.py` 60s 超时 + parseTwikitRows；X 不降级 Direct
   x-tweet-parse.js  X 推文卡纯解析模块（extractTweetsFromMarkdown 雪花 ID 解码时间 / parseTwikitRows / handleFromProfileUrl）
-  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章 URL 模式筛选（模式表外置 article-patterns.json）；X 账号仅作兜底（markdown 推文卡提取）
+  crawl4ai-fetch.js crawl4ai 抓取通道（Phase E 主通道）：REST 调本地容器 → 站点文章 URL 模式筛选（模式表外置 article-patterns.json）+ 卡片式标题提取（extractMarkdownLinks/isGenericCta，F-020）+ 正文清洗（cleanArticleBody/isNavBlock，F-020）；X 账号仅作兜底（markdown 推文卡提取）
   article-patterns.json 站点 → 文章 URL 模式表（按 host 分组多模式，新增信源/改模式直接编辑本文件不动代码）
   scraper-direct.js 信源直抓降级：axios 拉 HTML → 正则提取链接 → AI 精选文章
   scraper.js/reader.js blog 类型：claude-blog 抓列表 + 读正文
@@ -80,6 +80,7 @@ scripts/            运维脚本（run-pipeline/install-schedule 定时自动化
 - **白名单信源**：只抓取 `keyword_sources` 表中 `fetch_type='firecrawl'` 且 `enabled=true` 的信源页面。无白名单的关键词走 HackerNews 兜底
 - 当前关键词覆盖：MU（9 源三 tier，含 4 个 X 记者：Stone/Ornstein/Whitwell/Mitten）、Anthropic（6 源二 tier）、Dallas Mavericks（8 源三 tier，含 Marc Stein X），详见各 REQ 文档
 - 信源页面选择实测可达站点：优先 crawl4ai 容器（可过墙），Node 直连不可达但容器可达的站点（Guardian、claude.com/blog）仍可纳入白名单
+- **T0 官方信源内容天然相关（F-020 起）**：`src/index.js` 对 `tier===0` 官方源两项放行——① `preFilter` 免词根预筛（官方源量小且相关，标题未必含词根）；② `analyzeItems` 的 `applyTierFloor(score, tier)` 把 `score` 抬到 `max(AI, 85)`（常量 `T0_FLOOR`），保证官方内容必入库 + 进 T0/T1 邮件。官方源实测曾整站被 AI 判 0 分（claude-blog 26/31），根因见"抓取陷阱"节
 - **RLS 已收紧（Phase10）**：anon 仅 SELECT（articles/keywords/keyword_sources），后端写库用 `.env` 的 `SUPABASE_SERVICE_KEY`（service role 绕过 RLS，`src/db.js` 单例优先 service key、缺省回退 `SUPABASE_KEY`）；前端仍用 publishable key 匿名读
 - Windows 路径统一使用 `E:\claude\ai-news-monitor`（Git Bash 用 `/e/claude/...`）
 
@@ -121,8 +122,8 @@ scripts/            运维脚本（run-pipeline/install-schedule 定时自动化
 ### 网络访问
 - **⚠️ Git 推拉 GitHub 走代理（2026-08-08 实测）**：本机 GitHub HTTPS 443 直连不可达（`Connection reset` / `Could not connect`），SSH 22 端口通但本地 `id_rsa` 未被仓库所属 GitHub 账户授权（`Permission denied (publickey)`）。**解决**：`netstat -ano` 确认代理（Clash/V2Ray）监听 `127.0.0.1:7890` → `git config --global http.proxy http://127.0.0.1:7890` + `https.proxy` 同值。环境变量 `HTTP_PROXY`/`HTTPS_PROXY` 为空时，Git 不走进程继承，必须显式配 config 层。全局代理生效后对所有仓库生效，注意与 Crawl4AI 的 `NO_PROXY=localhost` 配合使用（两者不冲突：Git 走代理出站，crawl4ai 不走代理访问本地容器）
 - **BBC Sport / The Guardian**：Node 直连（axios）ETIMEDOUT 不可达；crawl4ai 容器可达 Guardian。管线抓取仍优先选国内可达站点
-- **claude.com/blog**：Node 直连超时（国内不可达），crawl4ai 容器可达（2026-08-04 实测 ✅）
-- **anthropic.com/news / anthropic.com/research**：crawl4ai 容器可达（2026-08-04 实测 ✅）
+- **claude.com/blog**：Node 直连超时（国内不可达），crawl4ai 容器可达（2026-08-04 实测 ✅）。⚠️ **容器不可用时此源 100% 颗粒无收**——Direct 降级对 claude.com 完全无效
+- **anthropic.com/news / anthropic.com/research**：crawl4ai 容器可达（2026-08-04 实测 ✅）。⚠️ **Direct 降级脆弱**：Node 直连可拉 HTML 但 AI 链接识别频繁失败（非标准页面结构）。2026-08-08 实测：crawl4ai 僵尸后 Anthropic 6 源全天 0 产出——三个 T0 源 Direct 全败（News 解析失败/Research 空/Claude Blog 超时），T1 媒体也各自阵亡（TechCrunch 空/VentureBeat 429/Wired AI 选 0 篇）。**管线自愈加固（F-019）后 crawl4ai 可用性大幅提升**，但仍建议 Anthropic 信源配置备用抓取策略
 - **TechCrunch / Wired**：双通道可达；**VentureBeat / Yahoo Sports / Bleacher Report**：仅 crawl4ai（Node 403/429 限流）
 - **Ars Technica**：JS challenge wall，双通道均不可达（不可用）
 - **SI Mavs / Mavs Moneyball / The Smoking Cuban**：crawl4ai 可达，Dallas 信源新增（2026-08-04 实测 ✅）
@@ -132,6 +133,8 @@ scripts/            运维脚本（run-pipeline/install-schedule 定时自动化
 
 ### 抓取陷阱
 
+- **claude.com/blog 卡片式链接（F-020 修复）**：首页 markdown 是 `## 真实标题 | 日期 | [Read more](url)`，锚文本是 CTA 无标题信息。`extractMarkdownLinks` 已加卡片式行级匹配（`## 标题` 行 + 同行 `[CTA](url)` 配对），`isGenericCta` 识别 Read more/Learn more 等并让 `titleFromSlug` 兜底——修复前 25 条里 10 条 title="Read more" 被 AI 判 0 分。**新增卡片式博客信源时沿用此机制，勿删**。
+- **`fetchArticleBody` 导航段污染（F-020 修复）**：claude.com 文章 `fit_markdown` 为空回落 `raw_markdown`，raw 顶部是 2700+ 字符站点导航（"Meet Claude Products…"），链接剥离后纯文本仍 >100 字符、旧过滤漏判，**占满 1500 字预算把真正文挤出**（实测喂导航正文把 85 分拉到 0 分）。`cleanArticleBody` 现用 `isNavBlock`（链接密度/每链接纯文字比）剥导航段 + 头部仍链接密集时最长正文段锚定兜底。**效果**：正文抓取质量直接影响 AI 评分与邮件摘要，别在 `cleanArticleBody` 上回退简化。
 - **ARTICLE_PATTERNS 已外置（2026-08-05 第一批重构）**：站点→文章 URL 模式表从 `crawl4ai-fetch.js` 抽到 `src/article-patterns.json`，按 host 分组**多模式数组**，匹配为逐一 `test()`（修 si.com 双条目——soccer/nba 各自匹配，Dallas 的 nba 模式不再被 `.find` 取第一条遮蔽）。新增信源/改 URL 模式**只编辑该 JSON**，勿改 crawl4ai-fetch.js 代码
 - **⚠️ 门户页导航链接污染（2026-08-04 Dallas 踩坑）**：Yahoo Sports / Bleacher Report / NBA.com 团队门户页包含大量非文章导航链接（Scores/Standings/Schedule/Stats/Draft/Fantasy/Suites/Sponsorship 等），`crawl4ai-fetch.js` 的 `isNonArticleUrl()` 过滤器必须持续维护，否则垃圾链接会被当作"文章"入库。**修复**：在 `isNonArticleUrl()` 中新增 20+ NBA 特有导航关键词过滤。验证结果：修复后 Yahoo 从 15 条垃圾 → 0 条，Dallas 真实新闻占比 100%。
 - **⚠️ 白名单 URL 准确性验证**：新加信源时，不能仅凭 HTTP 200 判断可用——必须人工验证 crawl4ai 返回的链接是否是真新闻文章（非导航/菜单/比分）。Yahoo `sports.yahoo.com/nba/teams/dallas/` 返回 200 但初始产出全部是比分板链接，修复后正常。

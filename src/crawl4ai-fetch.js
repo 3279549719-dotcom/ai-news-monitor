@@ -104,7 +104,16 @@ function isSpamTitle(title) {
   return /\b(schedule|standings|roster|stats|injuries|odds|scores|scoreboard|shop|tickets|transactions|depth-chart|video|fixtures|fantasy)\b/.test(t);
 }
 
-// 从 markdown 提取 [text](url) / Guardian 式 [](url)+###标题 链接
+// 通用 CTA 锚文本（"Read more"/"Learn more" 等）：无信息量，不能当标题用。
+// 卡片式博客（claude.com 等）文章链接的锚文本常是 "Read more"，真实标题在同段标题行里。
+function isGenericCta(text) {
+  return /^(read more|read the (full )?article|learn more|continue reading|continue|keep reading|find out more|see more|show more|read on|read article|view|view article|full article|more|details|click here)$/i.test(
+    (text || '').trim()
+  );
+}
+
+// 从 markdown 提取 [text](url) / Guardian 式 [](url)+###标题 / 卡片式 "## 标题 | 日期 | [CTA](url)" 链接。
+// 卡片式优先匹配：真实标题在锚文本前一格，先登记让真实标题赢下 URL 去重（否则 "Read more" 占位标题把 url 占掉）。
 function extractMarkdownLinks(md) {
   const links = [];
   const seen = new Set();
@@ -114,11 +123,18 @@ function extractMarkdownLinks(md) {
     seen.add(clean);
     links.push({ url: clean, text: (text || '').trim() });
   };
-  for (const m of md.matchAll(/\[([^\]]{0,120})\]\((https?:\/\/[^)\s]+)\)/g)) {
-    add(m[2], m[1]);
+  // ① 卡片式：行首 "## 标题 | 日期 | [Read more](url)" → 用标题当链接文本（剥掉 "| 日期" 元数据）
+  for (const line of md.split('\n')) {
+    const m = line.match(/^#{1,6}\s+([^\[]*?)\s*\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/);
+    if (m && isGenericCta(m[2])) add(m[3], m[1].trim().split('|')[0].trim());
   }
+  // ② Guardian 式："[](url) ### 标题"（先于通用正则，空锚文本也能赢下 URL 去重）
   for (const m of md.matchAll(/\[\]\((https?:\/\/[^)\s]+)\)\s*###\s*([^\n]+)/g)) {
     add(m[1], m[2]);
+  }
+  // ③ 通用 [text](url)（允许空锚文本，交由下游 titleFromSlug 兜底）
+  for (const m of md.matchAll(/\[([^\]]{0,120})\]\((https?:\/\/[^)\s]+)\)/g)) {
+    add(m[2], m[1]);
   }
   return links;
 }
@@ -182,7 +198,8 @@ async function fetchSourceArticles(source) {
     if (isSpamTitle(text)) return;
     const clean = url.split('#')[0];
     if (clean.length < 15) return;
-    const t = (text || '').trim();
+    // CTA 锚文本（Read more 等）无信息量 → 视为空标题，交由 matched 阶段的 titleFromSlug 兜底
+    const t = isGenericCta(text) ? '' : (text || '').trim();
     const existing = candidates.get(clean);
     if (!existing || (!existing.title && t)) {
       candidates.set(clean, { title: t, url: clean });
@@ -216,11 +233,64 @@ async function fetchSourceArticles(source) {
   return selected.map(a => toItem(source, { title: a.title, url: a.url, publishedAt: extractPublishDateFromUrl(a.url) }));
 }
 
+// 导航/菜单段检测：链接多且每链接平均纯文字很少（链接是标签而非正文引用）。
+// 站点 header 导航（claude.com "Meet Claude Products * [Claude] * ..." 式）整段只有短 token 列表，
+// 链接剥离后纯文本仍 >100 字符，旧的 `links>=3 && plain<100` 规则漏判，会把导航占满 1500 字预算。
+function isNavBlock(t) {
+  const links = (t.match(/\[[^\]]*\]\([^)]*\)/g) || []).length;
+  if (links < 4) return false;
+  const plain = t.replace(/\[[^\]]*\]\([^)]*\)/g, '').replace(/[^一-龥a-zA-Z0-9]+/g, '');
+  return plain.length / links < 80;
+}
+
+/**
+ * 纯函数：从 markdown 提取干净正文片段（剥导航/去重/截 1500 字符）。
+ * 按空行切段落 → 剥导航词段与 isNavBlock 导航段 → 剔除重复 ≥3 次的段落。
+ * 兜底：合并后头部仍链接密集（个别站点导航非 * 分隔）时，以最长正文段为锚重取，
+ * 避免站点导航占满预算把真正文挤出（claude.com 实测：fit 为空回落 raw，raw 顶部整段导航）。
+ * @param {string} text markdown 原文（fit 或 raw）
+ * @returns {string|null} 清洗后的正文片段；无内容返回 null
+ */
+function cleanArticleBody(text) {
+  if (!text) return null;
+
+  const counts = new Map();
+  const paras = [];
+  for (const p of text.split(/\n\s*\n/)) {
+    const t = p.replace(/\s+/g, ' ').trim();
+    if (!t) continue;
+    if (/menu|sign in|subscribe|cookie/i.test(t)) continue;
+    if (isNavBlock(t)) continue;
+    const links = (t.match(/\[[^\]]*\]\([^)]*\)/g) || []).length;
+    // 导航段特征：≥3 个链接且剥掉链接后几乎无正文文字（如 Guardian 顶部/足球子导航）
+    if (links >= 3) {
+      const plain = t.replace(/\[[^\]]*\]\([^)]*\)/g, '').replace(/[^一-龥a-zA-Z0-9]+/g, '');
+      if (plain.length < 100) continue;
+    }
+    const key = t.toLowerCase();
+    counts.set(key, (counts.get(key) || 0) + 1);
+    paras.push({ t, key });
+  }
+
+  const filtered = paras.filter(x => (counts.get(x.key) || 0) < 3).map(x => x.t);
+  if (filtered.length === 0) return null;
+
+  let body = filtered.join('\n\n');
+  // 兜底：头部仍链接密集 → 以最长段为锚（正文几乎总是最长段），取其后的段落重拼
+  const headLinks = (body.slice(0, 300).match(/\[[^\]]*\]\([^)]*\)/g) || []).length;
+  if (headLinks >= 8) {
+    const longest = filtered.reduce((a, b) => (b.length > a.length ? b : a), '');
+    if (longest.length >= 200) {
+      body = filtered.slice(filtered.indexOf(longest)).join('\n\n');
+    }
+  }
+  return body ? body.slice(0, 1500) : null;
+}
+
 /**
  * 抓取单篇正文（S1e，正文喂养用）。
- * 复用 crawlPage（waitMs=0）抓单篇 → md.fit_markdown || md.raw_markdown，
- * 剔除导航行（menu / Sign in / Subscribe / Cookie）与重复出现 ≥3 次的段落，
- * 截断到 1500 字符。失败 / 无内容返回 null。
+ * 复用 crawlPage（waitMs=0）抓单篇 → md.fit_markdown || md.raw_markdown → cleanArticleBody。
+ * 失败 / 无内容返回 null。
  * @param {string} url 文章 URL
  * @returns {Promise<string|null>} 清洗后的正文片段，失败返回 null
  */
@@ -235,30 +305,7 @@ async function fetchArticleBody(url) {
   if (!r || r.success === false) return null;
 
   const md = r.markdown || {};
-  const text = md.fit_markdown || md.raw_markdown;
-  if (!text) return null;
-
-  // 按空行切段落：剥导航段（密集链接的段，如 Guardian 顶部 News/Opinion/Sport 导航）
-  // 与导航词，统计重复段落剔除 ≥3 次的。导航前奏会把 1500 字截断占满，正文反而被挤出。
-  const counts = new Map();
-  const paras = [];
-  for (const p of text.split(/\n\s*\n/)) {
-    const t = p.replace(/\s+/g, ' ').trim();
-    if (!t) continue;
-    if (/menu|sign in|subscribe|cookie/i.test(t)) continue;
-    const links = (t.match(/\[[^\]]*\]\([^)]*\)/g) || []).length;
-    // 导航段特征：≥3 个链接且剥掉链接后几乎无正文文字（如 Guardian 顶部/足球子导航）
-    if (links >= 3) {
-      const plain = t.replace(/\[[^\]]*\]\([^)]*\)/g, '').replace(/[^一-龥a-zA-Z0-9]+/g, '');
-      if (plain.length < 100) continue;
-    }
-    const key = t.toLowerCase();
-    counts.set(key, (counts.get(key) || 0) + 1);
-    paras.push({ t, key });
-  }
-
-  const body = paras.filter(x => (counts.get(x.key) || 0) < 3).map(x => x.t).join('\n\n');
-  return body ? body.slice(0, 1500) : null;
+  return cleanArticleBody(md.fit_markdown || md.raw_markdown);
 }
 
-module.exports = { fetchSourceArticles, isXUrl, fetchArticleBody };
+module.exports = { fetchSourceArticles, isXUrl, fetchArticleBody, cleanArticleBody, extractMarkdownLinks, isGenericCta, isNavBlock };
