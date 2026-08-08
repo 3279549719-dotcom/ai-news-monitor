@@ -2,7 +2,7 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { buildDigestText, buildDigestHtml, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest } = require('./email');
+const { buildDigestText, buildDigestHtml, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest, isNotable, filterDigestSections } = require('./email');
 
 const SECTIONS = [
   {
@@ -118,4 +118,21 @@ test('sendDailyDigest：sender 成功透传 subject', async () => {
   const res = await sendDailyDigest(sections, { sender: async ({ subject }) => ({ sent: true, subject }) });
   assert.equal(res.sent, true);
   assert.match(res.subject, /每日摘要/);
+});
+
+test('isNotable：T0/T1 保留，T2/null 过滤', () => {
+  assert.equal(isNotable({ tier: 0 }), true);
+  assert.equal(isNotable({ tier: 1 }), true);
+  assert.equal(isNotable({ tier: 2 }), false);
+  assert.equal(isNotable({ tier: null }), false);
+  assert.equal(isNotable(null), false);
+});
+
+test('filterDigestSections：保留 keyword 结构，只留 T0/T1', () => {
+  const s = [{ keyword: { name: 'MU' }, results: [{ title: 'a', tier: 0 }, { title: 'b', tier: 2 }, { title: 'c' }] }];
+  const out = filterDigestSections(s);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].keyword.name, 'MU');
+  assert.equal(out[0].results.length, 1);
+  assert.equal(out[0].results[0].title, 'a');
 });

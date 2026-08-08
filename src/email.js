@@ -22,6 +22,21 @@ function tierLabel(tier) {
   return `[T${tier}] `;
 }
 
+// 过滤规则：只推 T0/T1 信源（官方 + 一线记者）。T2 媒体不进邮件，
+// 但内容照常入库/进日报 —— 此处只是展示层过滤，不改数据流。
+function isNotable(item) {
+  return item != null && (item.tier === 0 || item.tier === 1);
+}
+
+/**
+ * Filter sections to T0/T1 items only, preserving the per-keyword structure.
+ * @param {Array<{keyword:Object, results:Array}>} sections
+ * @returns {Array<{keyword:Object, results:Array}>}
+ */
+function filterDigestSections(sections) {
+  return sections.map(s => ({ ...s, results: (s.results || []).filter(isNotable) }));
+}
+
 function formatDigestItem(item) {
   const tier = tierLabel(item.tier);
   const score = item.score != null ? ` (${item.score}分)` : '';
@@ -138,4 +153,4 @@ async function sendDailyDigest(sections, opts = {}) {
   }
 }
 
-module.exports = { buildDigestText, buildDigestHtml, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest };
+module.exports = { buildDigestText, buildDigestHtml, buildSubject, isEmailConfigured, sendEmail, sendDailyDigest, isNotable, filterDigestSections };
