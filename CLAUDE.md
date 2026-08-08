@@ -24,6 +24,7 @@ CRON_SCHEDULE="0 8 * * *" node src/index.js  # 备选：常驻进程内 node-cro
 - 数据层：@supabase/supabase-js（keywords / keyword_sources / articles）
 - AI：openai SDK 指向 DeepSeek API（评分 + 摘要 + 链接识别）
 - 定时：node-cron（可选）
+- 邮件通知：nodemailer（SMTP，管线 run() 末尾发每日摘要精简列表；空结果照发）
 - 前端：React 18 + TypeScript + Vite + Tailwind CSS（`client/`）
 
 ## 目录结构
@@ -47,6 +48,7 @@ src/
   items.js          抓取结果 → 入库 items 形状规整（toItem/sourceSlug/normalizeUrlKey，多通道共用）
   crosscheck.js     交叉验证（方案B）：event 聚类 + 置信度/印证数/冲突标记 + 同事件去重（dedupeBySimilarity 双信号 / collapseSameEvent / dedupeAgainstExisting）
   report.js         日报 buildReport（按 category_schema 分组）
+  email.js          每日摘要邮件（SMTP，run() 末尾无条件发送；发送失败不影响管线退出码）
   tiers.js          getTier(url)：域名 → Tier 映射
   source-tiers.json 域名可信度映射表
   *.test.js         node:test 单元测试（npm test）

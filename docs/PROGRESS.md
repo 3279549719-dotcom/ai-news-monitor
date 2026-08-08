@@ -18,6 +18,7 @@
 | F-013 | Phase 9：历史数据回填去重 + 前端空态 — 全量回填重算 + 同事件三层去重 + BoardView 空态重构 + Playwright 截图 | **已完成（最终交付）** | 2026-08-05 验收全绿：Carrick 摘要修正(score 90)、Naji 4→1、npm test 42/42、前端三件套全绿、管线回归通过、**已 push origin/master**（见 F-013 交付内容） |
 | F-014 | Phase 10：管线自动化 + Vercel 部署 + RLS 安全收尾 — Windows 任务计划每日定时 + 前端公网部署 + 后端改 service key/RLS 收紧 anon 只读 | **已完成** | 2026-08-05 定时任务已注册（每日 08:00）、线上 URL 验证 88 条渲染正常、RLS anon 写被拒/service 读写 ✅、npm run check 全绿（见 F-014 交付内容） |
 | F-016 | Harness 加固（反馈验证闭环+架构约束）— PostToolUse 检查分流 / Stop 收尾门禁 / PreToolUse 危险操作拦截 / pre-commit 把关 / 证据化交付 | **已完成** | 2026-08-08 B1 分支测试 8/8 + .env 拦截实测 + npm run check 全绿（见 F-016 交付内容） |
+| F-017 | Email 每日摘要通知（管线内直发，SMTP 精简列表，空结果照发） | **已完成** | 2026-08-08 冒烟验证（见 F-017 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -254,6 +255,21 @@
 - **B2 pre-commit 把关**（`.githooks/pre-commit` + `scripts/harness-precommit.js` + `git config core.hooksPath .githooks`）：拦 `.env*` 入暂存（实测 `.env.test` 被拦 exit 1）+ 提交前跑 `npm run check`。
 
 **验收：** B1 分支测试 8/8 ✅ ｜ .env* 拦截实测 ✅ ｜ `npm run check` 全绿（53/53 单测 + type-check + lint + lint:backend）✅ ｜ 管线逻辑零改动（纯 harness 层）
+
+## F-017 Email 每日摘要通知交付内容（2026-08-08）
+
+> 触发：用户提出每日摘要主动推送，不能只等打开前端查看。方案选型「方案A 管线内直发」：在每日 08:00 定时管线 `run()` 末尾直接 SMTP 发送，无新增进程/定时任务，空结果照发。文档：`docs/superpowers/specs/2026-08-08-email-digest-design.md`（设计定稿）+ `docs/superpowers/plans/2026-08-08-email-digest.md`（6 任务 TDD 计划）。
+
+**发送模块（`src/email.js`，三导出）：**
+- `buildDigestText(sections)`：按关键词分组的纯文本精简列表（标题 + tier 徽章 + score 分 + URL），空结果组跳过、全空输出「今日无新增关注内容。」——纯函数可单测
+- `buildSubject(sections)`：主题行 `【AI News Monitor】YYYY-MM-DD 每日摘要 · 相关 N 条`
+- `sendDailyDigest(sections)`：组合 subject+text 走 nodemailer SMTP 发送；未配置/失败内部吞掉返回 `{sent:false, reason}`，**绝不影响管线退出码**（best-effort）
+
+**配置（`src/config.js` SMTP 块）：** `EMAIL_ENABLED`（`0` 禁用）/ `SMTP_HOST` / `SMTP_PORT`（默认 465）/ `SMTP_SECURE` / `EMAIL_USER` / `EMAIL_AUTH_CODE`（QQ/163 SMTP 授权码，非登录密码）/ `RECEIVER_EMAIL`，详见 LOCAL_SETUP §1.1
+
+**接线（`src/index.js`）：** `run()` 末尾**无条件**调用 `sendDailyDigest(sections)`——空结果照发；日报 `reports/YYYY-MM-DD.md` 仅在 `hasResults` 时写盘（移入 else 分支）。依赖 `nodemailer ^9.0.5`
+
+**交付验证：** `npm test` **64/64**（53 存量 + 11 新增 email.test.js 用例：正文分组/字段降级/空结果文案、主题行、isEmailConfigured 三态、sendDailyDigest 未配置与异常吞掉）✅ ｜ 真实发信冒烟 **exit 0** ✅ ｜ 提交前 `npm run check` 全绿（lint + type-check + 64/64）✅
 
 ## 项目开发路线图
 
