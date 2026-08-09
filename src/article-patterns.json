@@ -13,7 +13,7 @@
   "techcrunch.com": ["\\/20\\d\\d\\/\\d+\\/"],
   "venturebeat.com": ["\\/(technology|ai|business)\\/"],
   "wired.com": ["\\/story\\/"],
-  "nba.com": ["\\/mavs\\/news\\/"],
+  "nba.com": ["\\/mavs\\/news\\/", "\\/news\\/mavericks\\/", "\\/news\\/dallas\\/"],
   "dallasnews.com": ["\\/sports\\/mavericks\\/"],
   "sports.yahoo.com": ["\\.html$"],
   "bleacherreport.com": ["\\/articles\\/"],
