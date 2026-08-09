@@ -43,27 +43,17 @@ function ts() {
   return new Date().toISOString().replace('T', ' ').split('.')[0];
 }
 
-// ─── Alert (best-effort; reuses email.js SMTP config) ──────────────
-function sendAlertEmail(subject, htmlBody) {
-  if (noAlert) return;
+// ─── Alert (best-effort; 统一走 src/notify.js 分发器) ─────────────
+async function sendAlertEmail(subject, htmlBody) {
+  if (noAlert) return false;
   try {
-    const email = require('../src/email');
-    if (typeof email.isEmailConfigured !== 'function' || !email.isEmailConfigured()) {
-      console.warn('[pipeline] alert email skipped: SMTP not configured');
-      return false;
-    }
-    const to = require('../src/config').RECEIVER_EMAIL;
-    if (!to) {
-      console.warn('[pipeline] alert email skipped: no RECEIVER_EMAIL');
-      return false;
-    }
-    console.log(`[pipeline] sending alert email to ${to}…`);
-    const sent = email.sendEmail(to, subject, htmlBody);
-    if (sent) console.log('[pipeline] alert email sent');
-    else console.warn('[pipeline] alert email failed (best-effort, continuing)');
-    return true;
+    const notify = require('../src/notify');
+    const r = await notify({ subject, html: htmlBody, text: '' });
+    if (r.sent) console.log(`[pipeline] alert sent: ${subject}`);
+    else console.warn(`[pipeline] alert failed (best-effort): ${r.reason}`);
+    return r.sent;
   } catch (e) {
-    console.warn('[pipeline] alert email error:', e.message);
+    console.warn('[pipeline] alert error:', e.message);
     return false;
   }
 }

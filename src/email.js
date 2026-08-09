@@ -13,6 +13,7 @@
 
 const config = require('./config');
 const { CONFIDENCE_LABEL } = require('./crosscheck');
+const notify = require('./notify');
 
 function todayIso() {
   return new Date().toISOString().split('T')[0];
@@ -194,11 +195,15 @@ async function sendEmail({ subject, text, html }, opts = {}) {
 async function sendDailyDigest(sections, opts = {}) {
   try {
     const filtered = filterDigestSections(sections);
-    const subject = buildSubject(filtered);
-    const text = buildDigestText(filtered);
-    const html = buildDigestHtml(filtered);
-    if (opts.sender) return await opts.sender({ subject, text, html });
-    return await sendEmail({ subject, text, html }, opts);
+    const payload = {
+      subject: buildSubject(filtered),
+      text: buildDigestText(filtered),
+      html: buildDigestHtml(filtered),
+    };
+    // 单测 hook：opts.sender 直透 payload（不走 notify），保持既有 email.test.js 语义
+    if (opts.sender) return await opts.sender(payload);
+    // 生产路径：统一走通知分发器（默认 email 通道 → sendEmail）
+    return await notify(payload, opts);
   } catch (err) {
     return { sent: false, reason: err.message };
   }

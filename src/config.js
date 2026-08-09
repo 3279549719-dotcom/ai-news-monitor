@@ -42,6 +42,9 @@ module.exports = {
   SEEN_RING_SIZE: 200,
   SEEN_STORE_PATH: process.env.SEEN_STORE_PATH || path.join(__dirname, '../logs/.seen-ids.json'),
 
+  // A3 通知通道（逗号分隔；默认 email）。新增通道 = CHANNELS 注册表加一项 + 这里加名。
+  NOTIFY_CHANNELS: process.env.NOTIFY_CHANNELS || 'email',
+
   // X/Twitter 抓取（twikit 主 + crawl4ai 兜底）。凭证仅在 .env 提供。
   X_PYTHON: process.env.X_PYTHON || 'python',
   X_TWIKIT_ENABLED: process.env.X_TWIKIT_ENABLED !== '0',
