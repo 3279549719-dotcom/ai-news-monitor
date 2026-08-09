@@ -62,13 +62,13 @@ async function saveArticles(records) {
 /**
  * Load the enabled whitelist sources for a keyword.
  * @param {string} keywordId - Target keyword id.
- * @returns {Promise<Array>} Source rows (rss_url, scrape_url, source_name, tier, fetch_type).
+ * @returns {Promise<Array>} Source rows (rss_url, scrape_url, source_name, tier, fetch_type, backends).
  */
 async function loadKeywordSources(keywordId) {
   return withRetry(async () => {
     const { data, error } = await getClient()
       .from('keyword_sources')
-      .select('rss_url, scrape_url, source_name, tier, fetch_type')
+      .select('rss_url, scrape_url, source_name, tier, fetch_type, backends')
       .eq('keyword_id', keywordId)
       .eq('enabled', true);
     if (error) throw new Error(`loadKeywordSources: ${error.message}`);
