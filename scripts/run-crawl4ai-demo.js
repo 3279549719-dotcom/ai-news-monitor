@@ -30,7 +30,7 @@ async function runDemo() {
   const analyzed = [];
   for (const item of toProcess) {
     try {
-      const r = await analyzeResult(mu.query, item.title, item.snippet, item.tier, mu.category_schema);
+      const r = await analyzeResult({ query: mu.query, title: item.title, snippet: item.snippet, tier: item.tier, categorySchema: mu.category_schema });
       console.log(`  [AI] ${r.relevant ? '✅' : '❌'} score=${r.score} cat=${r.category || '-'} | ${item.title.slice(0, 40)}`);
       if (r.relevant) analyzed.push({ ...item, ...r });
     } catch (err) {
