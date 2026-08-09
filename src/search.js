@@ -1,18 +1,16 @@
 const axios = require('axios');
-const { fetchSource } = require('./scraper-direct');
-const crawl4ai = require('./crawl4ai-fetch');
-const xFetch = require('./x-fetch');
 const { getTier } = require('./tiers');
 const { toItem, normalizeUrlKey } = require('./items');
 const { MAX_PER_SOURCE } = require('./config');
+const { fetchSourceWithChain } = require('./fetch-chain');
 
 /**
  * Search orchestration for the search keyword type.
  *
- * When a keyword has whitelist sources configured, fetches each source in
- * sequence (crawl4ai first, degrading to scraper-direct on failure); otherwise
- * falls back to HackerNews. All results are URL-deduped keeping the most
- * trusted tier.
+ * When a keyword has whitelist sources configured, fetches each source through
+ * its backend chain (fetch-chain, driven by the source's backends config);
+ * otherwise falls back to HackerNews. All results are URL-deduped keeping the
+ * most trusted tier.
  */
 
 // HackerNews via Algolia API — best for tech topics, free.
@@ -95,25 +93,6 @@ function capSourceItems(items, maxPerSource) {
   return items.slice(0, maxPerSource);
 }
 
-// crawl4ai 优先；失败/空结果降级 scraper-direct；X 源走 x-fetch（twikit 主 + crawl4ai 兜底，不降 Direct）
-async function fetchSourceWithFallback(source) {
-  if (crawl4ai.isXUrl(source.scrape_url)) {
-    return xFetch.fetchXSourceArticles(source);
-  }
-  try {
-    const items = await crawl4ai.fetchSourceArticles(source);
-    if (items.length === 0) throw new Error('crawl4ai 空结果');
-    console.log(`  [Crawl4ai] ${source.source_name}: ${items.length} 篇`);
-    return items;
-  } catch (err) {
-    console.log(`  [Crawl4ai] ${source.source_name} → 降级 Direct: ${err.message}`);
-    try { return await fetchSource(source); } catch (e) {
-      console.error(`  [Direct] ${source.source_name} 降级也失败: ${e.message}`);
-      return [];
-    }
-  }
-}
-
 /**
  * Main search entry: gather candidate items for a keyword query.
  * Uses whitelist sources when present (per-source sequential fetch to avoid
@@ -134,7 +113,7 @@ async function searchAll(query, keywordSources = []) {
     // 非 T0 源每源上限 MAX_PER_SOURCE 条，防单源淹没、保证多源覆盖。
     const ordered = sortSourcesByTier(configuredSources);
     for (const source of ordered) {
-      let items = await fetchSourceWithFallback(source);
+      let items = await fetchSourceWithChain(source);
       const tier = source.tier ?? Infinity;
       if (tier > 0) items = capSourceItems(items, MAX_PER_SOURCE);
       combined.push(...items);
