@@ -193,34 +193,38 @@ function runPipeline() {
 
   child.stdout.pipe(process.stdout);
   child.stderr.pipe(process.stderr);
-  child.stdout.pipe(log);
-  child.stderr.pipe(log);
+  // { end: false } —— 防 pipe 在 stdout 结束(auto-end)时提前关闭 log 流：
+  // 否则 finishLog 的收尾 write/end 落到已关闭流上被静默丢弃，exit code 行不落盘（B1）。
+  child.stdout.pipe(log, { end: false });
+  child.stderr.pipe(log, { end: false });
+
+  // 日志收尾统一出口：write/end 回调链保证「收尾行落盘」后再打点、告警、退出，
+  // 避免 process.exit 抢跑导致日志缺 `exit code=0` 结尾行（B1）。
+  function finishLog(code, signal, spawnError) {
+    const summary = spawnError
+      ? `failed to spawn node: ${spawnError}`
+      : `pipeline exited (code=${code}${signal ? ` signal=${signal}` : ''})`;
+    log.write(`\n=== ${ts()} ${summary} ===\n\n`, () => {
+      log.end(async () => {
+        console.log(`[pipeline] ${summary}`);
+        if (spawnError) {
+          await sendAlertEmail('❌ ai-news-monitor: 管线启动失败', `<p>${ts()} ${summary}</p><p><small>— ai-news-monitor run-pipeline.js</small></p>`);
+        } else if (code !== 0) {
+          await sendAlertEmail(`❌ ai-news-monitor: 管线异常退出 (code=${code})`, `<p>${summary}</p><p>请检查日志: <code>logs/pipeline-${localStamp()}.log</code></p><p><small>— ai-news-monitor run-pipeline.js</small></p>`);
+        }
+        process.exit(code ?? 1);
+      });
+    });
+    // 安全兜底：流异常时 5s 后强制退出，避免进程悬挂
+    setTimeout(() => process.exit(code ?? 1), 5000).unref();
+  }
 
   child.on('error', (e) => {
     console.error('[pipeline] failed to spawn node:', e.message);
-    log.write(`\n[ERROR] ${ts()} failed to spawn node: ${e.message}\n`);
-    log.end();
-    sendAlertEmail(
-      '❌ ai-news-monitor: 管线启动失败',
-      `<p>${ts()} 管线子进程启动失败: <code>${e.message}</code></p>
-       <p><small>— ai-news-monitor run-pipeline.js</small></p>`,
-    );
-    process.exit(1);
+    finishLog(1, null, e.message);
   });
   child.on('exit', (code, signal) => {
-    log.write(`\n=== ${ts()} exit code=${code}${signal ? ` signal=${signal}` : ''} ===\n\n`);
-    log.end();
-    const summary = `pipeline exited (code=${code}${signal ? ` signal=${signal}` : ''}) at ${ts()}`;
-    console.log(`[pipeline] ${summary}`);
-    if (code !== 0) {
-      sendAlertEmail(
-        `❌ ai-news-monitor: 管线异常退出 (code=${code})`,
-        `<p>${summary}</p>
-         <p>请检查日志: <code>logs/pipeline-${localStamp()}.log</code></p>
-         <p><small>— ai-news-monitor run-pipeline.js</small></p>`,
-      );
-    }
-    process.exit(code ?? 1);
+    finishLog(code ?? 1, signal, null);
   });
 }
 
