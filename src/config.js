@@ -8,6 +8,7 @@
  * once; any entry point that requires this module gets the .env variables.
  */
 require('dotenv').config();
+const path = require('path');
 
 module.exports = {
   // AI relevance threshold (search-type score>=60 counts as relevant) and the
@@ -36,6 +37,10 @@ module.exports = {
   // collecting links, otherwise only the first-screen skeleton is returned.
   JS_SOURCES: new Set(['mavsmoneyball.com', 'thesmokingcuban.com']),
   JS_WAIT_MS: 5000,
+
+  // A2 增量幂等闸：每源最近 N 条已见 URL 环形缓冲（logs/.seen-ids.json，gitignored）。
+  SEEN_RING_SIZE: 200,
+  SEEN_STORE_PATH: process.env.SEEN_STORE_PATH || path.join(__dirname, '../logs/.seen-ids.json'),
 
   // X/Twitter 抓取（twikit 主 + crawl4ai 兜底）。凭证仅在 .env 提供。
   X_PYTHON: process.env.X_PYTHON || 'python',

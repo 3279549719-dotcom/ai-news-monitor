@@ -2,7 +2,8 @@
 
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { applyTierFloor, T0_FLOOR, preFilter } = require('./index');
+const { SeenStore, keyForUrl } = require('./seen');
+const { applyTierFloor, T0_FLOOR, preFilter, applySeenRing } = require('./index');
 
 // ── applyTierFloor：T0 官方源相关性放行 ──────────────────────────
 test('applyTierFloor：T0 源被 AI 误判低分 → 抬到放行线', () => {
@@ -43,4 +44,21 @@ test('preFilter：非 T0 源仍按词根过滤', () => {
   const kept = preFilter(items, 'Anthropic');
   assert.equal(kept.length, 1);
   assert.equal(kept[0].title, 'Claude code migration');
+});
+
+// ── applySeenRing：增量幂等闸第一道 ─────────────────────────────
+test('applySeenRing：剔除 seen ring 内已分析 URL，保留新 URL', () => {
+  const seen = new SeenStore(200);
+  const items = [
+    { source: 'man-utd-official', url: 'https://www.manutd.com/en/news/a' },
+    { source: 'man-utd-official', url: 'https://www.manutd.com/en/news/b' },
+  ];
+  seen.add('man-utd-official', keyForUrl(items[0].url));
+  const kept = applySeenRing(items, seen);
+  assert.equal(kept.length, 1);
+  assert.equal(kept[0].url, 'https://www.manutd.com/en/news/b');
+});
+
+test('applySeenRing：空输入返回空数组，不抛错', () => {
+  assert.deepEqual(applySeenRing([], new SeenStore(200)), []);
 });

@@ -13,7 +13,8 @@ const { crosscheck, collapseSameEvent, dedupeAgainstExisting, CONFIDENCE_LABEL }
 const { getKeywordRoots } = require('./keyword-roots');
 const { buildReport } = require('./report');
 const { sendDailyDigest } = require('./email');
-const { RESULT_LIMIT, MIN_SCORE } = require('./config');
+const { RESULT_LIMIT, MIN_SCORE, SEEN_RING_SIZE, SEEN_STORE_PATH } = require('./config');
+const { keyForUrl, SeenStore } = require('./seen');
 
 // ---------------------------------------------------------------------------
 // 前置过滤：标题不含关键词词根的直接跳过（省 DeepSeek 调用）
@@ -41,6 +42,17 @@ function preFilter(items, keywordName) {
     console.log(`  [PreFilter] ${skipped.length} 条跳过（标题不含词根）`);
   }
   return filtered;
+}
+
+/**
+ * 增量幂等闸第一道：剔除 seen ring 内近期已分析过的 URL（抓取后、DB 过滤前）。
+ * @param {Array} items - 本次抓取的全部候选。
+ * @param {SeenStore} seen - 每源环形缓冲。
+ * @returns {Array} 仅保留 seen 中未出现的条目。
+ */
+function applySeenRing(items, seen) {
+  if (!items || items.length === 0) return items;
+  return items.filter(i => !seen.has(i.source, keyForUrl(i.url)));
 }
 
 // T0 官方信源相关性放行线：官方站内容天然相关（claude.com/anthropic.com/manutd.com/nba.com 等），
@@ -138,7 +150,7 @@ async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
  * 阶段 1：抓取候选文章
  * 调用 pipeline.fetch 获取原始列表，经 filterNewItems 过滤已入库 URL。
  */
-async function fetchCandidates(keyword) {
+async function fetchCandidates(keyword, seen) {
   const pipeline = PIPELINES[keyword.type];
   if (!pipeline) {
     console.warn(`  [${keyword.name}] 未知类型 "${keyword.type}"，跳过`);
@@ -154,7 +166,12 @@ async function fetchCandidates(keyword) {
   const allItems = await pipeline.fetch(keyword, keywordSources);
   console.log(`  找到 ${allItems.length} 条`);
 
-  const newItems = await filterNewItems(allItems, keyword.id);
+  const ringFresh = applySeenRing(allItems, seen);
+  if (ringFresh.length < allItems.length) {
+    console.log(`  [Seen] ${allItems.length - ringFresh.length} 条近期已分析，跳过`);
+  }
+
+  const newItems = await filterNewItems(ringFresh, keyword.id);
   console.log(`  未处理: ${newItems.length}`);
 
   return newItems;
@@ -286,14 +303,19 @@ async function persist(records) {
 // processKeyword：编排各阶段
 // ---------------------------------------------------------------------------
 
-async function processKeyword(keyword) {
+async function processKeyword(keyword, seen) {
   // 阶段 1：抓取候选
-  const newItems = await fetchCandidates(keyword);
+  const newItems = await fetchCandidates(keyword, seen);
   if (newItems === null) return [];   // 未知类型
   if (newItems.length === 0) return [];
 
   // 阶段 2：分析 + 交叉验证
   const toSaveRelevant = await analyzeAndCrosscheck(keyword, newItems);
+
+  // 分析完成后登记本轮进入预算的候选到 seen（崩溃中断不误标；相关 URL 由 DB score>0 兜底）
+  for (const it of newItems.slice(0, RESULT_LIMIT)) {
+    seen.add(it.source, keyForUrl(it.url));
+  }
 
   // 阶段 3：跨运行去重
   const deduped = await dedupeAgainstRecent(toSaveRelevant, keyword.id, 30);
@@ -322,15 +344,17 @@ async function run() {
   }
   console.log(`\n监控 ${keywords.length} 个关键词: ${keywords.map(k => k.name).join(', ')}`);
 
+  const seen = await SeenStore.load({ filePath: SEEN_STORE_PATH, capacity: SEEN_RING_SIZE });
   const sections = [];
   for (const kw of keywords) {
     try {
-      sections.push({ keyword: kw, results: await processKeyword(kw) });
+      sections.push({ keyword: kw, results: await processKeyword(kw, seen) });
     } catch (err) {
       console.error(`\n[${kw.name}] 错误: ${err.message}`);
       sections.push({ keyword: kw, results: [] });
     }
   }
+  await seen.save({ filePath: SEEN_STORE_PATH });
 
   const hasResults = sections.some(s => s.results.length > 0);
   if (!hasResults) {
@@ -370,4 +394,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord, applyTierFloor, T0_FLOOR };
+module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord, applyTierFloor, applySeenRing, T0_FLOOR };
