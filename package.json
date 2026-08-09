@@ -33,6 +33,8 @@
     "type-check": "npm --prefix client run type-check",
 
     "check": "npm run lint && npm run type-check && npm test",
+    "commit": "node scripts/git-commit.js",
+    "commit:push": "node scripts/git-commit.js --push --all",
 
     "ops:backfill": "node scripts/backfill-resummarize.js",
     "ops:dedup": "node scripts/dedup-existing.js",
