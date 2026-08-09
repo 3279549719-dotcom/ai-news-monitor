@@ -25,11 +25,14 @@ async function loadKeywords() {
 }
 
 /**
- * Filter out items whose URL already exists for the keyword.
+ * Filter out items whose URL already exists for the keyword as a RELEVANT row
+ * (score > 0). score=0 rows are treated as "seen marker" but NOT blocking:
+ * a mis-scored URL can be re-analyzed on a later run (A2-2). Short-term
+ * re-analysis is damped by the seen ring (src/seen.js).
  * Uses the get_new_urls RPC to avoid PostgREST URL length limits on big arrays.
  * @param {Array} items - Candidate items with a `url` field.
  * @param {string} keywordId - Target keyword id.
- * @returns {Promise<Array>} Only items whose URL is new.
+ * @returns {Promise<Array>} Only items whose URL is new (or only score-0-marked).
  */
 async function filterNewItems(items, keywordId) {
   if (items.length === 0) return [];
