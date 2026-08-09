@@ -20,6 +20,7 @@
 | F-016 | Harness 加固（反馈验证闭环+架构约束）— PostToolUse 检查分流 / Stop 收尾门禁 / PreToolUse 危险操作拦截 / pre-commit 把关 / 证据化交付 | **已完成** | 2026-08-08 B1 分支测试 8/8 + .env 拦截实测 + npm run check 全绿（见 F-016 交付内容） |
 | F-017 | Email 每日摘要通知（管线内直发，SMTP 精简列表，空结果照发） | **已完成** | 2026-08-08 冒烟验证（见 F-017 交付内容） |
 | F-018 | 邮件升级 v2：T0/T1 精选 · 事件+中文摘要 HTML 卡片（T0/T1 过滤 + 板块分组 + 双格式 + 空结果照发，冒烟已验） | **已完成** | 2026-08-08 冒烟验证 72/72（commit `4cd0376`，见 F-018 交付内容） |
+| F-021 | 架构借鉴落地：抓取通道数据化(A1) + 增量幂等闸(A2) + 通知分发器(A3) + 日志收尾(B1) | **已完成** | 2026-08-09 npm run check 112/112 + E2E 两轮（[Seen] 跳过生效、exit line 稳定、Anthropic T0 单通道出内容）、score-0 放行 SQL 抽查 ✅（见 F-021 交付内容） |
 
 ## F-003 交付内容（2026-08-02）
 
@@ -308,6 +309,20 @@
 - **评分**：`applyTierFloor(score, tier)`——T0 源 `score=max(AI, 85)` 放行；`preFilter` 对 `tier===0` 项免词根预筛（官方内容天然相关，标题未必含词根）。
 
 **交付验证：** 新增 `src/crawl4ai-fetch.test.js`（10 例：CTA/卡片标题/Guardian 兼容/导航段/正文清理）+ `src/index.test.js`（4 例：T0 floor/preFilter 免词根），**npm run check 87/87 全绿** ✅ ｜ 真实数据端到端：claude-blog 25 条 **"Read more" 0 条**、auto-mode 正文**不含导航**、三篇官方文章 AI 分 85/80/0 → T0 floor 后全 **85 放行** ✅ ｜ 清理 43 行误杀数据（claude-blog 26 + news 8 + research 9，SQL DELETE 已确认）→ 管线排空重入 ✅ ｜ 修正自引入 bug：index.js 漏引 `MIN_SCORE`（首跑运行时暴露，`const { RESULT_LIMIT, MIN_SCORE } = require('./config')`）
+
+## F-021 架构借鉴落地（2026-08-09）
+
+> 来源：采纳 `docs/REQ-架构借鉴-吸收开源成熟监控组件.md`，DECISION 见 `docs/DECISION-架构借鉴-吸收开源成熟监控组件.md`，实施计划 `docs/superpowers/plans/2026-08-09-架构借鉴-抓取通道数据化-增量幂等-通知分发.md`（8 task，TDD）。
+
+**四项落地摘要：**
+- **A1 抓取通道数据化**：`keyword_sources.backends` jsonb 列（已迁移）+ `src/fetch-chain.js` 通道注册表（crawl4ai/direct/twikit），search.js 逐源走 `fetchSourceWithChain`；10 源已配置（3 Anthropic 单通道 / 5 X twikit 主链 / NBA Mavs + TechCrunch 双通道）。
+- **A2 增量幂等闸**：`src/seen.js` 每源 200 条 seen ring 持久化 `logs/.seen-ids.json`；`get_new_urls` RPC 改 `AND a.score > 0` —— score-0 行不再被视为已见、可被重评。
+- **A3 通知分发器**：`src/notify.js` 统一 notify()，`NOTIFY_CHANNELS` 逗号分隔多通道；email.js 日报 + run-pipeline 失败告警收口于此（顺带修复 run-pipeline 旧式 `sendEmail(to,subject,html)` 位置参数告警失效 bug）。
+- **B1 日志收尾**：run-pipeline finishLog 落盘后再 exit，根因 = pipe 默认 `end:true` 在子进程 exit 前关流丢行，修复 = `{ end: false }` + write/end 回调链。
+
+**验收结果：** npm run check **112/112** 全绿（新增 fetch-chain/seen/notify/index 用例）；E2E 两轮真实管线（含 Docker）：`[Seen] N 条近期已分析，跳过` 生效、`pipeline exited (code=0)` 结尾行稳定、Anthropic T0 单通道 backends 仍正常出内容（News 14/Claude Blog 25/TechCrunch 38/VentureBeat 10）、摘要邮件照常发送；score-0 抽查 `created_at::date=current_date` 存在 0 分行（14）+ 85 分行（12）且 RPC 定义含 `score > 0` ✅。
+
+**遗留观察项（DECISION 已记录延后）：** **A4/A5/A6 延后**（A4 统一事件建模、A5 去重信号增强、A6 健康自愈纵深）；**B2 待管理员**（失败告警多渠道扩展）；另：T2/T3/T4/T6/T7 若干 minor（deferred）见 SDD ledger；master 分支未 push origin/master（F-019/F-020/F-021 待推）。
 
 ## 项目开发路线图
 
