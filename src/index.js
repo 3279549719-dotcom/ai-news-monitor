@@ -59,14 +59,19 @@ function applySeenRing(items, seen) {
 // AI 评分被标题/正文噪声（"Read more" 标题、导航正文）带偏低于此线时抬到此线，保证官方内容必入库。
 const T0_FLOOR = 85;
 
+// T1 X 记者评分保底：跟队记者/权威记者的推文即使 AI 打 0 分也抬到 40，至少入库可见。
+const T1_FLOOR = 40;
+
 /**
- * 对 T0 官方信源应用相关性放行：score 取下限 T0_FLOOR。非 T0 源原样返回。
+ * 对 T0/T1 信源应用评分保底：T0 → T0_FLOOR，T1 → T1_FLOOR。其余层级原样返回。
  * @param {number} score - AI 原始评分。
  * @param {number|null} tier - 信源可信度层级。
  * @returns {number} 放行后的评分。
  */
 function applyTierFloor(score, tier) {
-  return tier === 0 ? Math.max(score, T0_FLOOR) : score;
+  if (tier === 0) return Math.max(score, T0_FLOOR);
+  if (tier === 1) return Math.max(score, T1_FLOOR);
+  return score;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,7 +141,7 @@ async function analyzeItems(keyword, items, limit = RESULT_LIMIT) {
       return acc;
     }
     const { score, summary, event, event_type, category } = r.value;
-    // T0 官方源抬到放行线；非 T0 维持 AI 原分
+    // T0 官方源抬到放行线；T1 跟队记者抬到保底线；其余层级维持 AI 原分
     const finalScore = applyTierFloor(score, item.tier);
     return finalScore >= MIN_SCORE ? [...acc, { ...item, score: finalScore, summary, event, event_type, category }] : acc;
   }, []);
@@ -394,4 +399,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord, applyTierFloor, applySeenRing, T0_FLOOR };
+module.exports = { run, buildReport, getKeywordRoots, preFilter, processKeyword, toArticleRecord, applyTierFloor, applySeenRing, T0_FLOOR, T1_FLOOR };

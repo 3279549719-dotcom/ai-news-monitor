@@ -3,7 +3,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { SeenStore, keyForUrl } = require('./seen');
-const { applyTierFloor, T0_FLOOR, preFilter, applySeenRing } = require('./index');
+const { applyTierFloor, T0_FLOOR, T1_FLOOR, preFilter, applySeenRing } = require('./index');
 
 // ── applyTierFloor：T0 官方源相关性放行 ──────────────────────────
 test('applyTierFloor：T0 源被 AI 误判低分 → 抬到放行线', () => {
@@ -12,12 +12,19 @@ test('applyTierFloor：T0 源被 AI 误判低分 → 抬到放行线', () => {
   assert.equal(applyTierFloor(59, 0), T0_FLOOR);
 });
 
-test('applyTierFloor：T0 源 AI 高分不动，非 T0 源原样', () => {
+test('applyTierFloor：T0 源 AI 高分不动，T2/null 原样', () => {
   assert.equal(applyTierFloor(90, 0), 90);   // T0 高分不降
   assert.equal(applyTierFloor(85, 0), 85);   // 恰为放行线不动
-  assert.equal(applyTierFloor(40, 1), 40);   // T1 不抬
   assert.equal(applyTierFloor(40, 2), 40);   // T2 不抬
   assert.equal(applyTierFloor(40, null), 40); // 无 tier 不抬
+});
+
+test('applyTierFloor：T1 源被 AI 打低分 → 抬到 T1_FLOOR', () => {
+  assert.equal(applyTierFloor(0, 1), T1_FLOOR);
+  assert.equal(applyTierFloor(20, 1), T1_FLOOR);
+  assert.equal(applyTierFloor(39, 1), T1_FLOOR);
+  assert.equal(applyTierFloor(50, 1), 50);   // T1 高分不降
+  assert.equal(applyTierFloor(40, 1), 40);   // 恰为保底线不动
 });
 
 // ── preFilter：T0 官方源免词根预筛 ───────────────────────────────
