@@ -113,6 +113,9 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
   const isDAL = keywordId === DAL_KEYWORD_ID;
   const boards = isMU ? MU_BOARDS : isDAL ? DAL_BOARDS : GENERIC_BOARDS;
 
+  // Remilia 角色图：只有 MU 板块视图展示，screen blend 去除黑底
+  const showRemilia = isMU;
+
   const byCategory = (key: string) => articles.filter(a => a.category === key);
 
   // 兜底：不在任何板块定义内的分类（如 rumour/conflict/academy_women）进「其他」板，避免静默丢弃
@@ -129,7 +132,16 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
     return (
       <div>
         <div className="mb-4">
-          <h2 className="text-lg font-bold text-slate-800">{keywordName}</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-slate-800">{keywordName}</h2>
+            {isMU && (
+              <img
+                src="/remilia.png"
+                alt="remilia"
+                className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm"
+              />
+            )}
+          </div>
           <p className="text-xs text-slate-400">白名单信源 · AI 评分 · Tier 可信度分级</p>
         </div>
         <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 px-6 text-center">
@@ -160,7 +172,7 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
         <div>
           <h2 className="text-lg font-bold text-slate-800">{keywordName}</h2>
           <p className="text-xs text-slate-400">白名单信源 · AI 评分 · Tier 可信度分级</p>
@@ -177,6 +189,17 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
           </label>
         )}
       </div>
+
+      {showRemilia && (
+        <div className="flex justify-center mb-3">
+          <img
+            src="/remilia.png"
+            alt="remilia"
+            className="w-24 h-24 object-contain"
+            style={{ mixBlendMode: 'screen' }}
+          />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
         {boardsWithItems.map(board => {
