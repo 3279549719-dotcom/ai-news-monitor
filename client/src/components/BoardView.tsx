@@ -113,7 +113,7 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
   const isDAL = keywordId === DAL_KEYWORD_ID;
   const boards = isMU ? MU_BOARDS : isDAL ? DAL_BOARDS : GENERIC_BOARDS;
 
-  // Remilia 角色图：只有 MU 板块视图展示，screen blend 去除黑底
+  // Remilia 角色图：只有 MU 板块视图展示，圆形头像 + 柔和阴影，位于标题下方居中
   const showRemilia = isMU;
 
   const byCategory = (key: string) => articles.filter(a => a.category === key);
@@ -195,8 +195,7 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
           <img
             src="/remilia.png"
             alt="remilia"
-            className="w-24 h-24 object-contain"
-            style={{ mixBlendMode: 'screen' }}
+            className="w-20 h-20 object-cover rounded-full border-2 border-white shadow-md"
           />
         </div>
       )}
