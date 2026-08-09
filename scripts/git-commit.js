@@ -34,7 +34,8 @@ function run(cmd, args, opts = {}) {
   const r = spawnSync(cmd, args, {
     cwd: ROOT,
     encoding: 'utf8',
-    shell: process.platform === 'win32',
+    // 不用 shell：提交信息可能含 /() 等特殊字符，
+    // cmd.exe 拼参会被破坏，参数数组必须原样传给 git.exe
     timeout: 300000,
     ...opts,
   });
