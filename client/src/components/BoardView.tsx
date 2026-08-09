@@ -195,7 +195,7 @@ export default function BoardView({ articles, keywordId, keywordName, includeOld
           <img
             src="/remilia.png"
             alt="remilia"
-            className="w-20 h-20 object-cover rounded-full border-2 border-white shadow-md"
+            className="w-48 h-48 object-cover rounded-full border-2 border-white shadow-md"
           />
         </div>
       )}
