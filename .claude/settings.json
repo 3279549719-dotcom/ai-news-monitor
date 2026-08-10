@@ -6,7 +6,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /e/claude/ai-news-monitor && node scripts/harness-check.js 2>&1 | tail -40"
+            "command": "cd /e/claude/ai-news-monitor && node scripts/harness-check.js 2>&1 | tail -40",
+            "async": true
           }
         ]
       }
