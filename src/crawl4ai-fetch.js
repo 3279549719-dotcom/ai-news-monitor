@@ -20,7 +20,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { selectArticleLinks } = require('./ai');
-const { CRAWL4AI_URL, CRAWL4AI_API_TOKEN, JS_SOURCES, JS_WAIT_MS } = require('./config');
+const { CRAWL4AI_URL, JS_SOURCES, JS_WAIT_MS, getSecret } = require('./config');
 const { toItem } = require('./items');
 const { extractPublishDateFromUrl } = require('./dates');
 const { extractTweetsFromMarkdown, handleFromProfileUrl } = require('./x-tweet-parse');
@@ -42,7 +42,7 @@ const TOKEN_FILE = path.join(__dirname, '../.crawl4ai-token');
 let _token = null;
 function getToken() {
   if (_token) return _token;
-  if (CRAWL4AI_API_TOKEN) { _token = CRAWL4AI_API_TOKEN; return _token; }
+  const tok = getSecret('CRAWL4AI_API_TOKEN'); if (tok) { _token = tok; return _token; }
   try { _token = fs.readFileSync(TOKEN_FILE, 'utf8').trim(); } catch (err) { _token = ''; }
   return _token;
 }

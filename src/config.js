@@ -1,88 +1,105 @@
 'use strict';
 
 /**
- * Central config module.
+ * Central config module — refactored 2026-08-10.
  *
- * Reads environment variables and exposes global constants so that individual
- * modules never touch `process.env` directly. dotenv is loaded here exactly
- * once; any entry point that requires this module gets the .env variables.
+ * Public constants are exported directly. Sensitive keys (API keys, tokens,
+ * passwords) are accessed through `getSecret(name)` so they are never dumped
+ * when a test or debug script does `console.log(require('./config'))`.
+ *
+ * dotenv is loaded here exactly once; any entry point that requires this
+ * module gets the .env variables.
  */
 require('dotenv').config();
 const path = require('path');
 
+// ============================================================================
+// Public constants — safe to log / inspect
+// ============================================================================
+
 module.exports = {
-  // AI relevance threshold (search-type score>=60 counts as relevant).
+  // AI relevance threshold (score>=60 counts as relevant).
   MIN_SCORE: 60,
 
-  // 单次运行每个关键词最多分析条数。
+  // Items per keyword per run.
   RESULT_LIMIT: 30,
 
-  // T0 官方信源评分放行线：官方站内容天然相关，AI 评分被标题/正文噪声带偏低于此线时抬到此处。
+  // T0 官方信源评分放行线。
   T0_FLOOR: 85,
 
-  // T1 记者评分保底：跟队记者/权威记者推文至少抬到 40，保证可见。
+  // T1 记者评分保底。
   T1_FLOOR: 40,
 
-  // Pipeline 类型注册表：关键字对应抓取+分析处理函数。
-  // blog 类型 LEGACY，新关键词请用 search。
-  PIPELINES: {
-    blog: 'blog',
-    search: 'search',
-  },
+  // Pipeline type registry. blog = LEGACY, new keywords should use search.
+  PIPELINES: { blog: 'blog', search: 'search' },
 
-  // 单源产出上限（仅非 T0 源）：防单源淹没分析预算，保证多源（尤其 T1 X 记者）
-  // 都能进入 feed。T0 官方源不设限。
+  // Non-T0 source cap per source.
   MAX_PER_SOURCE: 5,
 
-  // Shared HTTP (axios) user-agent and timeout for scraping.
+  // Shared HTTP headers.
   HTTP_USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
   HTTP_TIMEOUT_MS: 20000,
 
-  // DeepSeek LLM endpoint (OpenAI SDK compatible).
-  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
+  // DeepSeek LLM (non-sensitive parts).
   DEEPSEEK_BASE_URL: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
   DEEPSEEK_MODEL: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
 
-  // crawl4ai Docker container (primary fetch channel of the scheduled pipeline).
+  // crawl4ai container URL.
   CRAWL4AI_URL: process.env.CRAWL4AI_URL || 'http://localhost:11235',
-  CRAWL4AI_API_TOKEN: process.env.CRAWL4AI_API_TOKEN || '',
 
-  // JS-heavy sites: crawlPage must wait for client-side rendering before
-  // collecting links, otherwise only the first-screen skeleton is returned.
+  // JS-heavy sites that need extra render wait.
   JS_SOURCES: new Set(['mavsmoneyball.com', 'thesmokingcuban.com']),
   JS_WAIT_MS: 5000,
 
-  // A2 增量幂等闸：每源最近 N 条已见 URL 环形缓冲（logs/.seen-ids.json，gitignored）。
+  // Seen ring (incremental dedup).
   SEEN_RING_SIZE: 200,
   SEEN_STORE_PATH: process.env.SEEN_STORE_PATH || path.join(__dirname, '../logs/.seen-ids.json'),
 
-  // A3 通知通道（逗号分隔；默认 email）。新增通道 = CHANNELS 注册表加一项 + 这里加名。
+  // Notification channels (comma-separated).
   NOTIFY_CHANNELS: process.env.NOTIFY_CHANNELS || 'email',
 
-  // X/Twitter 抓取（twikit 主 + crawl4ai 兜底）。凭证仅在 .env 提供。
+  // X/Twitter fetch (non-sensitive).
   X_PYTHON: process.env.X_PYTHON || 'python',
   X_TWIKIT_ENABLED: process.env.X_TWIKIT_ENABLED !== '0',
-  X_AUTH_TOKEN: process.env.X_AUTH_TOKEN || '',
-  X_CT0: process.env.X_CT0 || '',
-  X_USERNAME: process.env.X_USERNAME || '',
-  X_PASSWORD: process.env.X_PASSWORD || '',
   X_COOKIES_FILE: process.env.X_COOKIES_FILE || '',
 
-  // Supabase connection.
+  // Supabase (non-sensitive).
   SUPABASE_URL: process.env.SUPABASE_URL,
-  SUPABASE_KEY: process.env.SUPABASE_KEY,
-  // Server-side service-role key used for writes (bypasses RLS). Present in
-  // .env but never shipped to the client bundle; falls back to SUPABASE_KEY
-  // when unset (legacy single-key setups).
-  SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY || '',
 
-  // Email digest SMTP（管线 run() 末尾推送每日摘要）。EMAIL_AUTH_CODE 用
-  // QQ/163 的 SMTP 授权码（非登录密码）。EMAIL_ENABLED=0 可禁用（测试用）。
+  // Email digest (non-sensitive).
   EMAIL_ENABLED: process.env.EMAIL_ENABLED !== '0',
   SMTP_HOST: process.env.SMTP_HOST || '',
   SMTP_PORT: Number(process.env.SMTP_PORT) || 465,
   SMTP_SECURE: process.env.SMTP_SECURE !== '0' && process.env.SMTP_SECURE !== 'false',
   EMAIL_USER: process.env.EMAIL_USER || '',
-  EMAIL_AUTH_CODE: process.env.EMAIL_AUTH_CODE || '',
   RECEIVER_EMAIL: process.env.RECEIVER_EMAIL || '',
 };
+
+// ============================================================================
+// Sensitive secrets — accessed via getSecret() only
+// ============================================================================
+
+const _secrets = {
+  DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY || '',
+  CRAWL4AI_API_TOKEN: process.env.CRAWL4AI_API_TOKEN || '',
+  X_AUTH_TOKEN: process.env.X_AUTH_TOKEN || '',
+  X_CT0: process.env.X_CT0 || '',
+  X_USERNAME: process.env.X_USERNAME || '',
+  X_PASSWORD: process.env.X_PASSWORD || '',
+  SUPABASE_KEY: process.env.SUPABASE_KEY || '',
+  SUPABASE_SERVICE_KEY: process.env.SUPABASE_SERVICE_KEY || '',
+  EMAIL_AUTH_CODE: process.env.EMAIL_AUTH_CODE || '',
+};
+
+/**
+ * Get a sensitive config value by name. Returns empty string when unset.
+ * Use this instead of reading keys directly from config exports.
+ * @param {string} name - Secret key name, e.g. 'DEEPSEEK_API_KEY'.
+ * @returns {string}
+ */
+function getSecret(name) {
+  return _secrets[name] || '';
+}
+
+module.exports.getSecret = getSecret;
+module.exports._secrets = _secrets; // exposed for tests that need to inject mock values

@@ -94,16 +94,22 @@
 
 | 模块 | 路径 | 用途 |
 |------|------|------|
-| 主调度 | `src/index.js` | Pipeline 循环、交叉验证、报告生成 |
+| 主调度 | `src/index.js` | Pipeline 编排入口（~130 行） |
+| 管线阶段 | `src/pipeline-stages.js` | 5 阶段函数：fetchCandidates → analyzeAndCrosscheck → dedupe → assembleRecords → persist |
 | 搜索 + 抓取 | `src/search.js` → `src/crawl4ai-fetch.js`（主）→ `src/scraper-direct.js`（降级） | 白名单信源逐源抓取 + HN 兜底 |
 | X 账号 | `src/x-fetch.js` → `scripts/x-fetch-tweets.py`（twikit） | X 记者推文主通道 |
 | AI 评分 | `src/ai.js` | DeepSeek 评分 + 摘要 + event/category |
-| 交叉验证 + 去重 | `src/crosscheck.js` | event 聚类 + 去重 |
-| 配置 / item 规整 / 日报 | `src/config.js` / `src/items.js` / `src/report.js` | env+常量 / toItem / buildReport |
+| 交叉验证 + 去重 | `src/crosscheck.js` | event 聚类 + 去重 + collapseSameEvent |
+| 配置 | `src/config.js` | 常量集中 + getSecret() 密钥闭包化 |
+| 条目规整 | `src/items.js` | toItem / normalizeUrlKey / toArticleRecord |
+| 词根过滤 | `src/keyword-roots.js` + `keyword-roots.json` | preFilter + 数据驱动词根表 |
+| 信源等级 | `src/tiers.js` | getTier / applyTierFloor |
+| 日报 | `src/report.js` | buildReport (Markdown) |
 | 通知 | `src/notify.js` → `src/email.js` | 统一通知分发（email 收口） |
 | 数据访问 | `src/store.js` (Supabase) | keywords / keyword_sources / articles CRUD |
 | 通道数据化 | `src/fetch-chain.js` + `keyword_sources.backends` | 每信源降级链执行 |
 | 增量幂等 | `src/seen.js` | 每源 200 条环形缓冲 |
+| 遗留模块 | `src/legacy/` | scraper.js / reader.js（已废弃 blog 类型） |
 | 前端 | `client/src/` | React SPA，直连 Supabase |
 
 ## 输出

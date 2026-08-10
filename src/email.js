@@ -162,7 +162,7 @@ function buildSubject(sections) {
 }
 
 function isEmailConfigured(cfg = config) {
-  return Boolean(cfg.EMAIL_ENABLED && cfg.SMTP_HOST && cfg.EMAIL_USER && cfg.EMAIL_AUTH_CODE && cfg.RECEIVER_EMAIL);
+  return Boolean(cfg.EMAIL_ENABLED && cfg.SMTP_HOST && cfg.EMAIL_USER && cfg.getSecret('EMAIL_AUTH_CODE') && cfg.RECEIVER_EMAIL);
 }
 
 async function sendEmail({ subject, text, html }, opts = {}) {
@@ -174,7 +174,7 @@ async function sendEmail({ subject, text, html }, opts = {}) {
     host: cfg.SMTP_HOST,
     port: cfg.SMTP_PORT,
     secure: cfg.SMTP_SECURE,
-    auth: { user: cfg.EMAIL_USER, pass: cfg.EMAIL_AUTH_CODE },
+    auth: { user: cfg.EMAIL_USER, pass: cfg.getSecret('EMAIL_AUTH_CODE') },
     connectionTimeout: 15000,
     socketTimeout: 20000,
   });

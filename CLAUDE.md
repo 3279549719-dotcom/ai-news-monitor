@@ -19,8 +19,9 @@ npm run ops:schedule:info      # 查看定时任务；npm run ops:unschedule 卸
 
 ```
 src/
-  index.js          主流程：关键词循环、pipeline 调度、报告生成
-  config.js         env 与常量集中读取
+  index.js          主流程：关键词循环、pipeline 调度、报告生成（~130 行纯编排）
+  pipeline-stages.js 管线 5 阶段函数（fetchCandidates → analyzeAndCrosscheck → dedupe → assembleRecords → persist）
+  config.js         env 与常量集中读取；敏感 key 经 getSecret() 闭包化
   db.js             Supabase client 单例
   store.js          数据访问层（keywords / keyword_sources / articles）
   search.js         白名单信源逐源调度（crawl4ai 优先 → 降级 scraper-direct）+ HN 兜底
@@ -30,17 +31,19 @@ src/
   x-tweet-parse.js  X 推文卡纯解析模块
   ai.js             DeepSeek 评分 + 摘要
   prompts/          AI 提示词集中目录
-  items.js          抓取结果 → 入库形状规整
+  items.js          抓取结果 → 入库形状规整（含 toArticleRecord）
   crosscheck.js     交叉验证 + 同事件去重
   report.js         日报 buildReport
   email.js          每日摘要邮件
   notify.js         通知分发器（收口 email）
   fetch-chain.js    抓取通道数据化执行
   seen.js           增量幂等闸（每源 200 条环形缓冲）
-  tiers.js          URL → Tier 映射
-  keyword-roots.js  关键词词根映射表
+  tiers.js          URL → Tier 映射（含 applyTierFloor）
+  keyword-roots.js  关键词词根映射（含 preFilter；数据来自 keyword-roots.json）
+  keyword-roots.json 词根数据文件（新增关键词只需改此 JSON）
   article-patterns.json 站点 → 文章 URL 模式表（外置，按 host 分组）
   source-tiers.json 域名可信度映射表
+  legacy/           已废弃模块（scraper.js、reader.js）
 docs/               需求、决策、计划、验收、进度文档
 reports/            每日报告 YYYY-MM-DD.md
 client/             React SPA（Vite + Tailwind）

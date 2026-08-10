@@ -12,7 +12,7 @@
  */
 
 const OpenAI = require('openai');
-const { DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, MIN_SCORE } = require('./config');
+const { getSecret, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL, MIN_SCORE } = require('./config');
 const { SYSTEM_PROMPT } = require('./prompts/analyze-prompt');
 const { buildSelectLinksPrompt } = require('./prompts/select-links-prompt');
 
@@ -24,7 +24,7 @@ let _openai = null;
  */
 function getOpenAI() {
   if (!_openai) {
-    _openai = new OpenAI({ apiKey: DEEPSEEK_API_KEY, baseURL: DEEPSEEK_BASE_URL });
+    _openai = new OpenAI({ apiKey: getSecret('DEEPSEEK_API_KEY'), baseURL: DEEPSEEK_BASE_URL });
   }
   return _openai;
 }

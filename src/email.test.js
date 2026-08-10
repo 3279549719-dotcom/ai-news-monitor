@@ -120,7 +120,7 @@ test('buildDigestHtml：空结果输出"今日无值得关注"', () => {
   assert.match(html, /今日无值得关注的新内容。/);
 });
 
-const FULL_CFG = { EMAIL_ENABLED: true, SMTP_HOST: 'smtp.qq.com', EMAIL_USER: 'a@qq.com', EMAIL_AUTH_CODE: 'x', RECEIVER_EMAIL: 'b@qq.com' };
+const FULL_CFG = { EMAIL_ENABLED: true, SMTP_HOST: 'smtp.qq.com', EMAIL_USER: 'a@qq.com', getSecret: () => 'x', RECEIVER_EMAIL: 'b@qq.com' };
 
 test('isEmailConfigured：配置齐则启用', () => {
   assert.equal(isEmailConfigured(FULL_CFG), true);
@@ -135,7 +135,7 @@ test('isEmailConfigured：EMAIL_ENABLED=false 不启用', () => {
 });
 
 test('sendDailyDigest：未配置返回 {sent:false} 且不抛错', async () => {
-  const noCfg = { EMAIL_ENABLED: true, SMTP_HOST: '', EMAIL_USER: '', EMAIL_AUTH_CODE: '', RECEIVER_EMAIL: '' };
+  const noCfg = { EMAIL_ENABLED: true, SMTP_HOST: '', EMAIL_USER: '', getSecret: () => '', RECEIVER_EMAIL: '' };
   const res = await sendDailyDigest([], { config: noCfg });
   assert.equal(res.sent, false);
   assert.match(res.reason, /未配置/);

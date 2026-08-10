@@ -1,5 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
-const { SUPABASE_URL, SUPABASE_KEY, SUPABASE_SERVICE_KEY } = require('./config');
+const { SUPABASE_URL, getSecret } = require('./config');
 
 /**
  * Supabase client singleton + retry wrapper.
@@ -23,7 +23,7 @@ let _client;
  */
 function getClient() {
   if (!_client) {
-    const key = SUPABASE_SERVICE_KEY || SUPABASE_KEY;
+    const key = getSecret('SUPABASE_SERVICE_KEY') || getSecret('SUPABASE_KEY');
     if (!SUPABASE_URL || !key) {
       throw new Error('SUPABASE_URL and SUPABASE_KEY (or SUPABASE_SERVICE_KEY) must be set in .env');
     }
