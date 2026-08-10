@@ -41,6 +41,12 @@
 - 提交前检查工作区、分支、远程与忽略规则，只暂存本次工作。未经用户明确授权，不推送、发布、部署或创建 PR。
 - 不提交密钥、`.env*`、本地数据库、备份、日志、依赖目录和构建产物，除非项目明确要求。
 - **Git 提交快捷命令（仓库约定）**：提交优先走 `npm run commit -- "<type>(<scope>): 描述"`。使用安全版——先 `git add` 只暂存本次工作（**不用 `-a` 全暂存**，避免混入 `.codex/`、`.loop-js.tmp` 等杂项；可用 `--dry-run` 预览）；推送走 `npm run commit -- "msg" -p` 仍需先经用户明确授权，或用户已指明 `commit:push` 一条龙。
+- **Git 工作流完整命令（仓库约定）**：
+  - `npm run commit -- "type: 描述"` — 仅提交（走 git-commit.js 校验门）
+  - `npm run commit -- "type: 描述" -p` — 提交+推送
+  - `gh pr create --title "标题" --body "说明"` — 创建 Pull Request（需先 push 分支到远端）
+  - `gh run list --limit 10` / `gh run watch <id>` — 查看/监控 GitHub Actions
+  - push 前铁律：`git fetch origin` → 评估分叉 → 远端有新提交则 `git pull --rebase` → 再 push，**禁止 force-push**
 
 # Execution Rules
 
