@@ -11,10 +11,24 @@ require('dotenv').config();
 const path = require('path');
 
 module.exports = {
-  // AI relevance threshold (search-type score>=60 counts as relevant) and the
-  // maximum number of items processed per keyword.
+  // AI relevance threshold (search-type score>=60 counts as relevant).
   MIN_SCORE: 60,
+
+  // 单次运行每个关键词最多分析条数。
   RESULT_LIMIT: 30,
+
+  // T0 官方信源评分放行线：官方站内容天然相关，AI 评分被标题/正文噪声带偏低于此线时抬到此处。
+  T0_FLOOR: 85,
+
+  // T1 记者评分保底：跟队记者/权威记者推文至少抬到 40，保证可见。
+  T1_FLOOR: 40,
+
+  // Pipeline 类型注册表：关键字对应抓取+分析处理函数。
+  // blog 类型 LEGACY，新关键词请用 search。
+  PIPELINES: {
+    blog: 'blog',
+    search: 'search',
+  },
 
   // 单源产出上限（仅非 T0 源）：防单源淹没分析预算，保证多源（尤其 T1 X 记者）
   // 都能进入 feed。T0 官方源不设限。

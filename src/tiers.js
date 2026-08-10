@@ -10,6 +10,7 @@
 
 const { URL } = require('url');
 const tiers = require('./source-tiers.json');
+const { T0_FLOOR, T1_FLOOR } = require('./config');
 
 /**
  * Returns the source tier (0–3) for a given URL, or null if not found.
@@ -35,4 +36,17 @@ function getTier(urlString) {
   return tier !== undefined ? tier : null;
 }
 
-module.exports = { getTier };
+/**
+ * Apply tier-based score floor.
+ * T0 → T0_FLOOR, T1 → T1_FLOOR. Other tiers return the original score.
+ * @param {number} score - AI raw score.
+ * @param {number|null} tier - Source credibility tier.
+ * @returns {number} Adjusted score.
+ */
+function applyTierFloor(score, tier) {
+  if (tier === 0) return Math.max(score, T0_FLOOR);
+  if (tier === 1) return Math.max(score, T1_FLOOR);
+  return score;
+}
+
+module.exports = { getTier, applyTierFloor };

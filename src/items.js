@@ -48,4 +48,28 @@ function normalizeUrlKey(url) {
     .replace(/\/$/, '');
 }
 
-module.exports = { sourceSlug, toItem, normalizeUrlKey };
+/**
+ * 模块级纯函数：构造入库记录
+ * @param {Object} item    - 文章对象（title, url, source, snippet, publishedAt, tier）
+ * @param {Object} keyword - 关键词对象（id, type, category_schema）
+ * @param {Object} overrides - 额外字段（summary, score, category, event, ...）
+ */
+function toArticleRecord(item, keyword, overrides = {}) {
+  const schemaKeys = keyword.category_schema && !Array.isArray(keyword.category_schema)
+    ? Object.keys(keyword.category_schema)
+    : [];
+
+  return {
+    keyword_id: keyword.id,
+    title: item.title,
+    url: item.url,
+    source: item.source || keyword.type,
+    snippet: item.snippet || null,
+    published_at: item.publishedAt ? new Date(item.publishedAt).toISOString() : null,
+    source_tier: item.tier ?? null,
+    ...overrides,
+    category: overrides.category && schemaKeys.includes(overrides.category) ? overrides.category : null,
+  };
+}
+
+module.exports = { sourceSlug, toItem, normalizeUrlKey, toArticleRecord };

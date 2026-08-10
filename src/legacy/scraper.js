@@ -1,6 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { HTTP_USER_AGENT, HTTP_TIMEOUT_MS } = require('./config');
+const { HTTP_USER_AGENT, HTTP_TIMEOUT_MS } = require('../config');
 
 /**
  * LEGACY blog-type list fetcher (scraper/reader pipeline). The blog type is

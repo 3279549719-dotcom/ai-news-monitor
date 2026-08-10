@@ -4,16 +4,12 @@
  * Keyword root-token map.
  *
  * Maps each keyword to a set of root tokens used by preFilter and the C1
- * acceptance check: a title containing any root is treated as a candidate,
- * otherwise it is skipped by the pre-filter to save DeepSeek calls. Matching
- * is case-insensitive and supports both Chinese and English tokens.
+ * acceptance check. Data loaded from keyword-roots.json so that adding a new
+ * keyword does not require editing JS source code.
  */
 
-const KEYWORD_ROOTS = {
-  'Manchester United': ['man', 'united', 'mufc', '老特拉福德', '梦剧场', 'red devils', 'rashford', 'bruno', 'garnacho', 'højlund', 'ten hag'],
-  'Anthropic': ['anthropic', 'claude', 'amodei'],
-  'Dallas Mavericks': ['maverick', 'mavs', 'dallas', 'doncic', 'luka', 'kyrie', 'irving', 'cuban'],
-};
+const path = require('path');
+const KEYWORD_ROOTS = require('./keyword-roots.json');
 
 /**
  * Get the root tokens for a keyword name.
@@ -24,4 +20,34 @@ function getKeywordRoots(name) {
   return KEYWORD_ROOTS[name] || [];
 }
 
-module.exports = { getKeywordRoots, KEYWORD_ROOTS };
+/**
+ * Pre-filter items: keep only items whose title contains at least one keyword
+ * root token. T0 official sources are exempt (always pass).
+ * @param {Array} items - Candidate items with `title` and `tier` fields.
+ * @param {string} keywordName - Display name of the keyword.
+ * @returns {Array} Filtered items.
+ */
+function preFilter(items, keywordName) {
+  const roots = getKeywordRoots(keywordName);
+  if (roots.length === 0) return items;
+  const filtered = [];
+  const skipped = [];
+  for (const item of items) {
+    if (item.tier === 0) {
+      filtered.push(item);
+      continue;
+    }
+    const t = (item.title || '').toLowerCase();
+    if (roots.some(r => t.includes(r.toLowerCase()))) {
+      filtered.push(item);
+    } else {
+      skipped.push(item);
+    }
+  }
+  if (skipped.length > 0) {
+    console.log(`  [PreFilter] ${skipped.length} 条跳过（标题不含词根）`);
+  }
+  return filtered;
+}
+
+module.exports = { getKeywordRoots, preFilter, KEYWORD_ROOTS };
