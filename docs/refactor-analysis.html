@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ai-news-monitor 重构分析报告</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-secondary: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d2991d;
+    --red: #f85149;
+    --purple: #a371f7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    background: var(--bg); color: var(--text); line-height:1.6;
+    max-width: 960px; margin:0 auto; padding: 32px 20px;
+  }
+  h1 { font-size:26px; margin-bottom:8px; }
+  h2 { font-size:18px; color: var(--accent); margin: 40px 0 16px; padding-bottom:8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size:15px; margin: 24px 0 10px; }
+  .subtitle { color: var(--text-secondary); font-size:13px; margin-bottom:32px; }
+  .stat-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin:16px 0; }
+  .stat-card {
+    background: var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px;
+    text-align:center;
+  }
+  .stat-card .value { font-size:28px; font-weight:700; }
+  .stat-card .label { font-size:12px; color: var(--text-secondary); margin-top:4px; }
+  table { width:100%; border-collapse:collapse; margin:12px 0; font-size:13px; }
+  th { background:var(--surface); text-align:left; padding:10px 12px; border:1px solid var(--border); font-weight:600; }
+  td { padding:8px 12px; border:1px solid var(--border); vertical-align:top; }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+  .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:11px; font-weight:600; }
+  .badge-green { background:rgba(63,185,80,0.15); color:var(--green); }
+  .badge-yellow { background:rgba(210,153,29,0.15); color:var(--yellow); }
+  .badge-red { background:rgba(248,81,73,0.15); color:var(--red); }
+  .badge-purple { background:rgba(163,113,247,0.15); color:var(--purple); }
+  .section-card {
+    background: var(--surface); border:1px solid var(--border); border-radius:10px; padding:20px; margin:16px 0;
+  }
+  .section-card h4 { font-size:15px; margin-bottom:12px; }
+  .pro-list, .con-list { list-style:none; margin:8px 0; }
+  .pro-list li::before { content:'✅ '; }
+  .con-list li::before { content:'⚠️ '; }
+  li { margin:6px 0; font-size:13px; }
+  .bar { height:8px; border-radius:4px; margin:4px 0 12px; background:var(--border); overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; }
+  .bar-fill.green { background:var(--green); }
+  .bar-fill.yellow { background:var(--yellow); }
+  .bar-fill.red { background:var(--red); }
+  .code-block {
+    background: #0d1117; border:1px solid var(--border); border-radius:6px;
+    padding:12px 16px; font-family:'JetBrains Mono','Fira Code',monospace;
+    font-size:12px; overflow-x:auto; margin:10px 0; white-space:pre;
+  }
+  .option-card {
+    background: var(--surface); border:2px solid var(--border); border-radius:12px; padding:24px; margin:20px 0;
+    transition: border-color 0.2s;
+  }
+  .option-card:hover { border-color: var(--accent); }
+  .option-card .opt-title { font-size:17px; font-weight:700; margin-bottom:8px; }
+  .option-card .opt-meta { font-size:12px; color:var(--text-secondary); margin-bottom:12px; }
+  .rec-badge {
+    display:inline-block; background:var(--accent); color:#000; padding:3px 10px;
+    border-radius:6px; font-size:11px; font-weight:700; margin-left:8px;
+  }
+  hr { border:none; border-top:1px solid var(--border); margin:24px 0; }
+  .file-tree { font-size:12px; line-height:1.8; padding:12px; background:var(--surface); border:1px solid var(--border); border-radius:6px; }
+  .file-tree .dir { color:var(--accent); }
+  .file-tree .file { color:var(--text-secondary); }
+  .file-tree .newf { color:var(--green); }
+  .compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  .compare-box { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; }
+  .compare-box.old { border-left:3px solid var(--red); }
+  .compare-box.new { border-left:3px solid var(--green); }
+  .compare-box h4 { font-size:14px; margin-bottom:8px; }
+  .summary-row { display:flex; gap:24px; margin:16px 0; flex-wrap:wrap; }
+  .summary-item { display:flex; align-items:center; gap:8px; }
+  .summary-item .num { font-size:24px; font-weight:700; }
+  .summary-item .txt { font-size:12px; color:var(--text-secondary); }
+  a { color:var(--accent); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  @media (max-width:640px) {
+    .compare-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<h1>🔬 ai-news-monitor 重构分析报告</h1>
+<p class="subtitle">全面审计 18 个源码模块 + 配置 + 测试 · 2026-08-10</p>
+
+<!-- ====== OVERVIEW ====== -->
+<h2>📊 现状总览</h2>
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="value" style="color:var(--accent)">18</div>
+    <div class="label">源码模块</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" style="color:var(--yellow)">~410</div>
+    <div class="label">index.js 行数</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" style="color:var(--green)">7</div>
+    <div class="label">测试文件</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" style="color:var(--purple)">5</div>
+    <div class="label">遗留模块 (LEGACY)</div>
+  </div>
+  <div class="stat-card">
+    <div class="value" style="color:var(--red)">2</div>
+    <div class="label">硬编码数据文件 (keyword-roots / config 重复)</div>
+  </div>
+</div>
+
+<div class="summary-row">
+  <div class="summary-item"><span class="num" style="color:var(--accent)">CommonJS</span><span class="txt">模块体系</span></div>
+  <div class="summary-item"><span class="num" style="color:var(--yellow)">flat</span><span class="txt">src/ 目录结构（无分层）</span></div>
+  <div class="summary-item"><span class="num" style="color:var(--green)">8/8</span><span class="txt">测试文件全绿</span></div>
+</div>
+
+<!-- ====== PROBLEMS ====== -->
+<h2>🔍 识别到的 8 个结构性问题</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:5%">#</th><th style="width:25%">问题</th><th style="width:25%">影响</th><th style="width:25%">严重度</th><th style="width:20%">所在位置</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>index.js 超重</strong> — 主入口 ~410 行，混入 pipeline 调度、过滤函数、评分逻辑、入库构造等 5 类职责</td>
+      <td>改一处要全读，新成员无从下手；任何 pipeline 修改都在同一个 410 行文件里博弈</td>
+      <td><span class="badge badge-red">高</span></td>
+      <td>src/index.js</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>配置分散</strong> — T0_FLOOR、T1_FLOOR、RESULT_LIMIT 在 index.js 硬编码，config.js 也有自己的 MIN_SCORE 定义</td>
+      <td>调评分/放行线要同时改两个文件，容易遗漏；配置源不唯一</td>
+      <td><span class="badge badge-yellow">中</span></td>
+      <td>config.js + index.js</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>PIPELINES 对象是纯配置</strong> — 放在 index.js 里和调度逻辑混在一起，类型定义 + 函数引用混合</td>
+      <td>新增 pipeline 类型要改 index.js 主入口；无法独立测试 pipeline 路由</td>
+      <td><span class="badge badge-yellow">中</span></td>
+      <td>index.js L82-L92</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>keyword-roots 硬编码词根</strong> — 关键词->词根的映射写在代码里而非数据文件</td>
+      <td>新增关键词需改 JS 源码，不符合"新增信源改数据不改代码"的设计原则</td>
+      <td><span class="badge badge-yellow">中</span></td>
+      <td>src/keyword-roots.js</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>模块依赖环</strong> — notify.js ↔ email.js 互相 require（通过惰性 require 缓解但未根治）</td>
+      <td>环形依赖在极端场景下可能导致部分初始化失败；理解成本高</td>
+      <td><span class="badge badge-yellow">中</span></td>
+      <td>notify.js + email.js</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>遗留代码未隔离</strong> — scraper.js、reader.js 两个 LEGACY 模块仍与活跃代码同目录</td>
+      <td>新人误读、误改遗留代码；CI 不会提示"你改了 LEGACY"</td>
+      <td><span class="badge badge-green">低</span></td>
+      <td>src/scraper.js, src/reader.js</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><strong>配置含敏感信息</strong> — config.js 顶层直接 require('dotenv').config() 并暴露全部 env；DEEPSEEK_API_KEY 等直接挂在 exports 上</td>
+      <td>任何 require('./config') 都能拿到所有密钥；测试 mock 需整体替换 config 对象</td>
+      <td><span class="badge badge-yellow">中</span></td>
+      <td>src/config.js</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td><strong>fetch-chain 通道注册硬编码</strong> — BACKENDS 对象在 fetch-chain.js 里定义，通道函数引用写死</td>
+      <td>新增通道（如 RSS、GraphQL）必须改 fetch-chain 源码</td>
+      <td><span class="badge badge-green">低</span></td>
+      <td>src/fetch-chain.js</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ====== ARCH OVERVIEW ====== -->
+<h2>🏗️ 现有模块依赖关系</h2>
+
+<div class="code-block">index.js ── 主调度入口
+  ├── config.js        ← .env 读取 + 常量
+  ├── db.js            ← Supabase 单例 + withRetry
+  ├── store.js         ← 数据访问层 (keywords/sources/articles)
+  ├── search.js        ← 白名单信源调度 + HN 兜底
+  │     ├── fetch-chain.js  ── 信源降级链
+  │     │     ├── crawl4ai-fetch.js  ── Docker 容器抓取
+  │     │     ├── scraper-direct.js  ── axios 直接抓取 (降级)
+  │     │     └── x-fetch.js        ── X 记者 twikit 主 → crawl4ai 兜底
+  │     └── items.js        ── 条目规整 + URL 去重键
+  ├── ai.js            ← DeepSeek 评分 + 摘要 + 链接筛选
+  │     └── prompts/
+  ├── crosscheck.js    ← 交叉验证 + 同事件去重
+  ├── seen.js          ← 增量幂等环形缓冲
+  ├── tiers.js         ← URL → Tier 映射
+  ├── keyword-roots.js ← 关键词词根表 (硬编码)
+  ├── report.js        ← Markdown 日报生成
+  ├── email.js         ← 邮件摘要
+  ├── notify.js        ← 通知分发器
+  ├── dates.js         ← URL 日期提取
+  ├── scraper.js       ← [LEGACY] blog 列表抓取
+  └── reader.js        ← [LEGACY] blog 正文抓取</div>
+
+<!-- ====== OPTIONS ====== -->
+<h2>🎯 三种重构方案对比</h2>
+
+<div class="option-card">
+  <div class="opt-title">方案 A：轻量整理 <span class="badge badge-green">低风险</span></div>
+  <div class="opt-meta">工时 ~1.5h · 改动文件 5-7 个 · 不改变模块边界</div>
+  <p style="font-size:13px;margin:12px 0;">只做低风险的集中化：把散落的配置常量统一到 config.js，把 index.js 中的纯函数（preFilter / applyTierFloor / toArticleRecord）按职责分发到已有模块（keyword-roots.js / tiers.js / items.js），遗留模块移入 legacy/。</p>
+  
+  <h4>具体改动</h4>
+  <table>
+    <tr><th>文件</th><th>改动</th><th>风险</th></tr>
+    <tr><td>config.js</td><td>新增 T0_FLOOR / T1_FLOOR / RESULT_LIMIT / PIPELINES 常量；补全缺失的集中读取</td><td><span class="badge badge-green">低</span></td></tr>
+    <tr><td>keyword-roots.js</td><td>改为从 keyword-roots.json 数据文件加载（不改数据内容）</td><td><span class="badge badge-green">低</span></td></tr>
+    <tr><td>index.js</td><td>移除硬编码常量，改为 require config；preFilter 移到 keyword-roots，applyTierFloor 移到 tiers；toArticleRecord 移到 items</td><td><span class="badge badge-yellow">中</span></td></tr>
+    <tr><td>scraper.js / reader.js</td><td>移入 src/legacy/ 目录，更新 index.js 引用路径</td><td><span class="badge badge-green">低</span></td></tr>
+    <tr><td>notify.js / email.js</td><td>打破循环依赖：email.js 不再 require notify.js，改为上游 index.js 调 notify 分发</td><td><span class="badge badge-yellow">中</span></td></tr>
+  </table>
+</div>
+
+<div class="option-card">
+  <div class="opt-title">方案 B：分层重构 <span class="rec-badge">推荐</span></div>
+  <div class="opt-meta">工时 ~3-4h · 改动文件 12-15 个 · 新增 3-4 个模块 · 分层 directory</div>
+  <p style="font-size:13px;margin:12px 0;">按职责把 flat src/ 重组为四层：<strong>config/</strong>（配置分离）、<strong>fetch/</strong>（抓取通道）、<strong>pipeline/</strong>（调度 + 评分 + 过滤）、<strong>output/</strong>（报告 + 邮件 + 通知）。index.js 瘦身到 ~100 行纯编排。保留所有 CommonJS 兼容和现有 API。</p>
+  
+  <h4>目标结构</h4>
+  <div class="file-tree">
+<span class="dir">src/</span>
+├── <span class="dir">config/</span>
+│   ├── index.js          <span class="newf">← 合并 config.js，移除硬编码</span>
+│   ├── constants.js      <span class="newf">← T0_FLOOR / T1_FLOOR / MIN_SCORE / RESULT_LIMIT</span>
+│   └── defaults.js       <span class="newf">← env 默认值 + 敏感配置掩码</span>
+├── <span class="dir">data/</span>
+│   ├── source-tiers.json     <span class="file">← 不动</span>
+│   ├── article-patterns.json <span class="file">← 不动</span>
+│   └── keyword-roots.json    <span class="newf">← 从 keyword-roots.js 迁出</span>
+├── <span class="dir">db/</span>
+│   ├── client.js         <span class="file">← 原 db.js（Supabase 单例）</span>
+│   └── store.js          <span class="file">← 原 store.js</span>
+├── <span class="dir">fetch/</span>
+│   ├── chain.js          <span class="file">← 原 fetch-chain.js</span>
+│   ├── crawl4ai.js       <span class="file">← 原 crawl4ai-fetch.js</span>
+│   ├── direct.js         <span class="file">← 原 scraper-direct.js</span>
+│   ├── x.js              <span class="file">← 原 x-fetch.js</span>
+│   ├── x-parse.js        <span class="file">← 原 x-tweet-parse.js</span>
+│   └── items.js          <span class="file">← 原 items.js + toArticleRecord</span>
+├── <span class="dir">ai/</span>
+│   ├── client.js         <span class="file">← 原 ai.js 中的 OpenAI 单例</span>
+│   ├── analyze.js        <span class="newf">← 原 analyzeResult + buildAnalyzePrompt</span>
+│   ├── select-links.js   <span class="newf">← 原 selectArticleLinks</span>
+│   └── prompts/          <span class="file">← 不动</span>
+├── <span class="dir">pipeline/</span>
+│   ├── index.js          <span class="newf">← 原 index.js → 纯编排 + run()</span>
+│   ├── filter.js         <span class="newf">← preFilter + applySeenRing + dedupeAgainstRecent</span>
+│   ├── scoring.js        <span class="newf">← applyTierFloor + analyzeItems</span>
+│   └── stages.js         <span class="newf">← fetchCandidates / analyzeAndCrosscheck / assembleRecords / persist</span>
+├── <span class="dir">output/</span>
+│   ├── report.js         <span class="file">← 原 report.js</span>
+│   ├── email.js          <span class="file">← 原 email.js（不再 require notify）</span>
+│   └── notify.js         <span class="file">← 原 notify.js</span>
+├── <span class="dir">util/</span>
+│   ├── dates.js          <span class="file">← 原 dates.js</span>
+│   ├── seen.js           <span class="file">← 原 seen.js</span>
+│   └── tiers.js          <span class="file">← 原 tiers.js</span>
+└── <span class="dir">legacy/</span>
+    ├── scraper.js            <span class="file">← 移入</span>
+    └── reader.js             <span class="file">← 移入</span></div>
+
+  <h4>收益</h4>
+  <ul class="pro-list">
+    <li>index.js 从 410 行 → ~100 行，只做编排不包含业务逻辑</li>
+    <li>每个目录有明确的单一职责，新增成员按功能定位文件</li>
+    <li>配置与代码彻底分离，调放行线改 constants.js 即可</li>
+    <li>fetch 通道可以独立测试，pipeline stages 可以独立测试</li>
+    <li>打破 notify/email 环依赖</li>
+    <li>向后兼容：所有 require 路径变更集中在模块边界，测试只需更新 require 路径</li>
+  </ul>
+
+  <h4>风险</h4>
+  <ul class="con-list">
+    <li>文件移动 + 重命名，所有测试的 require 路径需同步更新（7 个测试文件）</li>
+    <li>fetch-chain.js 中的通道注册函数引用路径需更新</li>
+    <li>scripts/ 下脚本可能直接 require src/ 模块，需逐一检查</li>
+  </ul>
+</div>
+
+<div class="option-card" style="opacity:0.85">
+  <div class="opt-title">方案 C：激进重写 <span class="badge badge-red">高风险</span></div>
+  <div class="opt-meta">工时 1-2 天 · 改动 90%+ 文件 · 建议推迟</div>
+  <p style="font-size:13px;margin:12px 0;">引入 TypeScript、IoC 容器、ES Module、插件化通道注册。channel registry 从硬编码变为文件系统扫描 / 配置驱动。pipelines 从函数变为 Pipeline 类。</p>
+  <ul class="con-list">
+    <li>风险极高：当前管线每天运行，全量重写可能引入回归 bug</li>
+    <li>TypeScript 迁移需同时改前端构建链（client 已是 TS）</li>
+    <li>收益不明确：当前 18 模块的复杂度完全不需要 IoC</li>
+    <li>建议等到管线模块数 > 30 或多人协作频率 > 3 时再做</li>
+  </ul>
+</div>
+
+<!-- ====== DECISION ====== -->
+<h2>📋 决策建议</h2>
+
+<div class="section-card" style="border-left:3px solid var(--accent)">
+  <h4>🏆 推荐方案 B：分层重构</h4>
+  <p style="font-size:13px;">理由：风险可控（不改业务逻辑，只重组文件），收益明确（index.js 瘦身、职责分离、新人友好），所有改动都可被现有测试覆盖验证。</p>
+  <p style="font-size:13px;margin-top:8px;">最关键的改动只有两类：① 文件重命名/移动 + require 路径更新 ② index.js 拆分 + 全局常量统一到 config。两类的回归风险都被测试覆盖。</p>
+</div>
+
+<div class="compare-grid">
+  <div class="compare-box old">
+    <h4>❌ 如果不重构</h4>
+    <ul style="list-style:none;font-size:13px;">
+      <li style="margin:8px 0">index.js 继续膨胀，每次加功能都在 410 行里塞</li>
+      <li style="margin:8px 0">新成员/LLM 需要全读 410 行才能定位修改点</li>
+      <li style="margin:8px 0">配置分散导致调参遗漏</li>
+      <li style="margin:8px 0">遗留代码污染活跃目录</li>
+    </ul>
+  </div>
+  <div class="compare-box new">
+    <h4>✅ 重构后</h4>
+    <ul style="list-style:none;font-size:13px;">
+      <li style="margin:8px 0">index.js ~100 行，5 秒理解主流程</li>
+      <li style="margin:8px 0">按目录功能找文件：fetch/（抓取）、pipeline/（编排）、ai/（AI）</li>
+      <li style="margin:8px 0">调评分行 → src/config/constants.js 一处改</li>
+      <li style="margin:8px 0">legacy/ 目录一目了然</li>
+    </ul>
+  </div>
+</div>
+
+<hr>
+
+<p style="color:var(--text-secondary);font-size:12px;">
+  请选择 A / B / C 方案，我将立即在 worktree 中实施。<br>
+  若你选择 <strong>B</strong>（推荐），我会分 4 步推进：① worktree 创建 → ② 目录重组 + require 路径更新 → ③ 测试验证 → ④ 确认后合并。
+</p>
+
+</body>
+</html>

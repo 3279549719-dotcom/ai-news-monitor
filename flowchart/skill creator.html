@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在 Claude Code 中通过 Skills 构建验证循环</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f3f0;
+            color: #1e1c19;
+            padding: 2rem 1.5rem;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 880px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 3rem 2.8rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.05);
+        }
+        @media (max-width: 680px) {
+            .container { padding: 1.8rem 1.2rem; }
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.3rem;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #5b5650;
+            margin-bottom: 2rem;
+            border-left: 4px solid #d0c8c0;
+            padding-left: 1.2rem;
+            background: #faf8f6;
+            padding: 0.8rem 1.2rem;
+            border-radius: 0 14px 14px 0;
+        }
+        .meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #6b655e;
+            margin-bottom: 2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid #e8e2da;
+        }
+        .meta span { background: #f0ede8; padding: 0.1rem 0.8rem; border-radius: 30px; }
+        h2 {
+            font-size: 1.7rem;
+            font-weight: 620;
+            margin: 2rem 0 0.8rem 0;
+            letter-spacing: -0.01em;
+        }
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 620;
+            margin: 1.6rem 0 0.5rem 0;
+        }
+        h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin: 1.2rem 0 0.3rem 0;
+            color: #2d2a26;
+        }
+        p {
+            margin-bottom: 1rem;
+            color: #2d2a26;
+        }
+        ul, ol {
+            margin: 0.6rem 0 1.2rem 1.8rem;
+            color: #2d2a26;
+        }
+        li { margin-bottom: 0.3rem; }
+        .code-block {
+            background: #f0ede8;
+            border-radius: 14px;
+            padding: 1rem 1.4rem;
+            font-family: 'SF Mono', 'Menlo', 'Consolas', monospace;
+            font-size: 0.82rem;
+            color: #2d2a26;
+            border: 1px solid #ddd6ce;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin: 0.8rem 0 1.2rem 0;
+        }
+        .code-block .comment { color: #6b655e; font-style: italic; }
+        .insight-box {
+            background: #f5f2ed;
+            border-radius: 18px;
+            padding: 1.4rem 1.8rem;
+            margin: 1.4rem 0;
+            border-left: 5px solid #b8834a;
+        }
+        .insight-box strong { color: #1e1c19; }
+        .pill {
+            display: inline-block;
+            background: #e8e2da;
+            padding: 0.05rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 550;
+            color: #2d2a26;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.2rem 0 1.8rem 0;
+        }
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        .grid-2 .card {
+            background: #fcfcfa;
+            border-radius: 18px;
+            padding: 1.2rem 1.4rem;
+            border: 1px solid #e8e2da;
+        }
+        .grid-2 .card h4 { margin-top: 0; }
+        .footnote {
+            margin-top: 2.4rem;
+            padding-top: 1.6rem;
+            border-top: 2px solid #e8e2da;
+            font-size: 0.9rem;
+            color: #5b5650;
+        }
+        .footnote strong { color: #1e1c19; }
+        .inline-code {
+            background: #ece8e2;
+            padding: 0.05rem 0.5rem;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        .diagram-placeholder {
+            background: #f0ede8;
+            border-radius: 16px;
+            padding: 1.2rem;
+            text-align: center;
+            border: 2px dashed #c8beb2;
+            margin: 1rem 0 1.6rem 0;
+            color: #5b5650;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- 标题与元数据 -->
+    <h1>在 Claude Code 中通过 Skills 构建验证循环</h1>
+    <div class="subhead">如何将你的手动检查转化为 skills，让 Claude 自行闭环反馈。</div>
+    <div class="meta">
+        <span>📂 Claude Code</span>
+        <span>📅 2026年7月22日</span>
+        <span>⏱️ 阅读 5 分钟</span>
+    </div>
+
+    <!-- 导语 -->
+    <p>大多数智能体编码会话遵循一个循环：你提出修改要求，Claude 收集上下文、采取行动、验证结果，如果需要，循环回去收集更多上下文。</p>
+    <p><strong>验证（Verification）</strong> 是智能体在回应前检查自己工作的方式。Claude 已经通过观察代码库中的确定性信号（包括类型检查器、linter、测试和运行时错误）来做一部分验证。Claude 无法推断的部分，就变成了你手动检查功能时采取的步骤。</p>
+    <p>然而，这些<strong>手动步骤可以转化为验证循环</strong>。在 Claude Code 中，验证循环是一个迭代过程，Claude 在其中检查并尝试修复自己的工作。</p>
+
+    <div class="diagram-placeholder">
+        🔄 智能体循环：1. 收集上下文 → 2. 采取行动 → 3. 验证结果
+    </div>
+
+    <p>在本文中，我们将介绍最常见的验证循环类型，并展示我们在 Anthropic 内部使用的做法。然后我们会展示如何将你已经做的手动检查编码为 skills，让 Claude 自行闭环反馈，这样你就可以在它迭代时去处理别的事情了。</p>
+    <p>👋 刚接触智能体循环？从 <a href="#" style="color: #3b7a7a; text-decoration: none; border-bottom: 1px dotted #3b7a7a;">智能体循环入门</a> 开始。</p>
+
+    <!-- 什么是验证循环 -->
+    <h2>什么是验证循环？</h2>
+    <p>验证循环是一个重复循环，AI 智能体在其中检查自己的工作——运行测试、linter 或自定义检查——并在继续之前修复失败项。在 Claude Code 中，验证循环可以打包为 skills，因此每个会话都会自动应用相同的检查，而不依赖于人类去记住它们。</p>
+
+    <!-- 内置验证循环 -->
+    <h2>内置验证循环</h2>
+    <p>在深入设计自定义验证循环之前，了解 Claude 对多种验证循环的内置支持会很有帮助。常见功能和方法包括：</p>
+    <ul>
+        <li><strong><span class="inline-code">/verify</span> skill</strong>：构建、运行并观察应用中的变更。</li>
+        <li><strong>工具链（Toolchain）</strong>：Claude 旨在捕获并对你提供的任何工具（如 linter）的错误代码和警告采取行动。一个好的实践是在 <span class="inline-code">CLAUDE.md</span> 中列出你的确切构建和测试命令，这样 Claude 就不必去推断。</li>
+        <li><strong>代码审查（研究预览版）</strong>：一项托管的多智能体服务，在你启用的仓库中对 PR 运行自动审查。你可以手动修复发现的问题并推送，或者通过评论 <span class="inline-code">@claude</span> 来闭环（如果你已经设置并配置了 GitHub Actions，如下所述）。</li>
+        <li><strong>GitHub Actions</strong>：定义一个调用带有验证 skill 的 Claude 的任务，你本地运行的相同检查会在每次推送或 PR 时触发。</li>
+        <li><strong>Spec 验证</strong>：一个 skill，帮助根据仓库中的 markdown spec 验证每次变更，并修复违规项。</li>
+        <li><strong>Claude Managed Agents 中的 Rubrics（测试版）</strong>：一项托管智能体服务，允许你使用独立的评分智能体（grader agent）根据评分标准验证结果。失败会自动循环回进行返工。</li>
+    </ul>
+
+    <!-- 编写验证循环 -->
+    <h2>编写验证循环</h2>
+    <p>当你有一个现有项目，并且发现自己每次 Claude 为你实现新功能时都要做同样的小修正，那么是时候将这些步骤转化为你自己的自定义验证循环了。第一步是<strong>写下你每次都会做的所有事情</strong>。</p>
+    <p>如果你正在启动一个新项目，需要弄清楚项目应该如何运作，也是如此。用简单的英语写下最佳实践版本，就像你会在第一天交给新队友那样。</p>
+    <div class="insight-box">
+        <p><strong>💡 专业提示</strong>：这里的检查不一定是定性的才适合。“拒绝任何删除了列但没有回填步骤的迁移”是一条确定性的规则，没有通用的 linter 能捕获，但项目特定的 linter 可以。任何你不得不反复手动强制执行的事情，都适合被捕获为一个循环。</p>
+    </div>
+
+    <!-- 安装与创建 Skill -->
+    <h2>将其制作为一个 Skill</h2>
+    <p>将重复步骤编码为验证循环最常见的方法是将其编写为 skill，而创建 skill 最快的方法是安装 <span class="inline-code">skill-creator</span> 插件，让 Claude 对你进行访谈：</p>
+    <div class="code-block">
+        <span class="comment"># 安装 skill-creator 插件（在 Claude Code 中）</span>
+        /plugin install skill-creator
+        <span class="comment"># 然后让 Claude 帮你创建 skill</span>
+        /skill-creator 创建一个用于端到端验证前端变更的 skill。采访我的工作流程。
+    </div>
+    <p>你也可以手动编写 skill，只需在项目中的 <span class="inline-code">.claude/skills/</span> 目录下放一个 markdown 文件。最简单的验证 skill 就是几行 frontmatter 加上正文：</p>
+    <div class="code-block">
+        ---
+        name: verify-log-hygiene
+        description: 检查错误日志是否包含请求 ID，并且绝不包含请求体。
+          当 diff 涉及错误处理或日志记录时使用。
+        allowed-tools: [Read, Edit, Grep]
+        ---
+        读取当前 diff 中的错误处理路径。
+        对于错误路径上的每个日志调用，确认它包含请求 ID
+        并且没有传递请求体、头部或任何用户提供的负载。
+        报告每个违规的文件:行号，然后修复它：在缺失的地方添加请求 ID，
+        并从日志调用中剥离负载。
+    </div>
+    <p>完整的 schema 及其背后的理念，请参阅我们的 <a href="#" style="color: #3b7a7a; text-decoration: none; border-bottom: 1px dotted #3b7a7a;">完整 skill 构建指南</a>。</p>
+
+    <!-- 匹配检查到运行位置 -->
+    <h2>将检查匹配到运行位置</h2>
+    <p>接下来要确定验证循环如何触发：<strong>独立（Standalone）</strong>、<strong>嵌入式（Embedded）</strong>、<strong>链式（Chained）</strong>，还是绑定到 PR。</p>
+
+    <div class="grid-2">
+        <div class="card">
+            <h4>🔹 独立（Standalone）</h4>
+            <p>你在产出工件后<strong>有意调用</strong>它。独立的 skill 适用于并非每次都需要应用的跨领域检查：提交前安全扫描、PR 前可访问性审计、仓库范围内的许可头验证。任何你想在许多工作流中可用，但不想在每次代码变更时都触发的东西。</p>
+            <p style="font-size: 0.9rem; color: #5b5650;">⚠️ 代价是每次调用仍然是你需要记住执行的一个步骤。当你每次变更后都运行它时，就说明已经超出了独立模式。此时，该流程已经赢得了永久位置：将其嵌入或链式。</p>
+        </div>
+        <div class="card">
+            <h4>🔸 嵌入式（Embedded）</h4>
+            <p>作为产生式 skill 的一部分<strong>自动触发</strong>。该检查属于一个特定的工作流，现在该工作流无需你要求就会运行它。</p>
+            <div class="code-block" style="font-size: 0.75rem; margin-top: 0.4rem;">
+                <span class="comment"># 在技能 body 末尾追加一行</span>
+                创建组件文件后，对其运行 eslint
+                并在报告完成前处理所有错误。
+            </div>
+            <p style="font-size: 0.9rem; color: #5b5650;">✅ 适用于你能编辑的 skill（你自己写的，或项目级安装的）。<br>❌ 不适用于内置或插件管理的 skill（会被覆盖）。</p>
+        </div>
+        <div class="card">
+            <h4>🔗 链式（Chained）</h4>
+            <p>一个 skill 在结尾调用另一个 skill，多个验证交接端到端运行。</p>
+            <p style="font-size: 0.9rem; color: #5b5650;">Anthropic 的 Claude Code 团队成员日常使用此模式：<span class="inline-code">/code-review</span> 查找 bug，<span class="inline-code">/simplify</span> 清理 diff，<span class="inline-code">/verify</span> 确认端到端行为，<span class="inline-code">/design</span> 根据 DESIGN.md 检查 UI 变更。</p>
+            <div class="code-block" style="font-size: 0.75rem;">
+                <span class="comment"># .claude/skills/safe-refactor/SKILL.md</span>
+                首先在当前 diff 上运行 /simplify。
+                当 /simplify 完成后，调用 /verify-no-public-api-changes。
+            </div>
+        </div>
+        <div class="card">
+            <h4>📦 在每个 PR 上</h4>
+            <p>一旦链在你自己的变更上稳定下来，同样的流程就可以在每个 PR 上运行。队友的变更也会通过你同样的关卡，无论他们是否记得调用链。</p>
+            <p style="font-size: 0.9rem; color: #5b5650;">这是验证从个人基础设施转变为团队基础设施的地方。你写下来是为了每周省两分钟，现在它正在为每个人每次变更省两分钟。</p>
+        </div>
+    </div>
+
+    <div class="insight-box">
+        <p><strong>📌 何时跳过某种模式</strong>：<br>
+        • 跳过嵌入式（embedded）用于跨工作流的检查 → 用独立（standalone）<br>
+        • 当步骤足够独立，有时你想单独运行其中一个时，跳过链式（chained）<br>
+        • 在链还在变动时，暂缓设置 PR 级别的关卡</p>
+    </div>
+
+    <!-- 流程总结 -->
+    <h2>验证循环创建流程</h2>
+    <p>一旦你掌握了流程，就可以准备扩展你的循环工程了。验证循环的创建过程是一致的，无论你在自动化什么或在什么环境中：</p>
+    <ol>
+        <li><strong>选择</strong>你本周最常做的手动跟进事项。</li>
+        <li><strong>先试用</strong>内置的 <span class="inline-code">/verify</span> skill，看看它是否有助于你的流程。</li>
+        <li><strong>用简单的英语写下</strong>该流程，就像你会在第一天交给新队友那样。</li>
+        <li><strong>交给 <span class="inline-code">skill-creator</span></strong>，或者自己把 markdown 文件放到 <span class="inline-code">.claude/skills/</span> 目录下。</li>
+        <li><strong>在新任务上调用它</strong>，确认检查作为输出的一部分运行，根据需要迭代。</li>
+        <li><strong>尝试 skill 链式</strong>来创建端到端的验证流。</li>
+    </ol>
+    <p>你为 Claude 编码得越多，Claude 的回应就越能在第一次尝试时接近你想要的。你不再需要手动调整的那些修正，现在释放了你的注意力，让你可以去处理那些没有 skill 能为你写下的、独一无二的工作。</p>
+
+    <!-- 结尾与相关文章 -->
+    <div class="footnote">
+        <p style="font-size: 0.9rem;">
+            <strong>开始使用 Claude Code 中的验证循环。</strong>
+        </p>
+        <p style="font-size: 0.85rem; color: #6b655e; margin-top: 0.4rem;">
+            本文由 Delba de Oliveira 撰写，她是 Claude Code 团队的成员。
+        </p>
+    </div>
+
+    <!-- 相关文章 -->
+    <div style="margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1px solid #e8e2da;">
+        <p style="font-weight: 550; color: #2d2a26; margin-bottom: 0.6rem;">📄 相关文章</p>
+        <ul style="list-style: none; padding: 0; font-size: 0.9rem;">
+            <li style="padding: 0.3rem 0;">• <a href="#" style="color: #3b7a7a; text-decoration: none; border-bottom: 1px dotted #3b7a7a;">2026年8月7日 · Auto 模式现已成为 Claude Code Pro、Max 和 Team 计划的默认模式</a></li>
+            <li style="padding: 0.3rem 0;">• <a href="#" style="color: #3b7a7a; text-decoration: none; border-bottom: 1px dotted #3b7a7a;">2026年8月7日 · 在生产环境中运行 Auto 模式</a></li>
+            <li style="padding: 0.3rem 0;">• <a href="#" style="color: #3b7a7a; text-decoration: none; border-bottom: 1px dotted #3b7a7a;">2026年8月6日 · Millennium 和 Anthropic 正在与 Claude 共同构建数字风险分析师</a></li>
+            <li style="padding: 0.3rem 0;">• <a href="#" style="color: #3b7a7a; text-decoration: none; border-bottom: 1px dotted #3b7a7a;">2026年7月24日 · Claude 模型详解：为你的用例选择最佳模型</a></li>
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>
