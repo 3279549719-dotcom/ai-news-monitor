@@ -228,6 +228,27 @@ function runPipeline() {
   });
 }
 
+
+// ─── Auto git push logs ──────────────────────────────────────────
+async function autoPushLogs() {
+  const { execSync } = require('child_process');
+  try {
+    execSync('git add logs/', { cwd: ROOT, stdio: 'pipe' });
+    const staged = execSync('git diff --cached --name-only', { cwd: ROOT, encoding: 'utf8' });
+    const forbidden = ['.env', 'src/config.js', '.crawl4ai-token', 'node_modules'];
+    for (const f of forbidden) {
+      if (staged.includes(f)) { console.warn('[pipeline] REFUSED to push: ' + f + ' in staged files'); return; }
+    }
+    try { execSync('git diff --cached --quiet', { cwd: ROOT }); return; } catch (e) { /* has changes */ }
+    execSync('git commit -m "ops: pipeline log ' + localStamp() + '"', { cwd: ROOT });
+    execSync('git fetch origin', { cwd: ROOT });
+    const rl = execSync('git rev-list --left-right --count origin/master...HEAD', { cwd: ROOT, encoding: 'utf8' }).trim().split('	').map(Number);
+    if (rl[0] > 0) execSync('git pull --rebase origin master', { cwd: ROOT });
+    execSync('git push origin master', { cwd: ROOT });
+    console.log('[pipeline] logs pushed to GitHub');
+  } catch (e) { console.warn('[pipeline] auto-push failed (best-effort):', e.message); }
+}
+
 // ─── Entry ──────────────────────────────────────────────────────────
 if (require.main === module) {
   console.log(`\n=== ai-news-monitor pipeline ${ts()} ===\n`);

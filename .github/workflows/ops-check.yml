@@ -4,6 +4,7 @@ name: Ops Check
 #   · 每日两次：08:00 UTC（北京 16:00）和 16:00 UTC（北京 00:00）
 #   · 手动触发：Actions 页面 → Run workflow
 #   · 超时 5 分钟，足够检查 + Supabase REST 调用
+#   · Copilot AI 诊断：失败时 Issue body 含 @copilot 指令自动触发分析
 
 on:
   schedule:
@@ -28,11 +29,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Pull latest logs
+        run: |
+          git pull origin master --rebase || echo "no new logs to pull"
+
       - name: Run ops check
         run: node scripts/ops-check.js --actions
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY: *** secrets.SUPABASE_SERVICE_KEY }}
 
       - name: Upload result
         if: always()
@@ -42,7 +47,7 @@ jobs:
           path: logs/.ops-check.json
           retention-days: 7
 
-  # 告警：当 ops-check 失败时发 GitHub Issue
+  # 告警 + AI 诊断：当 ops-check 失败时创建 Issue 并触发 Copilot 分析
   alert-on-failure:
     needs: ops-check
     if: failure()
@@ -58,5 +63,9 @@ jobs:
 
             运行时间: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-            请检查 ops-check 详情日志，修复后关闭此 Issue。
-          labels: 'ops, automated'
+            @copilot 请分析本次 ops-check 巡检失败的原因：
+            1. 读取 ops-check-result artifact 中的 logs/.ops-check.json
+            2. 定位所有失败项并分析根因
+            3. 给出可执行的修复建议
+            4. 在此 Issue 下评论你的诊断结论
+          labels: 'ops, ai-diagnose'

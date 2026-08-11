@@ -27,6 +27,12 @@ const https = require('https');
 const ROOT = path.join(__dirname, '..');
 const ARGS = new Set(process.argv.slice(2));
 const FULL_MODE = !ARGS.has('--light') && !ARGS.has('--actions');
+const ALERT_MODE = ARGS.has('--alert-threshold');
+const THRESHOLDS = {
+  minSupabaseArticles: parseInt(process.env.OPS_MIN_ARTICLES || '0', 10),
+  maxDaysNoPipeline: parseInt(process.env.OPS_MAX_DAYS_NO_PIPELINE || '3', 10),
+  minDiskGB: parseInt(process.env.OPS_MIN_DISK_GB || '10', 10),
+};
 
 /* ===== helpers ===== */
 const localDate = () => new Date().toISOString().split('T')[0];
@@ -90,7 +96,8 @@ function checkDisk() {
       try {
         const j = JSON.parse(info.stdout.trim());
         const free = j.FreeGB || 0;
-        const ok = free >= 20;
+        const minGb = ALERT_MODE ? THRESHOLDS.minDiskGB : 20;
+        const ok = free >= minGb;
         results.push(`${j.Name} ${free}GB`);
         if (!ok) allOk = false;
       } catch { results.push(`${d} parse-fail`); }
@@ -109,9 +116,12 @@ function checkLastRun() {
     const data = JSON.parse(raw);
     const today = localDate();
     const ranToday = data.date === today;
+    const daysSince = ranToday ? 0 : Math.floor((Date.now() - new Date(data.date + "T00:00:00").getTime()) / 86400000);
     return {
-      label: '今日 pipeline', ok: ranToday,
-      detail: ranToday
+      label: '今日 pipeline', ok: ALERT_MODE ? (daysSince <= THRESHOLDS.maxDaysNoPipeline) : ranToday,
+      detail: ALERT_MODE && !ranToday && daysSince > THRESHOLDS.maxDaysNoPipeline
+        ? `上次运行 ${data.date}，已 ${daysSince} 天未跑（超过 ${THRESHOLDS.maxDaysNoPipeline} 天阈值）`
+        : ranToday
         ? `今天已跑 (${data.ranAt})`
         : `上次运行 ${data.date} (${data.ranAt})，今天 (${today}) 尚未跑`,
     };
