@@ -102,4 +102,5 @@ function getSecret(name) {
 }
 
 module.exports.getSecret = getSecret;
-module.exports._secrets = _secrets; // exposed for tests that need to inject mock values
+// Only expose _secrets in test environment — production code must use getSecret()
+if (process.env.NODE_ENV === 'test') module.exports._secrets = _secrets;

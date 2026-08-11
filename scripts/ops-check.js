@@ -37,10 +37,10 @@ function log(label, ok, detail = '') {
   return { label, ok, detail };
 }
 
-function httpGet(url, timeoutMs = 8000) {
+function httpGet(url, timeoutMs = 8000, verifyTls = true) {
   return new Promise((resolve, reject) => {
     const t = setTimeout(() => { req.destroy(); reject(new Error('timeout')); }, timeoutMs);
-    const req = https.get(url, { rejectUnauthorized: false }, res => {
+    const req = https.get(url, { rejectUnauthorized: !verifyTls }, res => {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => { clearTimeout(t); resolve({ status: res.statusCode, body: data }); });
@@ -168,7 +168,7 @@ async function checkSupabaseArticles() {
   try {
     const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
     const url = `${SUPABASE_URL}/rest/v1/articles?select=id,created_at&created_at=gte.${since}&limit=1000`;
-    const { status, body } = await httpGet(url, 8000);
+    const { status, body } = await httpGet(url, 8000, true);
     if (status !== 200) {
       // Try with auth header
       const res2 = await new Promise((resolve, reject) => {
