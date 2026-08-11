@@ -39,7 +39,7 @@ jobs:
         run: node scripts/ops-check.js --actions
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY: *** secrets.SUPABASE_SERVICE_KEY }}
 
       - name: Upload result
         if: always()
@@ -49,12 +49,13 @@ jobs:
           path: logs/.ops-check.json
           retention-days: 7
 
-  # 告警 + AI 诊断：当 ops-check 失败时创建 Issue 并触发 Copilot 分析
-  # 注意：需要 GitHub Actions 有 issues:write 权限（Settings → Actions → General → Workflow permissions → Read and write）：当 ops-check 失败时创建 Issue 并触发 Copilot 分析
+  # 失败 → 创建 Issue（含 @copilot 诊断指令）
   alert-on-failure:
     needs: ops-check
     if: failure()
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Create issue on failure
         uses: actions-cool/issues-helper@v3
