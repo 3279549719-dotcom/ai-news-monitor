@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>三代理实战：真派发还是单窗口？—— 证据链实锤</title>
+<style>
+  :root {
+    --bg: #0f1115; --card: #1a1d24; --card2: #22262f; --border: #303643;
+    --text: #e6e9ef; --muted: #9aa3b2; --accent: #4f8cff;
+    --green: #3ecf6d; --red: #ff5c5c; --amber: #f5a623; --purple: #a78bfa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; line-height: 1.6; padding: 32px 20px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { margin-bottom: 28px; }
+  h1 { font-size: 23px; margin-bottom: 6px; }
+  .sub { color: var(--muted); font-size: 14px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; background: var(--card2); border: 1px solid var(--border); color: var(--muted); }
+  .badge.green { color: var(--green); border-color: #2d5c3f; background: #13261a; }
+  .badge.red { color: var(--red); border-color: #5c2d2d; background: #261313; }
+  .badge.amber { color: var(--amber); border-color: #5c4a2d; background: #261f13; }
+  .badge.purple { color: var(--purple); border-color: #4a3d6b; background: #1a1626; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 16px; }
+  .card h2 { font-size: 16px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .num { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .card h2 .ev { font-size: 12px; color: var(--green); font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  td .ok { color: var(--green); font-weight: 600; }
+  td .fail { color: var(--red); font-weight: 600; }
+  td .warn { color: var(--amber); font-weight: 600; }
+  td .mono, .mono { font-family: "Cascadia Code", Consolas, monospace; font-size: 12.5px; }
+  .quote { border-left: 3px solid var(--accent); background: var(--card2); padding: 10px 14px; border-radius: 0 8px 8px 0; font-size: 13px; color: var(--muted); margin: 10px 0; }
+  .log { background: #0b0d11; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; color: var(--green); overflow-x: auto; white-space: pre-wrap; margin-top: 10px; }
+  .log.plain { color: var(--text); }
+  ul { padding-left: 20px; font-size: 14px; }
+  li { margin-bottom: 6px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 640px) { .grid2 { grid-template-columns: 1fr; } }
+  .verdict { display: flex; gap: 14px; align-items: flex-start; background: var(--card2); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-top: 14px; }
+  .verdict .icon { font-size: 28px; line-height: 1.2; }
+  footer { color: var(--muted); font-size: 12px; text-align: center; margin-top: 24px; }
+  .kbd { background: var(--card2); border: 1px solid var(--border); border-radius: 6px; padding: 2px 8px; font-family: monospace; font-size: 12.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🔍 三代理实战：真派发，还是单窗口自导自演？</h1>
+    <div class="sub">Planner → Generator → Evaluator 文件交接协议 · 证据链实锤 · 2026-08-11 管线搬 GitHub 实战</div>
+    <div class="badges">
+      <span class="badge green">真 subagent ×2</span>
+      <span class="badge green">文件交接 ✓</span>
+      <span class="badge amber">同模型 · 非独立 brain</span>
+      <span class="badge red">Planner = 主会话</span>
+      <span class="badge purple">偏差 2 已如实记录</span>
+    </div>
+  </header>
+
+  <div class="card">
+    <h2><span class="num">1</span> 先给结论（不绕弯）</h2>
+    <div class="verdict">
+      <div class="icon">✅</div>
+      <div>
+        <p><b>不是</b>一个 context window 自导自演。Generator 和 Evaluator 是<strong>真实派发的独立上下文子代理</strong>（Claude Code Agent 工具，隔离上下文窗口），各自按派发 prompt 里注入的人设与规范干活，全程靠<strong>落盘文档交接</strong>推进。</p>
+      </div>
+    </div>
+    <div class="verdict" style="margin-top:10px;">
+      <div class="icon">⚠️</div>
+      <div>
+        <p>但<b>也不是</b> Anthropic 那篇描述的「3 个独立大脑」。真相是：<b>Planner = 主会话扮演</b>（未派发）；三个角色跑在<strong>同一模型</strong>（deepseek-v4-flash）上，人设靠 prompt 注入、隔离靠上下文、交接靠文件——<b>没有模型层人设隔离</b>。</p>
+      </div>
+    </div>
+    <p style="font-size:14px;color:var(--muted);margin-top:12px">一句话：<b>交接协议是真的 · 隔离上下文是真的 · 独立复核是真的</b>；「独立大脑 / 模型隔离」是假的。这与你仓库里 <span class="mono">DECISION-三代理架构-自审评估.md</span> 的「偏差 2」完全一致。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span> 证据 A：Agent 派发记录 <span class="ev">（最硬实锤）</span></h2>
+    <p style="font-size:14px;margin-bottom:10px">会话转录文件 <span class="mono">022ea5e6-0338-442c-bbe8-e52b9cac7f2b.jsonl</span> 里，记录了两条真实的 <span class="mono">Agent</span> 工具调用。Agent 工具的每次调用 = 生成一个<strong>全新隔离上下文窗口</strong>的子代理进程。这就是「Generator / Evaluator 确实是两个独立子代理」的直接证据：</p>
+    <table>
+      <tr><th>时间 (UTC)</th><th>description</th><th>subagent_type</th><th>model</th></tr>
+      <tr><td class="mono">13:35:01Z</td><td><b>Generator: implement CI pipeline</b></td><td class="mono">general-purpose</td><td class="mono">deepseek-v4-flash</td></tr>
+      <tr><td class="mono">13:46:48Z</td><td><b>Evaluator: verify CI pipeline</b></td><td class="mono">general-purpose</td><td class="mono">deepseek-v4-flash</td></tr>
+    </table>
+    <div class="quote">两条记录从文件里提取的真实 JSON（节选）：<span class="mono">{"type":"tool_use","name":"Agent","input":{"description":"Generator: implement CI pipeline","subagent_type":"general-purpose","prompt":"你是 ai-news-monitor 项目的 **Generator** 子代理..."}}</span></div>
+    <p style="font-size:13.5px;color:var(--muted)">自查命令（Git Bash）：<span class="kbd">grep -c '"Agent"' 'E:/claude/.claude/projects/E--claude-ai-news-monitor/022ea5e6-*.jsonl'</span></p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span> 证据 B：派发 prompt 里的「人设 + 规范 + 交接指令」</h2>
+    <p style="font-size:14px;margin-bottom:10px">每个子代理收到的是完整角色定义，不是「帮我干点活」：</p>
+    <div class="log plain">【Generator 派发 prompt 开头】
+你是 ai-news-monitor 项目的 **Generator** 子代理，负责"管线搬 GitHub Actions（纯 CI）"改造任务。
+...
+1. 先读需求 brief：...task-2-brief.md —— 这是你的需求唯一来源，含全部具体代码与验收命令
+2. 再读 Planner 交接（worktree 内 docs/ 下）：
+   - docs/PLANNER_DONE.md（交接信号）
+   - docs/PLAN-管线搬GitHub.md（技术方案，Generator 唯一依据）
+   - docs/SPRINT-20260811-github-pipeline.md（"完成"定义）
+本项目规范（AGENTS.md）：后端 CommonJS；只改任务内文件；提交走 npm run commit...</div>
+    <div class="log plain" style="color:var(--amber)">【Evaluator 派发 prompt 开头】
+你是 ai-news-monitor 项目的 **Evaluator** 子代理，负责对 Generator 交付的改动做**独立复核**并产出终审。
+**核心原则：不信任 Generator 的自我声称，全部命令你自己重跑，输出你自己看。**
+你正是三代理里给 Generator"校准"的那个角色。
+按序读：task-3-brief.md → docs/GENERATOR_DONE.md → docs/SPRINT → docs/REVIEW.md.template → review package（d056d2d..3e20530.diff）</div>
+    <p style="font-size:13.5px;color:var(--muted);margin-top:8px">人设（角色声明）、规范（AGENTS.md / CommonJS / 提交走 commit 门）、交接（先读上一棒落盘文档）——全部在 prompt 层落地。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span> 证据 C：文件交接链（git 实锤）</h2>
+    <table>
+      <tr><th>时间</th><th>提交</th><th>角色</th><th>内容</th><th>下一棒读取</th></tr>
+      <tr><td class="mono">21:30</td><td class="mono">d056d2d</td><td>Planner</td><td><span class="mono">docs/PLAN-管线搬GitHub.md</span> + SPRINT + <span class="mono">PLANNER_DONE.md</span>（交接信号）</td><td>→ Generator</td></tr>
+      <tr><td class="mono">21:42</td><td class="mono">529c06d</td><td>Generator</td><td>代码交付：2 workflow + run-pipeline <span class="mono">--ci</span> + 5 测试</td><td>→ Evaluator 复核对象</td></tr>
+      <tr><td class="mono">21:43</td><td class="mono">3e20530</td><td>Generator</td><td><span class="mono">docs/GENERATOR_DONE.md</span>（A4 证据交接）</td><td>→ Evaluator</td></tr>
+      <tr><td class="mono">21:52</td><td class="mono">5f22140</td><td>Evaluator</td><td><span class="mono">docs/REVIEW-20260811-github-pipeline.md</span>（终审 PASS + 3 Minor）</td><td>→ Phase 4 主会话</td></tr>
+    </table>
+    <p style="font-size:13.5px;color:var(--muted);margin-top:8px">每棒的提交 message 带角色前缀（<span class="mono">docs(planner)</span> / <span class="mono">feat(generator)</span> / <span class="mono">docs(evaluator)</span>），交接文档落盘在 <span class="mono">docs/</span>，下一位派发 prompt 明确要求「先读」。时间与转录里的派发时刻一一对上（13:35Z=21:35、13:46Z=21:46 本地）。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">5</span> 证据 D：Evaluator 独立复核（不是自说自话）</h2>
+    <p style="font-size:14px;margin-bottom:10px">如果全程一个上下文，第二棒只会「复制粘贴第一棒的测试输出自圆其说」。真实情况是 Evaluator 在自己隔离的上下文里<strong>全部命令重新跑了一遍</strong>，并抓到 Generator 没说的东西：</p>
+    <div class="log plain">【task-3-report.md 摘录】
+独立重跑验证（全部自行重跑，非 Generator 粘贴）：
+- node --check scripts/run-pipeline.js → exit 0
+- node --test scripts/run-pipeline.test.js -v → 5/5 PASS
+- npm test → 118/118 PASS（基线核对：父提交 d056d2d 测试文件 13→14，新增 5 条真实执行）
+- npm run check → exit 0 ｜ actionlint 两个新 workflow → exit 0
+C/V/S 逐项：C1-C3 / V1-V4 / S1-S3 全部 PASS，Secret 名与 config.js 15 个 env 逐一 grep 命中。
+问题清单（无 Critical / Important）：
+- Minor① vars.EMAIL_ENABLED 未设时 config 默认开邮件 → Phase 4 先 gh variable set false
+- Minor② 预存：actionlint 对 master 的 ops-check.yml:52 报错（非本次引入）
+- Minor③ KNOWN_TRAPS 缺 [::] 端口映射陷阱原文
+待实机回归项：crawl4ai 冒烟 / daily-pipeline dispatch / --ci 降级分支 / Supabase 落库 —— 共 6 项</div>
+    <p style="font-size:13.5px;color:var(--muted);margin-top:8px">「基线 113→118 核对」「3 条 Minor」「明确哪些要 Phase 4 实机验证」——这些是第二个上下文真的在审第一个上下文的产物，且审出了差异，不是同一个窗口的自审。</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">6</span> 证据 E：每次派发的 brief / report 全部落盘</h2>
+    <p style="font-size:14px;margin-bottom:10px">派发不是「口头交代」，每次派发的需求 brief 和子代理交回的 report 都写进了独立目录，任何时刻可回看：</p>
+    <div class="log plain">.superpowers/sdd/2026-08-11-github-pipeline-three-agent/
+├── progress.md            ← SDD 账本：每任务状态 + 提交 sha
+├── task-2-brief.md        ← 派发给 Generator 的需求 brief（含全部代码）
+├── task-2-report.md       ← Generator 交回的 report（提交 sha + 验收输出）
+├── task-3-brief.md        ← 派发给 Evaluator 的需求 brief
+└── task-3-report.md       ← Evaluator 交回的 report（独立复核输出）</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">7</span> 诚实清单：哪些真 · 哪些打折 · 哪些没达成</h2>
+    <table>
+      <tr><th>要素（Anthropic 描述）</th><th>本次实际</th><th>判定</th></tr>
+      <tr><td>多个角色各司其职</td><td>Planner / Generator / Evaluator 三个角色分工</td><td class="ok">✅ 真</td></tr>
+      <tr><td>独立上下文隔离</td><td>Generator、Evaluator 是 Agent 工具派发的隔离窗口</td><td class="ok">✅ 真（×2）</td></tr>
+      <tr><td>通过文档落盘交接推进</td><td>PLANNER_DONE → GENERATOR_DONE → REVIEW，每棒先读上一棒落盘</td><td class="ok">✅ 真</td></tr>
+      <tr><td>后棒不信任前棒、独立复核</td><td>Evaluator 全命令重跑 + 抓到 3 Minor + 标注待实机项</td><td class="ok">✅ 真</td></tr>
+      <tr><td>「3 个 agent」都独立派发</td><td>Planner 由<strong>主会话扮演</strong>，未派发 —— 实为 1 主会话 + 2 子代理</td><td class="warn">⚠️ 打折</td></tr>
+      <tr><td>各 agent 独立模型 / 独立 brain</td><td>三个角色同一模型 <span class="mono">deepseek-v4-flash</span>，人设靠 prompt 注入</td><td class="fail">❌ 未达成</td></tr>
+      <tr><td>架构层保证独立性（无指挥者偏见）</td><td>独立性靠 prompt 纪律 + 隔离上下文；指挥者（主会话）偏见可传染</td><td class="warn">⚠️ 打折 = 偏差 2</td></tr>
+    </table>
+    <div class="quote">与你仓库 <span class="mono">docs/DECISION-三代理架构-自审评估.md</span> 的复盘结论逐字吻合：<b>「偏差 2 影响可控但不为零：独立性靠 prompt 纪律而非架构，指挥者偏见可传染。」</b>本次 HTML 就是这条偏差的实证。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">8</span> 你可以自己验证（3 条命令）</h2>
+    <div class="log plain"># 1. 看派发记录（Generator / Evaluator 两条 Agent 调用，各只命中一次）
+grep -o '"description":"\(Generator\|Evaluator\): [^"]*"' 'E:/claude/.claude/projects/E--claude-ai-news-monitor/022ea5e6-0338-442c-bbe8-e52b9cac7f2b.jsonl' | sort -u
+
+# 2. 看 git 交接链（4 个角色提交）
+git log --oneline d056d2d..5f22140
+
+# 3. 看派发产物落盘
+ls 'E:/claude/ai-news-monitor/.superpowers/sdd/2026-08-11-github-pipeline-three-agent/'</div>
+  </div>
+
+  <footer>证据来源：会话转录 022ea5e6-*.jsonl（派发记录）· git log（交接链）· .superpowers/sdd/（brief/report）· docs/DECISION-三代理架构-自审评估.md（复盘）· 生成于 2026-08-12 · ai-news-monitor</footer>
+</div>
+</body>
+</html>
