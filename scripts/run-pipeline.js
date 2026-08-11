@@ -254,6 +254,9 @@ function runPipeline() {
     finishLog(1, null, e.message);
   });
   child.on('exit', (code, signal) => {
+    if (process.argv.includes('--json')) {
+      outputJsonStatus(true, code ?? 0);
+    }
     finishLog(code ?? 1, signal, null);
   });
 }
@@ -283,12 +286,33 @@ async function autoPushLogs() {
   } catch (e) { console.warn('[pipeline] auto-push failed (best-effort):', e.message); }
 }
 
+// ─── --json 模式：输出结构化状态 ──────────────────────────────────
+function outputJsonStatus(crawl4aiReady, exitCode) {
+  const statusFile = path.join(ROOT, 'logs', '.last-run.json');
+  let lastRun = null;
+  try { if (fs.existsSync(statusFile)) lastRun = JSON.parse(fs.readFileSync(statusFile, 'utf8')); } catch {}
+
+  const reportPath = path.join(ROOT, 'reports', `${localStamp()}.md`);
+  const logPath = path.join(ROOT, 'logs', `pipeline-${localStamp()}.log`);
+
+  console.log(JSON.stringify({
+    success: exitCode === 0,
+    exit_code: exitCode,
+    date: localStamp(),
+    crawl4ai_ready: crawl4aiReady,
+    status_file: lastRun ? { ok: lastRun.crawl4aiOk, reason: lastRun.reason } : null,
+    report: fs.existsSync(reportPath) ? reportPath : null,
+    log_file: logPath,
+  }, null, 2));
+}
+
 // ─── Entry ──────────────────────────────────────────────────────────
 if (require.main === module) {
-  console.log(`\n=== ai-news-monitor pipeline ${ts()} ===\n`);
+  const isJson = process.argv.includes('--json');
+  if (!isJson) console.log(`\n=== ai-news-monitor pipeline ${ts()} ===\n`);
   ensureCrawl4ai();
   runPipeline();
 } else {
   // Required as a module — export for programmatic use / testing
-  module.exports = { ensureCrawl4ai, dockerStart, checkCrawl4aiHealth, sendAlertEmail, writeStatusFile, parseArgs, healthCheckOutputPath };
+  module.exports = { ensureCrawl4ai, dockerStart, checkCrawl4aiHealth, sendAlertEmail, writeStatusFile, parseArgs, healthCheckOutputPath, outputJsonStatus };
 }

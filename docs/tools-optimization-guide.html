@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tools 元能力强化 · ai-news-monitor 优化路线图</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+    background: #f5f3ef;
+    color: #1e1c19;
+    line-height: 1.65;
+    padding: 0;
+  }
+  .hero {
+    background: linear-gradient(135deg, #1e1c19 0%, #3d3933 100%);
+    color: #f5f3ef;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+  .hero h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
+  .hero .sub { font-size: 1.05rem; opacity: 0.75; max-width: 640px; margin: 0 auto; }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.12); padding: 0.3rem 1rem; border-radius: 20px; font-size: 0.82rem; margin-top: 0.8rem; }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+
+  .toc {
+    background: #fff; border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2rem;
+    border: 1px solid #e0d8d0;
+  }
+  .toc h3 { font-size: 1.05rem; margin-bottom: 0.6rem; color: #8b6f4e; }
+  .toc ol { padding-left: 1.2rem; }
+  .toc li { margin: 0.25rem 0; }
+  .toc a { color: #3d7a6e; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  h2 {
+    font-size: 1.5rem; font-weight: 650; margin: 2.5rem 0 1rem;
+    padding-bottom: 0.5rem; border-bottom: 2px solid #e0d8d0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h3 { font-size: 1.15rem; font-weight: 620; margin: 1.5rem 0 0.6rem; }
+  h4 { font-size: 1rem; font-weight: 600; margin: 1.2rem 0 0.4rem; }
+
+  p { margin: 0.6rem 0; }
+  ul, ol { margin: 0.5rem 0 0.5rem 1.5rem; }
+  li { margin: 0.25rem 0; }
+
+  .panel {
+    background: #fff; border-radius: 16px; padding: 1.5rem 2rem; margin: 1.2rem 0;
+    border: 1px solid #e0d8d0;
+  }
+  .panel.info { border-left: 4px solid #3d7a6e; }
+  .panel.warn { border-left: 4px solid #d4a14e; }
+  .panel.tip { border-left: 4px solid #5b8ec4; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.2rem 0; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin: 1.2rem 0; }
+  @media (max-width: 720px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: #fff; border-radius: 14px; padding: 1.3rem; border: 1px solid #e0d8d0;
+    transition: border-color 0.15s;
+  }
+  .card:hover { border-color: #c0b8a8; }
+  .card .icon { font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .card h4 { margin: 0.3rem 0; font-size: 0.95rem; }
+
+  .timeline { position: relative; padding-left: 2rem; margin: 1.5rem 0; }
+  .timeline::before { content: ''; position: absolute; left: 12px; top: 0; bottom: 0; width: 2px; background: #d5cdc2; }
+  .tl-item { position: relative; margin-bottom: 1.8rem; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-marker {
+    position: absolute; left: -1.55rem; top: 0.15rem;
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #3d7a6e; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; font-weight: 700;
+  }
+  .tl-marker.phase2 { background: #d4a14e; }
+  .tl-marker.phase3 { background: #5b8ec4; }
+  .tl-marker.phase4 { background: #8b5ea6; }
+  .tl-body { background: #fff; border-radius: 12px; padding: 1rem 1.3rem; border: 1px solid #e0d8d0; }
+  .tl-body h4 { margin-top: 0; }
+  .tl-body .est { font-size: 0.8rem; color: #8b6f4e; }
+
+  table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; }
+  th, td { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid #e8e2da; }
+  th { background: #f8f6f2; font-weight: 620; }
+  tr:hover { background: #faf8f5; }
+
+  .gap-table td:first-child { font-weight: 600; min-width: 140px; }
+  .gap-table .gap { color: #c0392b; }
+  .gap-table .partial { color: #d4a14e; }
+  .gap-table .ok { color: #3d7a6e; }
+
+  .metric-row { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: 1rem 0; }
+  .metric-card {
+    flex: 1; min-width: 140px; background: #fff; border-radius: 12px; padding: 1rem 1.2rem;
+    border: 1px solid #e0d8d0; text-align: center;
+  }
+  .metric-card .num { font-size: 1.8rem; font-weight: 700; color: #3d7a6e; }
+  .metric-card .num.warn { color: #d4a14e; }
+  .metric-card .label { font-size: 0.82rem; color: #6b655e; margin-top: 0.2rem; }
+
+  .quote {
+    background: #f8f6f2; border-radius: 12px; padding: 1rem 1.5rem; margin: 1rem 0;
+    border-left: 4px solid #b8834a; font-style: italic; color: #4a4440;
+  }
+  .quote .attr { font-style: normal; font-size: 0.85rem; color: #8b6f4e; margin-top: 0.3rem; }
+
+  code {
+    background: #ece8e2; padding: 0.05rem 0.45rem; border-radius: 5px;
+    font-family: 'SF Mono', 'Menlo', 'Consolas', monospace; font-size: 0.87rem;
+  }
+  pre {
+    background: #2d2a26; color: #e8e2da; padding: 1rem 1.2rem; border-radius: 12px;
+    overflow-x: auto; font-size: 0.82rem; line-height: 1.5; margin: 0.8rem 0;
+  }
+  pre code { background: none; padding: 0; color: inherit; }
+
+  .footnote { margin-top: 3rem; padding-top: 1.5rem; border-top: 2px solid #e0d8d0; font-size: 0.88rem; color: #6b655e; }
+  .footnote a { color: #3d7a6e; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Tools 元能力强化 · 优化路线图</h1>
+  <div class="sub">从"命令别名"到"AI-Native 工具系统"——基于 Anthropic 和 OpenAI 官方最佳实践</div>
+  <div class="badge">ai-news-monitor · 2026-08-11</div>
+</div>
+
+<div class="container">
+
+<div class="toc">
+  <h3>📋 目录导航</h3>
+  <ol>
+    <li><a href="#s1">项目现状诊断：你的工具能力在哪个层次？</a></li>
+    <li><a href="#s2">官方说了什么：Anthropic & OpenAI 核心洞察</a></li>
+    <li><a href="#s3">差距分析：项目缺了什么？</a></li>
+    <li><a href="#s4">四阶段优化路线</a></li>
+    <li><a href="#s5">与 function calling 的关系：核心澄清</a></li>
+    <li><a href="#s6">这些优化如何推动 AI 项目开发？</a></li>
+    <li><a href="#s7">参考资料</a></li>
+  </ol>
+</div>
+
+<!-- ====== SECTION 1: 现状 ====== -->
+<h2 id="s1">🔍 项目现状诊断</h2>
+
+<p>你的 <code>ai-news-monitor</code> 项目已经有一整套脚本化工具链，但对照 Anthropic 和 OpenAI 的官方标准，还停留在"命令别名/简单组合"层次。来看实际状况：</p>
+
+<div class="grid3">
+  <div class="card">
+    <div class="icon">🔹</div>
+    <h4>层次 1：别名化 ✅ 已有</h4>
+    <p><code>npm run check</code> = lint + type-check + test<br>
+    <code>npm run commit</code> = 校验 → 暂存 → 提交</p>
+  </div>
+  <div class="card">
+    <div class="icon">🔸</div>
+    <h4>层次 2：组合化 ✅ 已有</h4>
+    <p><code>ops:run-auto</code> = Docker 自愈 → 管线 → 日志<br>
+    Harness 四件套 = pretooluse + posttooluse + precommit + stop</p>
+  </div>
+  <div class="card">
+    <div class="icon">🔶</div>
+    <h4>层次 3：智能化 ❌ 缺失</h4>
+    <p>没有结构化 function calling 工具定义<br>
+    没有意图驱动的工具路由<br>
+    没有上下文感知的参数填充</p>
+  </div>
+</div>
+
+<div class="panel info">
+  <h4>🗺️ 当前工具的架构全景</h4>
+  <table>
+    <tr><th>工具/模块</th><th>文件</th><th>能力层次</th><th>问题</th></tr>
+    <tr><td><code>npm run check</code></td><td>package.json scripts</td><td>组合化</td><td>AI 调用时只能裸写 <code>bash("npm test")</code>，不知道有哪些可用选项</td></tr>
+    <tr><td><code>npm run commit</code></td><td>scripts/git-commit.js</td><td>组合化+护栏</td><td>AI 需要记住参数语法 <code>-p -n --amend</code>，无结构化 schema</td></tr>
+    <tr><td>Harness pretooluse</td><td>scripts/harness-pretooluse.js</td><td>规则匹配</td><td>只能拦截已知 footgun，无法自学习新错误模式</td></tr>
+    <tr><td>Harness posttooluse</td><td>scripts/harness-check.js</td><td>反馈（非阻断）</td><td>只做"通过/失败"二元判断，无诊断建议</td></tr>
+    <tr><td>Harness precommit</td><td>scripts/harness-precommit.js</td><td>护栏</td><td>硬阻断，但无上下文解释"为什么失败了、建议怎么修"</td></tr>
+    <tr><td>Harness stop</td><td>scripts/harness-stop.js</td><td>收尾门禁</td><td>同 posttooluse，只检查不改错</td></tr>
+    <tr><td><code>ops:run-auto</code></td><td>scripts/run-pipeline.js</td><td>流水线</td><td>自愈逻辑好但 AI 无法理解其内部状态——只知道"跑完了"或"失败了"</td></tr>
+    <tr><td>AI 评分 (ai.js)</td><td>src/ai.js</td><td>LLM 调用</td><td>纯文本 prompt 调用 DeepSeek，不是 OpenAI/Claude 的结构化 function calling 模式</td></tr>
+  </table>
+</div>
+
+<!-- ====== SECTION 2: 官方洞察 ====== -->
+<h2 id="s2">📚 官方说了什么？</h2>
+
+<h3>Anthropic 核心洞察（15 篇官方文章提炼）</h3>
+
+<div class="metric-row">
+  <div class="metric-card"><div class="num">95%</div><div class="label">Tool Search Tool 上下文节省</div></div>
+  <div class="metric-card"><div class="num">37%</div><div class="label">PTC Token 节省</div></div>
+  <div class="metric-card"><div class="num">72→90%</div><div class="label">Tool Use Examples 准确率提升</div></div>
+</div>
+
+<div class="panel tip">
+  <h4>🧠 Anthropic 的 Tool Use 设计哲学（一句话版）</h4>
+  <p><strong>工具是"确定性系统"与"非确定性 Agent"之间的契约</strong>——它不是为了人类开发者设计的 API，而是为 LLM 的认知方式优化的接口。描述比 Schema 更重要，上下文是稀缺资源。</p>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h4>① Tool Search Tool（按需加载）</h4>
+    <p>标记 <code>defer_loading: true</code> 的工具不消耗初始上下文，需要时由模型自行搜索发现。从 77K → 8.7K tokens（节省 95%）。Opus 4 MCP 准确率从 49% 跃升至 74%。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: <em>Introducing advanced tool use</em>, 2025-11-24</p>
+  </div>
+  <div class="card">
+    <h4>② Programmatic Tool Calling</h4>
+    <p>让 Claude 通过 Python 代码编排工具调用，中间结果不出现在上下文。平均节省 37% token。消除 19+ 次重复推理往返。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: <em>Introducing advanced tool use</em>, 2025-11-24</p>
+  </div>
+  <div class="card">
+    <h4>③ Tool Use Examples</h4>
+    <p><code>input_examples</code> 教模型何时包含可选参数、参数如何关联。复杂参数准确率从 72% → 90%。用真实数据展示 minimal/partial/full 三种模式。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: <em>Introducing advanced tool use</em>, 2025-11-24</p>
+  </div>
+  <div class="card">
+    <h4>④ 工具描述是第一优化手段</h4>
+    <p>Anthropic 在 SWE-bench 中花在优化工具定义上的时间超过了优化 prompt。每个工具至少 3-4 句描述：做什么、何时用/何时不用、边界条件。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: <em>Writing effective tools for AI agents</em>, 2025-09-11</p>
+  </div>
+</div>
+
+<div class="quote">
+  <p>"如果你在写正则表达式从模型输出中提取决策，那个决策应该是一个工具调用。从自由文本中解析结构化意图说明结构应该放在 schema 中。"</p>
+  <div class="attr">—— Anthropic 官方文档, <em>How tool use works</em></div>
+</div>
+
+<h3>OpenAI 核心洞察</h3>
+
+<div class="grid2">
+  <div class="card">
+    <h4>① Strict Mode（结构化约束采样）</h4>
+    <p>设置 <code>strict: true</code>，模型输出 100% 符合 JSON Schema。通过 grammar-constrained sampling 实现。建议几乎所有 function calling 都用 strict。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: platform.openai.com/docs/guides/function-calling</p>
+  </div>
+  <div class="card">
+    <h4>② Tool Search / defer_loading</h4>
+    <p>GPT-5.4+ 支持。与 Anthropic 同方向：只加载高频工具，其余按需发现。配合 <code>allowed_tools</code> 可在不改变工具列表的情况下限制可用子集。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: platform.openai.com/docs/guides/function-calling</p>
+  </div>
+  <div class="card">
+    <h4>③ 命名空间（Namespaces）</h4>
+    <p>用 <code>type: "namespace"</code> 包裹相关工具（如 <code>crm</code>、<code>billing</code>、<code>shipping</code>）。帮助模型在"相似但属于不同系统"的工具间做出正确选择。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: platform.openai.com/docs/guides/function-calling</p>
+  </div>
+  <div class="card">
+    <h4>④ tool_choice 精细控制</h4>
+    <p><code>auto</code> / <code>required</code> / <code>none</code> / 强制特定工具 / <code>allowed_tools</code> 五种模式。并行调用可关闭 (<code>parallel_tool_calls: false</code>)。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">来源: platform.openai.com/docs/guides/function-calling</p>
+  </div>
+</div>
+
+<h3>两大厂商的共识</h3>
+
+<div class="panel">
+  <table>
+    <tr><th>共识点</th><th>Anthropic 表述</th><th>OpenAI 表述</th></tr>
+    <tr><td>上下文是稀缺资源</td><td>"每个 token 都消耗注意力预算"</td><td>"函数定义计入上下文限制，按输入 token 计费"</td></tr>
+    <tr><td>描述比 Schema 重要</td><td>"工具描述是最高杠杆的优化手段"</td><td>"写清晰详细的函数名、参数描述和指令"</td></tr>
+    <tr><td>少即是多</td><td>"少量精心设计的工具 > 大量简单包装"</td><td>"保持初始可用函数少于 20 个"</td></tr>
+    <tr><td>按需加载</td><td>Tool Search Tool + defer_loading</td><td>tool_search + defer_loading</td></tr>
+    <tr><td>并行优先</td><td>Claude 4+ 默认并行，同一 user 消息返回结果</td><td>GPT-5+ 支持并行，可关闭</td></tr>
+  </table>
+</div>
+
+<!-- ====== SECTION 3: 差距分析 ====== -->
+<h2 id="s3">📊 差距分析</h2>
+
+<div class="panel warn">
+  <h4>对照清单：官方最佳实践 vs 项目现状</h4>
+  <table class="gap-table">
+    <tr><th>官方最佳实践</th><th>项目现状</th><th>差距</th></tr>
+    <tr><td>结构化 Function Calling 工具定义（name + description + JSON Schema）</td><td>✗ 无。AI 调用全靠 bash("npm run xxx")</td><td class="gap">🔴 严重</td></tr>
+    <tr><td>Strict mode / 约束采样确保参数合规</td><td>✗ 无。脚本靠 node 参数校验，无 schema 层</td><td class="gap">🔴 严重</td></tr>
+    <tr><td>工具按需加载（< 10 个直接加载，> 10 个按需）</td><td>△ 项目脚本 < 10 个但缺少加载机制</td><td class="partial">🟡 可优化</td></tr>
+    <tr><td>工具描述至少 3-4 句，含何时用/何时不用/边界条件</td><td>△ package.json scripts 无描述；harness 脚本有注释但非结构化</td><td class="partial">🟡 可优化</td></tr>
+    <tr><td>Tool Use Examples（输入示例）</td><td>✗ 无。AI 只能靠记忆猜参数格式</td><td class="gap">🔴 严重</td></tr>
+    <tr><td>错误处理：is_error + 可操作信息让 Agent 自愈</td><td>△ harness 能拦截错误，但不给 Agent 自愈建议</td><td class="partial">🟡 可优化</td></tr>
+    <tr><td>并行工具调用（独立操作批处理）</td><td>✗ 无并行机制。每次 bash 调用串行</td><td class="gap">🔴 严重</td></tr>
+    <tr><td>命名空间分组（按领域给工具加前缀）</td><td>△ ops: / check / commit 有隐式前缀但不统一</td><td class="partial">🟡 可优化</td></tr>
+    <tr><td>工具返回值精简（只返回 AI 需要的字段）</td><td>△ 脚本 stdout 混杂进度消息和结果</td><td class="partial">🟡 可优化</td></tr>
+    <tr><td>代码编排工具调用（PTC / Code Execution）</td><td>✗ 无。AI 逐轮调用 bash 处理数据</td><td class="gap">🔴 严重</td></tr>
+  </table>
+</div>
+
+<p>结论：项目在"命令别名"和"简单组合"层次做得不错（harness 四件套是亮点），但在<strong>结构化工具定义、智能路由、上下文感知、代码编排</strong>这四个维度几乎是空白。</p>
+
+<!-- ====== SECTION 4: 路线图 ====== -->
+<h2 id="s4">🗺️ 四阶段优化路线</h2>
+
+<div class="timeline">
+
+  <div class="tl-item">
+    <div class="tl-marker">1</div>
+    <div class="tl-body">
+      <h4>Phase 1：结构化 —— 给每个工具穿上"AI 能理解的外衣"</h4>
+      <div class="est">⏱ 预计 1-2 天</div>
+      <ul>
+        <li><strong>创建 <code>tools-schema.json</code></strong>：把每个 npm script 和 harness 脚本写成 OpenAPI/JSON Schema 格式，含 name、description（3-4 句）、parameters、required、input_examples</li>
+        <li><strong>示例改造</strong> —— 把 <code>npm run check</code> 变成结构化工具：
+<pre><code>{
+  "name": "project_check",
+  "description": "运行项目全套验证流程，包含后端语法检查、前端类型检查、前端 Lint 和全量测试。适合在修改代码后提交前运行。不支持只跑部分检查——若只需语法检查请用 syntax_check 工具。",
+  "parameters": { "type": "object", "properties": {}, "required": [] },
+  "input_examples": [
+    { },
+    { "comment": "工具无参数，总是跑全套检查" }
+  ],
+  "return_schema": {
+    "passed": "boolean",
+    "stages": { "lint": "pass|fail", "type_check": "pass|fail", "test": "pass|fail" },
+    "failures": ["string"]
+  }
+}</code></pre></li>
+        <li><strong>为 git-commit.js 创建结构化工具定义</strong>：把 <code>-p -n --amend --dry-run -a --all</code> 这些 flag 变成明确的 boolean 参数</li>
+        <li><strong>建立 tools registry</strong>：一个 <code>src/tools/registry.js</code>，集中管理所有工具的 schema 定义</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-marker phase2">2</div>
+    <div class="tl-body">
+      <h4>Phase 2：智能化 —— 让 AI 自己选择合适的工具</h4>
+      <div class="est">⏱ 预计 2-3 天</div>
+      <ul>
+        <li><strong>引入 OpenCLI 结构</strong>：给每个脚本输出加上 JSON 模式（<code>--json</code> flag），让 AI 读取结构化结果而非解析混杂的 stdout</li>
+        <li><strong>Harness 输出诊断化</strong>：posttooluse/stop 不再只报"通过/失败"，而是输出结构化建议：
+<pre><code>// harness 输出示例
+{
+  "status": "fail",
+  "failures": [
+    { "file": "src/ai.js", "line": 142, "type": "syntax",
+      "message": "Unexpected token '}'",
+      "suggestion": "检查第 140-143 行的括号配对，可能多了一个 }" }
+  ],
+  "summary": "1 个语法错误，0 个类型错误，0 个测试失败"
+}</code></pre></li>
+        <li><strong>run-pipeline.js 增强</strong>：输出结构化状态文件（不仅是 JSON，而是带阶段状态、错误详情、重试建议的完整诊断）
+        <li><strong>建立 tool_choice 路由</strong>：在 agent system prompt 中说明何时用哪个工具（如"修改了 src/ 下 .js 文件后应调用 project_check；修改了 client/ 下 .tsx 文件后应调用 type_check"）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-marker phase3">3</div>
+    <div class="tl-body">
+      <h4>Phase 3：组合化 2.0 —— 上下文感知的工具编排</h4>
+      <div class="est">⏱ 预计 3-5 天</div>
+      <ul>
+        <li><strong>实现工具链图（Tool Graph）</strong>：定义工具间的依赖关系——AI 修改了前端文件 → 自动触发 type-check + lint；修改了后端文件 → 自动触发 node --check + test</li>
+        <li><strong>智能 commit 消息生成</strong>：基于 git diff 内容，AI 自动分析改动范围（哪个模块、什么类型），生成 conventional commit 格式的 message，填充到 commit 工具的参数中</li>
+        <li><strong>流水线状态感知</strong>：run-pipeline.js 不再只是"成功/失败"，而是返回各阶段执行结果，让 AI 知道具体哪步失败了、为什么、建议的重试策略</li>
+        <li><strong>工具响应格式化</strong>：所有工具输出加上 <code>response_format</code> 枚举（<code>concise</code> vs <code>detailed</code>），让 AI 控制返回内容的详细程度</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tl-item">
+    <div class="tl-marker phase4">4</div>
+    <div class="tl-body">
+      <h4>Phase 4：自治化 —— AI 能自愈、自优化</h4>
+      <div class="est">⏱ 预计 1-2 周</div>
+      <ul>
+        <li><strong>自愈闭环</strong>：harness 检测到失败 → 返回诊断建议 → AI 根据建议尝试自动修复 → 重新运行 check → 确认通过或上报</li>
+        <li><strong>工具使用评测体系</strong>：建立 evaluation tasks，定量测量 AI 在典型任务中的工具调用准确率、冗余调用数、错误率。用数据驱动工具描述的迭代优化</li>
+        <li><strong>异常模式学习</strong>：harness-pretooluse 从硬编码 footgun 列表升级为自适应规则——记录每次被拦截的操作和误报，逐步调整拦截策略</li>
+        <li><strong>Programmatic Tool Calling 模式</strong>：对于批量数据处理任务（如回填、去重），让 AI 写代码在本地执行而非逐轮调用 bash，大幅减少往返次数</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<h3>投入产出评估</h3>
+
+<div class="metric-row">
+  <div class="metric-card"><div class="num">1-2 天</div><div class="label">Phase 1 成本</div></div>
+  <div class="metric-card"><div class="num">3-5 天</div><div class="label">Phase 2 成本</div></div>
+  <div class="metric-card"><div class="num">3-5 天</div><div class="label">Phase 3 成本</div></div>
+  <div class="metric-card"><div class="num warn">1-2 周</div><div class="label">Phase 4 成本</div></div>
+</div>
+
+<p>Phase 1 收益最大——只需要 1-2 天给现有脚本穿上 schema 外衣，就能让 AI 从"猜着用"变成"按规范调用"。这也是 Anthropic 反复强调的第一个优化点：<strong>工具描述是最高杠杆的投资</strong>。</p>
+
+<!-- ====== SECTION 5: function calling ====== -->
+<h2 id="s5">🤝 与 Function Calling 的关系</h2>
+
+<div class="panel info">
+  <h4>直接回答你的问题</h4>
+  <p><strong>Function Calling 就是 Tools 元能力在 LLM 世界的"标准通路"。</strong></p>
+  <p>你文档里讨论的"把 bash、grep 包装成强化工具"——那个"包装"的过程，在 OpenAI 叫 function calling，在 Anthropic 叫 tool use。<strong>本质完全相同</strong>：都是把原本需要 AI 手动拼命令字符串的元能力，升级为带 schema、带描述、带示例的结构化接口。</p>
+</div>
+
+<div class="grid2">
+  <div class="card">
+    <h4>🔧 无 function calling（当前状态）</h4>
+    <p>AI 每次都要用 <code>bash("npm test -- --coverage")</code>——需要<strong>记住完整命令、参数格式、flag 名称</strong>。一个拼写错误就全崩。这和人类在命令行里手动输入没有区别。</p>
+    <p style="font-size:0.82rem; color:#6b655e;">→ 元能力的"原材料"态</p>
+  </div>
+  <div class="card">
+    <h4>⚡ 有 function calling（优化后）</h4>
+    <p>AI 调用 <code>run_tests(coverage=true)</code>（结构化 JSON），你的代码负责展开成 <code>npm test -- --coverage</code>。<strong>AI 不再需要知道底层命令行语法。</strong></p>
+    <p style="font-size:0.82rem; color:#6b655e;">→ 元能力的"加工"态</p>
+  </div>
+</div>
+
+<div class="quote">
+  <p>"工具强化不是创造新能力，而是让元能力以更高效的方式被调用。Function calling 就是这种强化的标准形式——模型通过结构化 JSON 发出调用意图，而非通过自由文本拼命令。"</p>
+</div>
+
+<table>
+  <tr><th></th><th>裸元能力（当前）</th><th>Function Calling（目标）</th></tr>
+  <tr><td>AI 调用方式</td><td><code>bash("npm test -- --coverage")</code></td><td><code>{"name":"run_tests","arguments":{"coverage":true}}</code></td></tr>
+  <tr><td>参数校验</td><td>无——AI 拼错 flag 就失败</td><td>JSON Schema 在 API 层校验</td></tr>
+  <tr><td>错误处理</td><td>stderr 混杂一大堆文本</td><td>结构化 <code>is_error + suggestion</code></td></tr>
+  <tr><td>工具选择</td><td>AI 靠记忆/试错</td><td>从 tool list 按 description 匹配</td></tr>
+  <tr><td>并行调用</td><td>每行 bash 串行执行</td><td>一次发多个 tool call 并行</td></tr>
+  <tr><td>上下文效率</td><td>原始命令字符串 + 巨量 stdout</td><td>精简 schema + 筛选后返回</td></tr>
+</table>
+
+<h3>你的 ai.js 已经在做类似的事，但方向反了</h3>
+<p>注意 <code>src/ai.js</code> 里 <code>analyzeResult()</code> 的那些 prompt 工程——你在用 prompt 引导 DeepSeek 输出结构化 JSON，然后再 <code>parseAnalyzeResult()</code> 用正则提取。这本质上是<strong>手动实现了一个非标准的 function calling</strong>：</p>
+<ul>
+  <li>你把 expected output schema 写在 prompt 里（而非 tools 参数里）</li>
+  <li>你用正则 <code>text.match(/\{[\s\S]*\}/)</code> 提取 JSON（而非原生 structured outputs）</li>
+  <li>你手动做 score range 裁剪（而非 strict mode 自动保证）</li>
+</ul>
+<p>如果 DeepSeek 支持 structured outputs / function calling（它确实支持 OpenAI-compatible 的函数调用接口），你完全可以把这些 prompt 里的 schema constraints 挪到 tools 参数中，让模型在生成时就受约束，省去正则解析的风险。</p>
+
+<!-- ====== SECTION 6: 为什么重要 ====== -->
+<h2 id="s6">🚀 这些优化到底对 AI 推进项目开发有什么帮助？</h2>
+
+<div class="grid3">
+  <div class="card">
+    <div class="icon">🧠</div>
+    <h4>降低认知负担</h4>
+    <p>AI 不需要记住 <code>npm test -- --coverage --watchAll=false --silent</code> 这种咒语——一个 <code>run_tests</code> 工具封装了所有细节。Anthropic 的数据：精确的工具描述能让模型正确率跃升 25%。</p>
+  </div>
+  <div class="card">
+    <div class="icon">⏩</div>
+    <h4>加快开发循环</h4>
+    <p>一次发 5 个并行 tool call（lint + type-check + test + format-check + build-check），而非 5 轮串行 bash。从分钟级变秒级。OpenAI 的默认行为就是并行调用。</p>
+  </div>
+  <div class="card">
+    <div class="icon">🛡️</div>
+    <h4>减少低级错误</h4>
+    <p>Strict mode 保证参数 100% 符合 schema——不会再有"多打了个 --"或"掉了引号"这类 typo 级错误。你的 harness pretooluse 也就不用硬编码那么多 footgun 了。</p>
+  </div>
+  <div class="card">
+    <div class="icon">💰</div>
+    <h4>节省 Token 成本</h4>
+    <p>工具按需加载 + PTC 代码编排可节省 37-95% token 消耗。对大项目意味着更少的 API 费用、更长的有效对话轮次。</p>
+  </div>
+  <div class="card">
+    <div class="icon">🔄</div>
+    <h4>实现自愈闭环</h4>
+    <p>Harness 输出诊断建议 → AI 理解并修正 → 自动重跑验证 → 通过或上报。开发效率从"人肉调试"变成"AI 自愈"。</p>
+  </div>
+  <div class="card">
+    <div class="icon">📈</div>
+    <h4>可量化评估</h4>
+    <p>有了结构化工具定义和评测集，你能用数据说话：工具调用准确率从 X% 升到 Y%，冗余调用减少 N%。不再靠"感觉变好了"来判断。</p>
+  </div>
+</div>
+
+<!-- ====== SECTION 7: 参考 ====== -->
+<h2 id="s7">📖 参考资料</h2>
+
+<div class="panel">
+  <h4>Anthropic 官方来源</h4>
+  <ol>
+    <li><a href="https://www.anthropic.com/engineering/advanced-tool-use">Introducing advanced tool use on the Claude Developer Platform</a> — Tool Search Tool, PTC, Tool Use Examples (2025-11-24)</li>
+    <li><a href="https://www.anthropic.com/engineering/writing-tools-for-agents">Writing effective tools for AI agents — using AI agents</a> — 工具设计核心实践 (2025-09-11)</li>
+    <li><a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective AI Agents</a> — Agent 架构模式 + Appendix 2: Prompt Engineering Your Tools (2024-12-19)</li>
+    <li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Effective context engineering for AI agents</a> — 上下文工程 (2025-09-29)</li>
+    <li><a href="https://www.anthropic.com/engineering/code-execution-with-mcp">Code execution with MCP: building more efficient AI agents</a> (2025-11-04)</li>
+    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview">Claude Platform Docs — Tool use overview</a></li>
+    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools">Claude Platform Docs — Define tools</a></li>
+    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use">Claude Platform Docs — Parallel tool use</a></li>
+    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works">Claude Platform Docs — How tool use works</a></li>
+    <li><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls">Claude Platform Docs — Handle tool calls</a></li>
+    <li><a href="https://platform.claude.com/docs/en/build-with-claude/structured-outputs">Claude Platform Docs — Structured outputs</a></li>
+    <li><a href="https://www.anthropic.com/news/model-context-protocol">Introducing the Model Context Protocol (MCP)</a> (2024-11-25)</li>
+    <li><a href="https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro">MCP 官方文档 — Introduction</a></li>
+  </ol>
+</div>
+
+<div class="panel">
+  <h4>OpenAI 官方来源</h4>
+  <ol>
+    <li><a href="https://platform.openai.com/docs/guides/function-calling">OpenAI Platform Docs — Function Calling Guide</a> — 完整 guide: tools 定义, strict mode, parallel, tool_choice, namespaces</li>
+  </ol>
+</div>
+
+<div class="panel">
+  <h4>项目参考文件</h4>
+  <ol>
+    <li><code>E:\claude\ai-news-monitor\flowchart\tools元能力强化.html</code> — 你的原始思路文档（元能力三层次）</li>
+    <li><code>E:\claude\ai-news-monitor\src\ai.js</code> — 当前的手动结构化输出实现（用于对比 function calling 模式）</li>
+  </ol>
+</div>
+
+<div class="footnote">
+  <p>本文档由 Alice 🐰 在 2026-08-11 基于 Anthropic 15 篇官方文章 + OpenAI 官方 function calling 指南 + 项目实际代码生成。所有外部链接在生成时已验证可访问。</p>
+  <p>如果你要从这里开始动手，建议第一步：创建 <code>src/tools/registry.js</code>，把 3-5 个最高频工具（check、commit、test）写成结构化 schema。这是投入产出比最高的行动。</p>
+</div>
+
+</div>
+
+</body>
+</html>

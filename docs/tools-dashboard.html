@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ai-news-monitor · Tools 工具体系改造全貌</title>
+<style>
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f3ef;color:#1e1c19;line-height:1.65;padding:0}
+  .hero{background:linear-gradient(135deg,#1e1c19 0%,#3d3933 100%);color:#f5f3ef;padding:2.5rem 2rem;text-align:center}
+  .hero h1{font-size:1.9rem;font-weight:700;letter-spacing:-0.01em;margin-bottom:.35rem}
+  .hero .sub{font-size:.9rem;opacity:.7;max-width:560px;margin:.2rem auto}
+  .hero .badge{display:inline-block;background:rgba(255,255,255,.15);padding:.3rem 1rem;border-radius:20px;font-size:.8rem;margin-top:.7rem}
+  .container{max-width:960px;margin:0 auto;padding:1.8rem 1.2rem 3rem}
+  h2{font-size:1.35rem;font-weight:650;margin:2.2rem 0 1rem;padding-bottom:.45rem;border-bottom:2px solid #e0d8d0;display:flex;align-items:center;gap:10px}
+  h3{font-size:1.05rem;font-weight:620;margin:1.3rem 0 .5rem}
+  h4{font-size:.9rem;font-weight:600;margin:1rem 0 .3rem;color:#2d5a3d}
+  p{margin:.5rem 0;font-size:.9rem}
+  ul,ol{margin:.4rem 0 .4rem 1.5rem;font-size:.88rem}
+  li{margin:.2rem 0}
+  .metrics-row{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0}
+  .metric{flex:1;min-width:100px;background:#fff;border-radius:12px;padding:1rem;border:1px solid #e0d8d0;text-align:center}
+  .metric .num{font-size:1.8rem;font-weight:700}
+  .metric .num.green{color:#3d7a6e}.metric .num.amber{color:#d4a14e}.metric .num.purple{color:#8b5ea6}
+  .metric .label{font-size:.76rem;color:#6b655e;margin-top:.15rem}
+  .progress-bar{background:#e0d8d0;border-radius:8px;height:7px;margin:.6rem 0;overflow:hidden}
+  .progress-bar .fill{height:100%;border-radius:8px}
+  .fill.p1{background:#3d7a6e;width:100%}.fill.p2{background:#5b8ec4;width:100%}
+  .fill.p3{background:#d4a14e;width:0%}.fill.p4{background:#8b5ea6;width:0%}
+  .phase-label{font-size:.78rem;color:#5b5650;margin:.2rem 0 .8rem}
+  table{width:100%;border-collapse:collapse;margin:.8rem 0;font-size:.84rem}
+  th,td{padding:.5rem .7rem;text-align:left;border-bottom:1px solid #e8e2da}
+  th{background:#f8f6f2;font-weight:620}
+  tr:hover{background:#faf8f5}
+  .tag{display:inline-block;padding:.12rem .5rem;border-radius:4px;font-size:.7rem;font-weight:600}
+  .tag-done{background:#dce8dc;color:#2d5a3d}.tag-wip{background:#e8dcbc;color:#5a4020}
+  .tag-next{background:#ece8e2;color:#6b655e}
+  .tag-new{background:#dce8e5;color:#2d5a4d}.tag-mod{background:#f0e4d0;color:#6b4c24}
+  .file-row td:first-child{font-family:'SF Mono','Menlo','Consolas',monospace;font-size:.78rem}
+  .phase-section{background:#fff;border-radius:14px;padding:1.5rem;margin:1.2rem 0;border:1px solid #e0d8d0}
+  .phase-section.done{border-left:5px solid #3d7a6e}
+  .phase-section.planned{border-left:5px solid #d4a14e}
+  .phase-section.future{border-left:5px solid #8b5ea6}
+  .phase-section .header{display:flex;align-items:center;gap:12px;margin-bottom:.8rem}
+  .phase-section .icon{font-size:2rem}.phase-section .title{font-size:1.1rem;font-weight:650}
+  .phase-section .est{font-size:.78rem;color:#8b6f4e;margin-left:auto}
+  .phase-section .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:.8rem}
+  @media(max-width:640px){.phase-section .detail-grid{grid-template-columns:1fr}}
+  .phase-section .detail-box{background:#f8f6f2;border-radius:10px;padding:.8rem 1rem}
+  .phase-section .detail-box h5{font-size:.82rem;margin-bottom:.3rem;color:#5b5650}
+  .panel{background:#fff;border-radius:12px;padding:1.2rem 1.5rem;margin:.8rem 0;border:1px solid #e0d8d0}
+  .panel.tip{border-left:4px solid #5b8ec4}.panel.warn{border-left:4px solid #d4a14e}
+  .panel.green{border-left:4px solid #3d7a6e}
+  code{background:#ece8e2;padding:.04rem .4rem;border-radius:4px;font-family:'SF Mono','Menlo','Consolas',monospace;font-size:.82rem}
+  .file-link{color:#3d7a6e;text-decoration:none}.file-link:hover{text-decoration:underline}
+  .footnote{margin-top:3rem;padding-top:1.2rem;border-top:2px solid #e0d8d0;font-size:.8rem;color:#6b655e}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Tools 工具体系改造 · 全貌仪表盘</h1>
+  <div class="sub">ai-news-monitor — 从"裸 bash 命令"到"结构化 function calling"的四阶段路线</div>
+  <div class="badge">Phase 1 ✅ &nbsp;·&nbsp; Phase 2 ✅ &nbsp;·&nbsp; Phase 3 ⬜ 待启动 &nbsp;·&nbsp; Phase 4 ⬜ 待启动</div>
+</div>
+
+<div class="container">
+
+<!-- 总览指标 -->
+<div class="metrics-row">
+  <div class="metric"><div class="num green">18</div><div class="label">结构化工具定义</div></div>
+  <div class="metric"><div class="num green">5</div><div class="label">始终加载（核心）</div></div>
+  <div class="metric"><div class="num green">13</div><div class="label">按需加载</div></div>
+  <div class="metric"><div class="num green">7</div><div class="label">命名空间</div></div>
+  <div class="metric"><div class="num amber">11</div><div class="label">改造维度总量</div></div>
+  <div class="metric"><div class="num green">9</div><div class="label">已完成</div></div>
+</div>
+
+<!-- 全局进度 -->
+<h3>四阶段总进度</h3>
+<div class="progress-bar"><div class="fill p1"></div></div>
+<div class="phase-label">Phase 1 · 结构化 ✅ 100% — 全部 18 个工具完成 JSON Schema 化</div>
+<div class="progress-bar"><div class="fill p2"></div></div>
+<div class="phase-label">Phase 2 · 智能化 ✅ 100% — harness 诊断、commit 智能生成、pipeline 状态、ai.js v2</div>
+<div class="progress-bar"><div class="fill p3"></div></div>
+<div class="phase-label">Phase 3 · 组合化 2.0 ⬜ 0% — 待用户使用反馈后启动</div>
+<div class="progress-bar"><div class="fill p4"></div></div>
+<div class="phase-label">Phase 4 · 自治化 ⬜ 0% — 待 Phase 3 完成并稳定后启动</div>
+
+<!-- ====== PHASE 1 ====== -->
+<h2>已完成 · Phase 1：结构化</h2>
+<p>把每个工具写成 AI 能理解的标准接口——name + 详细描述 + JSON Schema 参数 + 输入示例 + 返回值结构。</p>
+
+<div class="phase-section done">
+  <div class="header">
+    <div class="icon">🔹</div><div class="title">Phase 1 · 别名化 → 结构化</div><div class="est">实际耗时：本次改造首轮</div>
+  </div>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>做了什么</h5>
+      <ul>
+        <li>创建 <code>src/tools/registry.js</code> — 18 个工具的统一注册表</li>
+        <li>每个工具包含：name（kebab-case）、description（3-4句含何时用/何时不用/边界条件）、parameters（JSON Schema）、input_examples（1-3个真实场景）、return_schema（返回值结构）</li>
+        <li>按 Anthropic 推荐：5 个核心工具标记 <code>defer_loading: false</code>（始终加载），13 个低频工具标记 <code>defer_loading: true</code>（AI 按需通过 <code>getToolIndex()</code> 发现）</li>
+        <li>7 个语义命名空间分组：check / commit / pipeline / ops / data / test / harness</li>
+        <li>更新 <code>CLAUDE.md</code> — 新增"可用工具"章节，任何 Claude 打开项目第一件事就是读到工具体系</li>
+      </ul>
+    </div>
+    <div class="detail-box">
+      <h5>关联文件</h5>
+      <table>
+        <tr><td><span class="tag tag-new">新建</span></td><td><code>src/tools/registry.js</code></td><td>核心注册表（35KB）</td></tr>
+        <tr><td><span class="tag tag-mod">修改</span></td><td><code>CLAUDE.md</code></td><td>新增工具体系入口章</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PHASE 2 ====== -->
+<h2>已完成 · Phase 2：智能化</h2>
+<p>让 AI 不仅知道有哪些工具，还能读取结构化诊断结果、自动生成 commit message、用原生 function calling 替代 prompt 正则。</p>
+
+<div class="phase-section done">
+  <div class="header">
+    <div class="icon">🔸</div><div class="title">Phase 2 · 智能化 — 工具自描述 + AI 可读输出</div><div class="est">实际耗时：本次改造收尾轮</div>
+  </div>
+
+  <h4>改造 ①：智能 commit message 生成</h4>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>怎么做</h5>
+      <p><code>git-commit.js --generate</code>：自动 <code>git diff --cached</code> → 发给 DeepSeek 分析改动范围（改了哪个模块、什么类型）→ 生成 conventional commit 格式的 message → 输出 JSON <code>{success, message, type, scope, changed_files}</code>。AI 从此不用手想 commit message，也不用记 -p/-n/--amend 这些 flag。</p>
+      <p>原 <code>node scripts/git-commit.js "feat: xxx"</code> 手动模式完全兼容。</p>
+    </div>
+    <div class="detail-box">
+      <h5>关联文件</h5>
+      <table><tr><td><span class="tag tag-mod">修改</span></td><td><code>scripts/git-commit.js</code></td><td>+ --generate + --json</td></tr></table>
+    </div>
+  </div>
+
+  <h4>改造 ②：pipeline 结构化状态输出</h4>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>怎么做</h5>
+      <p><code>run-pipeline.js --json</code>：管线跑完后不再只在 stdout 打日志，而是输出结构化 JSON：<code>{"success":true,"crawl4ai_ready":true,"report":"docs/...","log_file":"logs/..."}</code>。AI 调完管线立刻知道结果，不需要解析混杂的 stdout。</p>
+    </div>
+    <div class="detail-box">
+      <h5>关联文件</h5>
+      <table><tr><td><span class="tag tag-mod">修改</span></td><td><code>scripts/run-pipeline.js</code></td><td>+ --json + outputJsonStatus</td></tr></table>
+    </div>
+  </div>
+
+  <h4>改造 ③：harness 诊断输出</h4>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>怎么做</h5>
+      <p><strong>harness-check.js --json</strong>：不再只输出"通过/失败"文本，改为结构化 JSON 含 <code>stages[{stage, passed, summary, suggestion}]</code>——每个失败项都有具体修复建议。</p>
+      <p><strong>harness-diagnose.js（新建）</strong>：读取 harness 历史输出，分析出结构化问题清单 <code>{issues: [{harness, severity, message, suggestion}]}</code>。支持 --harness pretooluse/precommit/posttooluse/all 过滤。AI 可以用这个诊断结果来决定修复策略。</p>
+    </div>
+    <div class="detail-box">
+      <h5>关联文件</h5>
+      <table>
+        <tr><td><span class="tag tag-mod">修改</span></td><td><code>scripts/harness-check.js</code></td><td>+ --json 诊断模式</td></tr>
+        <tr><td><span class="tag tag-new">新建</span></td><td><code>scripts/harness-diagnose.js</code></td><td>harness 历史诊断工具</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h4>改造 ④：ai.js 真 function calling</h4>
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>怎么做</h5>
+      <p><strong>analyzeResultV2</strong>：用 OpenAI-compatible <code>tools</code> 参数定义 <code>report_article_analysis</code> function（score/summary/event/event_type/category），<code>tool_choice: {type:"function", function:{name:"report_article_analysis"}}</code> 强制模型按 schema 返回。不再需要 v1 的"prompt 让模型输出 JSON → <code>text.match(/\{[\s\S]*\}/)</code> 正则提取"。</p>
+      <p><strong>selectArticleLinksV2</strong>：同理，链接识别也从"prompt 输出 JSON → 手动剥 markdown fence → try-catch 解析"升级为工具调用 <code>select_articles</code> function。</p>
+      <p><strong>v1 保留为 fallback</strong>：如果 function calling 返回空 tool_calls（极少数兼容性问题），自动降级到 v1 的 prompt+正则模式。对现有管线零破坏。</p>
+    </div>
+    <div class="detail-box">
+      <h5>关联文件</h5>
+      <table><tr><td><span class="tag tag-mod">修改</span></td><td><code>src/ai.js</code></td><td>+ analyzeResultV2 + selectArticleLinksV2</td></tr></table>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PHASE 3 ====== -->
+<h2>待启动 · Phase 3：组合化 2.0</h2>
+<p>上下文感知的工具编排——让工具之间能互相感知、按需联动，而不是各自独立调用。</p>
+
+<div class="phase-section planned">
+  <div class="header">
+    <div class="icon">🔶</div><div class="title">Phase 3 · 组合化 2.0 — 上下文感知的工具编排</div><div class="est">预计 3-5 天</div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>子任务 A：工具链图（Tool Graph）</h5>
+      <p><strong>目标：</strong>定义工具间的依赖关系。AI 修改了前端文件 → 自动触发 type-check + lint；修改了后端文件 → 自动触发 node --check + test。</p>
+      <p><strong>实现思路：</strong>在 registry.js 给每个工具加 <code>triggers_on</code> 字段 —— 声明"哪些文件变更应该触发这个检查"。AI 改完文件后，根据变更路径自动选出需要跑的检查项。inspiration 来自 Anthropic 的 Tool Search Tool 概念——不是把所有工具全加载，而是基于上下文按需发现相关工具。</p>
+      <p><strong>具体做：</strong></p>
+      <ul>
+        <li>给 registry.js 的工具加 <code>triggers_on: ["src/*.js", "src/**/*.js"]</code> 等匹配规则</li>
+        <li>创建 <code>src/tools/graph.js</code> — 根据文件变更列表计算需要触发的检查工具</li>
+        <li>在 CLAUDE.md 中更新调用规则："修改 src/ 下的 .js 后自动触发 check_all；只改 client/ 下的 .tsx 后只需 check_type"</li>
+      </ul>
+    </div>
+    <div class="detail-box">
+      <h5>子任务 B：response_format 枚举</h5>
+      <p><strong>目标：</strong>AI 能控制工具返回的详细程度。灵感来自 Anthropic "Writing effective tools for agents" 中建议的 <code>response_format: concise | detailed</code> 模式。</p>
+      <p><strong>具体做：</strong></p>
+      <ul>
+        <li>给每个工具的 parameters 加 <code>response_format</code> 可选枚举</li>
+        <li><code>concise</code> = 只返回成功/失败 + 关键数字（给 AI 节省 token）</li>
+        <li><code>detailed</code> = 完整输出含日志、堆栈（人类排查问题时使用）</li>
+        <li>默认 AI 调用时用 concise，人类在终端调用时用 detailed</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="detail-grid" style="margin-top:1rem">
+    <div class="detail-box">
+      <h5>子任务 C：commit_git 参数感知</h5>
+      <p><strong>目标：</strong>AI 调用 commit_git 时，message 参数基于当前 git diff 自动预填充，不需要 AI 手想。Phase 2 的 --generate 已经做到了分析 diff → 生成 message，Phase 3 更进一步：把 --generate 的逻辑嵌入 registry.js 的 return_schema 和 description 中，让 AI 知道"这个工具会自动生成最佳 message，传 null 即可触发自动生成"。</p>
+    </div>
+    <div class="detail-box">
+      <h5>子任务 D：跨工具状态传递</h5>
+      <p><strong>目标：</strong>上一个工具的 return 能作为下一个工具的 input。例如 pipeline_run 返回 <code>{"relevant_items": 12}</code> → AI 自动判断"产出充足，不需要额外操作"或"产出太少，建议 data_backfill 重跑"。</p>
+      <p><strong>实现思路：</strong>在 registry.js 给每个工具加 <code>suggest_next</code> 字段——声明"本工具执行后，基于返回值建议的下一个工具"。AI 读取 return_schema 后结合 suggest_next 做出下一步决策。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PHASE 4 ====== -->
+<h2>待启动 · Phase 4：自治化</h2>
+<p>AI 从"被动调用工具"升级为"主动检测 → 诊断 → 修复 → 验证"的自愈闭环。</p>
+
+<div class="phase-section future">
+  <div class="header">
+    <div class="icon">🔶</div><div class="title">Phase 4 · 自治化 — 自愈 + 评测 + 学习</div><div class="est">预计 1-2 周</div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="detail-box">
+      <h5>子任务 A：自愈闭环</h5>
+      <p><strong>目标：</strong>harness 检测到失败 → 返回诊断建议 → AI 根据建议尝试自动修复 → 重新运行 check → 确认通过或上报。整个流程由 AI 驱动，不需要人肉介入。</p>
+      <p><strong>流程：</strong></p>
+      <ol>
+        <li>AI 修改代码 → harness-check --json 检测失败</li>
+        <li>harness-diagnose.js 返回结构化诊断：<code>{issues:[{message, suggestion, file, line}]}</code></li>
+        <li>AI 根据 suggestion 修复代码（改写错误行、补缺失的分号/括号/import）</li>
+        <li>AI 调 check_all 重新验证</li>
+        <li>通过 → commit；仍失败 → 重复诊断循环（最多 3 次，然后上报用户）</li>
+      </ol>
+      <p><strong>具体做：</strong>参考 Anthropic 的 SWE-bench agent：模型根据测试失败反馈自我修正，循环直到通过或达到上限。本项目的 harness 体系已经提供了诊断输出（Phase 2），缺的是"AI 读诊断 → 自动修改提交"的编排脚本。</p>
+    </div>
+    <div class="detail-box">
+      <h5>子任务 B：工具使用评测体系</h5>
+      <p><strong>目标：</strong>定量知道 AI 用工具的准确率，不复。建立 evaluation tasks（典型任务 + 期望的工具调用序列），每次改造后用评测数据驱动迭代。</p>
+      <p><strong>具体做：</strong></p>
+      <ul>
+        <li>选择 5-10 个典型任务（"修了 src/ai.js 的 bug"、"加了新的信源 URL"、"管线报告报告量太低需要排查"）</li>
+        <li>记录 AI 实际调用的工具序列和结果</li>
+        <li>评估指标：工具选择准确率、参数填充错误率、冗余调用数、工具描述搜索命中率</li>
+        <li>创建 <code>evals/tool-use.json</code> 评测定义文件</li>
+        <li>参考 Anthropic "Writing tools for agents" 的评估方法——用 agentic loop 跑评测，分析 tool call metrics</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="detail-grid" style="margin-top:1rem">
+    <div class="detail-box">
+      <h5>子任务 C：异常模式学习</h5>
+      <p><strong>目标：</strong>harness-pretooluse 从硬编码 footgun 列表升级为自适应规则。记录每次被拦截的操作和误报率，逐步调整拦截策略——不该拦的不拦，该拦的精确拦截。</p>
+      <p><strong>具体做：</strong></p>
+      <ul>
+        <li>harness-pretooluse 每次触发后记录日志：触发规则、被拦截命令、是否误报</li>
+        <li>创建 <code>scripts/harness-learn.js</code> — 读取日志统计每条规则的误报率，超过阈值自动降低规则优先级或加白名单</li>
+        <li>新 footgun 出现时，从拦截日志中分析模式，半自动生成新规则供人工审核</li>
+      </ul>
+    </div>
+    <div class="detail-box">
+      <h5>子任务 D：Programmatic Tool Calling 模式</h5>
+      <p><strong>目标：</strong>大数据处理任务（回填重算、跨运行去重、批量爬取）不再逐轮调用 bash，而是让 AI 写一段脚本在本地执行，中间结果不出现在 AI 上下文。</p>
+      <p><strong>灵感来源：</strong>Anthropic 的 Programmatic Tool Calling — Claude 写 Python 代码编排工具调用，中间结果不入上下文。实测 token 节省 37%。</p>
+      <p><strong>具体做：</strong></p>
+      <ul>
+        <li>在 registry.js 给 <code>data_backfill</code> 和 <code>data_dedup</code> 加 <code>code_execution: true</code> 标记</li>
+        <li>AI 调用这些工具时，工具内部跑脚本在子进程中执行，只把最终结果返回给 AI</li>
+        <li>参考 run-pipeline.js 的 child_process.spawn 模式，复用其安全沙箱（env 隔离 + --no-docker flag）</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ====== 文件清单 ====== -->
+<h2>📁 所有相关文件</h2>
+
+<table>
+  <tr><th>文件</th><th>类型</th><th>Phase</th><th>用途</th></tr>
+  <tr class="file-row"><td>src/tools/registry.js</td><td><span class="tag tag-new">新建</span></td><td>1</td><td>18 个工具的结构化 function calling 注册表 — 核心资产</td></tr>
+  <tr class="file-row"><td>CLAUDE.md</td><td><span class="tag tag-mod">修改</span></td><td>1</td><td>新增"可用工具（结构化注册表）"章节 — AI 入口</td></tr>
+  <tr class="file-row"><td>scripts/git-commit.js</td><td><span class="tag tag-mod">修改</span></td><td>2</td><td>+ --generate（AI 分析 diff 生成 conventional commit）+ --json</td></tr>
+  <tr class="file-row"><td>scripts/run-pipeline.js</td><td><span class="tag tag-mod">修改</span></td><td>2</td><td>+ --json（管线状态结构化 JSON 输出）</td></tr>
+  <tr class="file-row"><td>scripts/harness-check.js</td><td><span class="tag tag-mod">修改</span></td><td>2</td><td>+ --json（结构化诊断，含 suggestion 字段）</td></tr>
+  <tr class="file-row"><td>scripts/harness-diagnose.js</td><td><span class="tag tag-new">新建</span></td><td>2</td><td>harness 历史输出 → 结构化问题清单</td></tr>
+  <tr class="file-row"><td>src/ai.js</td><td><span class="tag tag-mod">修改</span></td><td>2</td><td>+ analyzeResultV2 + selectArticleLinksV2（原生 function calling，v1 fallback）</td></tr>
+  <tr class="file-row"><td>docs/REQ-tools-tool-use-optimization.md</td><td><span class="tag tag-new">新建</span></td><td>全</td><td>需求文档：背景/目标/范围/验收标准</td></tr>
+  <tr class="file-row"><td>docs/DECISION-tools-tool-use-optimization.md</td><td><span class="tag tag-new">新建</span></td><td>全</td><td>方案选型：3 方案对比 + 选型理由 + 风险</td></tr>
+  <tr class="file-row"><td>docs/PROGRESS-tools-tool-use-optimization.md</td><td><span class="tag tag-new">新建</span></td><td>全</td><td>进度文档：告诉 Claude 做了什么、在哪</td></tr>
+  <tr class="file-row"><td>docs/tools-optimization-guide.html</td><td><span class="tag tag-new">新建</span></td><td>全</td><td>完整优化路线图 HTML（含 Anthropic/OpenAI 官方来源）</td></tr>
+  <tr class="file-row"><td>docs/tools-dashboard.html</td><td><span class="tag tag-new">新建</span></td><td>全</td><td>可视化仪表盘（本文档）— 四阶段全貌</td></tr>
+</table>
+
+<!-- ====== 命名空间 ====== -->
+<h2>🏷️ 工具体系一览</h2>
+
+<table>
+  <tr><th>命名空间</th><th>数量</th><th>始终加载</th><th>按需加载</th></tr>
+  <tr><td><strong>check</strong></td><td>5</td><td>check_all ★, check_test ★</td><td>check_syntax, check_type, check_quality</td></tr>
+  <tr><td><strong>commit</strong></td><td>1</td><td>commit_git ★</td><td>—</td></tr>
+  <tr><td><strong>pipeline</strong></td><td>3</td><td>pipeline_run ★</td><td>pipeline_schedule, pipeline_auto_heal</td></tr>
+  <tr><td><strong>ops</strong></td><td>3</td><td>ops_check ★</td><td>ops_screenshot, ops_docker_restart</td></tr>
+  <tr><td><strong>data</strong></td><td>4</td><td>—</td><td>data_backfill, data_dedup, seed_demo, update_sources</td></tr>
+  <tr><td><strong>test</strong></td><td>1</td><td>—</td><td>test_scrape</td></tr>
+  <tr><td><strong>harness</strong></td><td>1</td><td>—</td><td>harness_diagnose</td></tr>
+</table>
+
+<!-- ====== 关键决策 ====== -->
+<div class="panel tip">
+  <h3>💡 关键架构决策（给另一个 AI 看）</h3>
+
+  <p><strong>为什么是 5 核心 + 13 按需？</strong></p>
+  <p>Anthropic 建议始终加载工具 ≤5 个，OpenAI 建议 <20 个。check_all, check_test, commit_git, pipeline_run, ops_check 是最高频 5 个——改了代码要验证、验证通过要提交、日常要跑管线、出问题要诊断。其余 13 个工具 AI 在需要时通过 <code>getToolIndex()</code> 获取索引（name + summary），匹配后 <code>getTool(name)</code> 拿完整定义。</p>
+
+  <p style="margin-top:.8rem"><strong>为什么 ai.js 保留 v1 而不直接删掉？</strong></p>
+  <p>DeepSeek 支持 OpenAI-compatible tools API，但如果极少数情况下返回空 tool_calls（兼容性边界），v2 会自动 fallback 到 v1 的 prompt+正则模式。零破坏迁移。等 v2 跑了几周管线无问题后，可以移掉 v1。</p>
+
+  <p style="margin-top:.8rem"><strong>为什么 harness 要双通道（--json + 无 flag 文本）？</strong></p>
+  <p>--json 输出是给 AI 读的（结构化），不加 flag 是人类在终端看的（原文本）。向后兼容，不影响现有 CI/CD 脚本。</p>
+
+  <p style="margin-top:.8rem"><strong>Phase 3 为什么不现在做？</strong></p>
+  <p>Anthropic 的核心建议："用简单的组合模式解决问题，仅在复杂度可证明能改善结果时才增加。" Phase 1-2 刚交付，需要先用一两周，积累实际使用数据——哪些工具 AI 选对了、哪些让它犹豫了、有没有工具从来不碰——然后再决定工具链图的具体规则。</p>
+
+  <p style="margin-top:.8rem"><strong>Phase 4 的自愈闭环依赖什么？</strong></p>
+  <p>依赖 Phase 3 的工具链图和 response_format：工具之间能互相感知状态了，才能基于"这个工具失败了"触发诊断 → 修复 → 复验流程。Phase 4 不能跳过 Phase 3 直接做。</p>
+</div>
+
+<div class="footnote">
+  <p>仪表盘生成: 2026-08-11 · 由 Alice 🐰 在 ai-news-monitor 项目中生成</p>
+  <p>参考来源: Anthropic (14 篇官方文章) · OpenAI (Function Calling Guide) · 项目实际代码</p>
+  <p>关联: REQ · DECISION · PROGRESS 三份 Markdown 文档同步交付</p>
+</div>
+
+</div>
+
+</body>
+</html>

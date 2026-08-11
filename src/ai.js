@@ -278,12 +278,172 @@ async function selectArticleLinks(links, sourceName, pageUrl, logPrefix = '') {
     .filter(a => a.url);
 }
 
+// ============================================================================
+// V2: 原生 function calling（替代 prompt + 正则解析）
+// DeepSeek API 支持 OpenAI-compatible tools 参数。
+// analyzer_tools 和 select_links_tool 放在尾部以减少对现有代码的视觉噪声。
+// ============================================================================
+
+const ANALYZE_TOOL = {
+  type: 'function',
+  function: {
+    name: 'report_article_analysis',
+    description: '对一篇文章进行相关性评分、中文摘要、事件提取和分类。当 score < 60 时 summary/event/event_type/category 全部为空字符串。',
+    parameters: {
+      type: 'object',
+      properties: {
+        score: { type: 'integer', description: '相关性评分 0-100。80-100=核心主题，60-79=明显相关，30-59=边缘，0-29=无关' },
+        summary: { type: 'string', description: '三段式中日摘要：【事件】一句话 【要点】2-3条 【为什么重要】一句话。score<60 时为空字符串。' },
+        event: { type: 'string', description: '核心事件：实体+动作+对象。score<60 时为空' },
+        event_type: { type: 'string', enum: ['interview', 'match', 'rumour', 'injury', 'deal', 'official', 'analysis', ''], description: '体裁分类，无证据时为空' },
+        category: { type: 'string', description: '板块分类key，无匹配时为空或 other' },
+      },
+      required: ['score', 'summary', 'event', 'event_type', 'category'],
+      additionalProperties: false,
+    },
+  },
+};
+
+const SELECT_LINKS_TOOL = {
+  type: 'function',
+  function: {
+    name: 'select_articles',
+    description: '从页面链接列表中选出真正的文章链接（非导航/广告/侧栏），返回 index 数组。',
+    parameters: {
+      type: 'object',
+      properties: {
+        articles: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              index: { type: 'integer', description: '链接在原始列表中的索引' },
+              title: { type: 'string', description: '文章标题' },
+            },
+            required: ['index', 'title'],
+            additionalProperties: false,
+          },
+          description: '选中的文章链接列表',
+        },
+      },
+      required: ['articles'],
+      additionalProperties: false,
+    },
+  },
+};
+
+/**
+ * V2: 用原生 function calling 分析文章。
+ * 相比 v1 (prompt + JSON.parse + 正则 fallback)，v2 在 API 层保证输出符合 schema，
+ * 不再需要 parseAnalyzeResult 的 try-catch 兜底。
+ *
+ * 保留 v1 作为 fallback：如果 API 返回 tool_calls 为空（极少数模型兼容性问题），
+ * 自动降级到 v1 的 prompt 模式。
+ */
+async function analyzeResultV2(options) {
+  const { query, title, snippet, tier = null, categorySchema = null, body = null } = options;
+
+  const tierHint =
+    tier === 0
+      ? '来源为T0官方/权威信源，默认可信度最高。'
+      : '';
+
+  const categoryHint = buildCategoryHint(categorySchema);
+
+  // 复用 v1 的用户 prompt 内容（评分标准、摘要格式、事件提取、过滤提示等）
+  const userPrompt = buildAnalyzePrompt({ query, title, snippet, tierHint, categoryHint, body });
+
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: DEEPSEEK_MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: SYSTEM_PROMPT,
+        },
+        { role: 'user', content: userPrompt },
+      ],
+      tools: [ANALYZE_TOOL],
+      tool_choice: { type: 'function', function: { name: 'report_article_analysis' } },
+      max_tokens: 600,
+      temperature: 0.1,
+    });
+
+    const toolCalls = response.choices[0].message.tool_calls;
+    if (toolCalls && toolCalls.length > 0) {
+      const args = JSON.parse(toolCalls[0].function.arguments);
+      return normalizeV2Result(args);
+    }
+    // fallback: 如果模型没返回 tool_call（兼容性），降级到 v1
+    return parseAnalyzeResult(response.choices[0].message.content || '');
+  } catch (e) {
+    // API 错误时回退到 v1
+    console.warn(`[ai.js] function calling failed, fallback to v1: ${e.message}`);
+    return analyzeResult(options);
+  }
+}
+
+function normalizeV2Result(result) {
+  const score = Math.max(0, Math.min(100, Number(result.score) || 0));
+  return {
+    relevant: score >= MIN_SCORE,
+    score,
+    summary: typeof result.summary === 'string' ? result.summary.trim() : '',
+    event: typeof result.event === 'string' ? result.event.trim() : '',
+    event_type: typeof result.event_type === 'string' ? result.event_type.trim() : '',
+    category: typeof result.category === 'string' ? result.category.trim() : '',
+  };
+}
+
+/**
+ * V2: 用原生 function calling 选文章链接。
+ * 替代 v1 的 JSON 文本 + 手动剥 markdown fence + try-catch 解析。
+ */
+async function selectArticleLinksV2(links, sourceName, pageUrl, logPrefix = '') {
+  const list = links.map((l, i) => `[${i}] ${l.title || l.text || ''}\n  URL: ${l.url}`).join('\n');
+
+  try {
+    const response = await getOpenAI().chat.completions.create({
+      model: DEEPSEEK_MODEL,
+      messages: [
+        {
+          role: 'system',
+          content: buildSelectLinksPrompt(sourceName, pageUrl),
+        },
+        { role: 'user', content: list },
+      ],
+      tools: [SELECT_LINKS_TOOL],
+      tool_choice: { type: 'function', function: { name: 'select_articles' } },
+      temperature: 0,
+      max_tokens: 2000,
+    });
+
+    const toolCalls = response.choices[0].message.tool_calls;
+    if (toolCalls && toolCalls.length > 0) {
+      const args = JSON.parse(toolCalls[0].function.arguments);
+      if (!Array.isArray(args.articles)) return [];
+      return args.articles
+        .map(a => ({ title: a.title || '', url: links[a.index]?.url || '' }))
+        .filter(a => a.url);
+    }
+
+    // fallback to v1
+    if (logPrefix) console.log(`  [${logPrefix}] ${sourceName}: function calling returned no tool_calls, fallback`);
+    return selectArticleLinks(links, sourceName, pageUrl, logPrefix);
+  } catch (e) {
+    console.warn(`  [${logPrefix || 'ai'}] function calling failed for ${sourceName}, fallback: ${e.message}`);
+    return selectArticleLinks(links, sourceName, pageUrl, logPrefix);
+  }
+}
+
 module.exports = {
   getOpenAI,
   summarizeArticle,
   analyzeResult,
+  analyzeResultV2,
   parseAnalyzeResult,
   selectArticleLinks,
+  selectArticleLinksV2,
   buildAnalyzePrompt,
   buildCategoryHint,
 };
