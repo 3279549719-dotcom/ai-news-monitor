@@ -9,7 +9,7 @@ AI 驱动的多关键词信息监控工具。从用户配置的白名单信源�
 ```bash
 node src/index.js              # 手动运行一次
 npm run ops:run-auto           # 手动模拟定时（含拉起 crawl4ai + 落日志）
-npm run ops:schedule           # 注册 Windows 任务计划：每日 08:00 自动跑（退役中，见下）
+npm run ops:schedule           # 本地开发手动用：注册 Windows 任务计划（每日 08:00 已退役移交 CI）
 npm run ops:schedule:info      # 查看定时任务；npm run ops:unschedule 卸载
 ```
 
@@ -17,9 +17,9 @@ npm run ops:schedule:info      # 查看定时任务；npm run ops:unschedule 卸
 > ```bash
 > gh workflow run daily-pipeline.yml --repo 3279549719-dotcom/ai-news-monitor --ref master
 > ```
-> **Windows 任务计划（兜底）**：`ops:schedule` 注册的每日 08:00 任务**待 CI 稳定运行 ≥1 次后退役**（Task 5.2），当前仍保留供本地开发手动跑。
+> **Windows 任务计划已退役**（2026-08-11）：08:00 定时移交 CI 后，`ops:unschedule` 已卸载 `ai-news-monitor-daily`。`ops:schedule`/`ops:run-auto` 仍保留供**本地开发手动跑**（不加 `--ci`）。
 >
-> 定时日志：`logs/pipeline-YYYY-MM-DD.log`；前端线上：`https://ai-news-monitor-silk.vercel.app`
+> 定时日志：CI 跑 `logs/pipeline-YYYY-MM-DD.log`（随 artifact 下载）；本地开发跑 `logs/pipeline-YYYY-MM-DD.log`；前端线上：`https://ai-news-monitor-silk.vercel.app`
 
 ## 目录结构
 
@@ -77,5 +77,36 @@ scripts/            运维脚本（run-pipeline / install-schedule / test-scrape
 - 新增信源时同步更新 `source-tiers.json` + `article-patterns.json`
 
 ---
+
+## 可用工具（结构化注册表）
+
+本项目工具已封装到 `src/tools/registry.js`。AI 应优先调用结构化工具定义（name + JSON parameters），而不是裸 `bash("npm run xxx")`。
+
+### 始终加载的核心工具（5个）
+
+| 工具 | 命名空间 | 用途 |
+|------|----------|------|
+| `check_all` | check | 全套验证（lint+type-check+test），改代码后必须跑 |
+| `check_test` | check | 仅运行后端测试，快速反馈循环 |
+| `commit_git` | commit | 规范化 Git 提交（格式校验+安全门+可选推送） |
+| `pipeline_run` | pipeline | 运行一次完整信息管线（Docker自愈→抓取→评分→入库→日报） |
+| `ops_check` | ops | 基础设施健康巡检（Docker/磁盘/Supabase/管线状态） |
+
+### 按需加载的工具（13个）
+
+| 命名空间 | 工具 |
+|----------|------|
+| check | `check_syntax`（后端语法）、`check_type`（前端TS）、`check_quality`（日报质量验收） |
+| pipeline | `pipeline_schedule`（Windows定时任务）、`pipeline_auto_heal`（自愈修复） |
+| ops | `ops_screenshot`（前端截图）、`ops_docker_restart`（重启Docker引擎） |
+| data | `data_backfill`（历史回填重算）、`data_dedup`（跨运行去重，⚠️不可逆）、`seed_demo`（演示数据）、`update_sources`（信源配置） |
+| test | `test_scrape`（单信源抓取测试） |
+| harness | `harness_diagnose`（读取harness诊断结果） |
+
+**调用规则：**
+- 始终加载的 5 个工具无需搜索，直接可用
+- 按需工具通过 `getToolIndex()` 获取索引（name+summary），匹配到后再 `getTool(name)` 获取完整定义
+- 查看工具详情的命令: `node -e "const {getStats}=require('./src/tools/registry'); console.log(JSON.stringify(getStats(),null,2))"`
+- 获取工具索引: `node -e "const {getToolIndex}=require('./src/tools/registry'); console.log(JSON.stringify(getToolIndex(),null,2))"`
 
 > **本文由 AI 自行维护。** 遇到新约束或模块增删时更新对应章节。陷阱/故障排除 → `docs/KNOWN_TRAPS.md`。完整文档导航 → `DOCUMENT_MAP.md`。

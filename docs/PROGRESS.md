@@ -14,13 +14,22 @@
 - **测试**：`scripts/run-pipeline.test.js` 新增 5 条（parseArgs 3 + healthCheckOutputPath 2，win32/linux 两端）；`npm run check` 全绿，`npm test` **118/118**（基线 113 + 5）；actionlint 两个新 workflow exit 0。
 - **GitHub 接线**：12 个 Secrets + `EMAIL_ENABLED=false` var 已写入（值不回显）；实验分支已并入 master 并推送。
 
-**当前状态：⚠️ CI 实机验证被账户级计费阻断** —— GitHub Actions runner 无法启动任何 job（`recent account payments have failed or your spending limit needs to be increased`，全仓库 13 个历史 run 全部 failure）。`crawl4ai-smoke` / `daily-pipeline` dispatch / Supabase 落库抽查 **待计费解除后执行**（Task 4.3/4.4/4.5）。Windows 任务计划**暂未退役**（保留兜底，Task 5.2 待 CI 稳定 ≥1 次后执行）。
+**实机验证结果（2026-08-11，全部通过 ✅）：**
+
+> 前置坑：账户级计费锁阻断 runner（`recent account payments have failed...`，13 个历史 run 全失败）。**解法 = 仓库转 public**：公开仓库标准 runner 免费不限量、无需支付方式（绑定卡失败/空白的根因是 Stripe 只认国际卡 + 中国区贸易合规误报）。密钥安全检查：`.env`/`.crawl4ai-token`/`client/.env` 已 gitignore；发现并删除含真实 Supabase 管理 token 的一次性脚本 `scripts/_tokentest.js`（`39281f5`），token 已在 Supabase 撤销（HTTP 401 验证）。
+
+- **4.3 crawl4ai 冒烟 ✅**：run `31506912987`，`{"status":"ok"}` + `CRAWL4AI HEALTHY (2 checks)`（镜像在 ubuntu-latest 独立启动 ~53s）。
+- **4.4 daily-pipeline 首次 dispatch ✅**：run `31507102823`，全链路成功（动态 crawl4ai → `--ci` → DeepSeek 评分），exit code=0，`[pipeline] crawl4ai ready ✓ (CI)`；降级机制验证：多源 crawl4ai 空结果自动降级 direct 不崩溃。
+- **4.5 落库验证 ✅**：最近 2 小时新增 **34 条**（Dallas 19 / MU 12 / Anthropic 3）。
+- **5.2 Windows 定时已退役 ✅**：`ops:unschedule` 卸载 `ai-news-monitor-daily`，PowerShell 确认任务不存在。`ops:schedule`/`ops:run-auto` 保留供本地开发手动跑。
+- 观察项：`EMAIL_ENABLED=false` 验证期关闭；actions/checkout@v4 等 Node 20 弃用提示（GitHub 强制跑 Node 24，非阻塞）。
 
 ## 功能进度
 
 | ID | 功能 | 状态 | 验证 |
 |---|---|---|---|
 | F-022 | Dallas 内容产出修复 — T1 X 评分保底 T1_FLOOR=40 + Tim MacMahon X 信源 + nba.com 抓取修复 | **已完成** | 2026-08-09 113/113 测试 + type-check/lint 全绿 |
+| F-023 | 管线搬 GitHub Actions 纯 CI + 三代理实战验证 — run-pipeline `--ci` + daily-pipeline.yml + crawl4ai-smoke.yml + Windows 定时退役 | **已完成** | 2026-08-11 冒烟✅ + daily dispatch✅ + 34 条落库✅ + 118/118 测试（见上 F-023 章节） |
 | F-021 | 架构借鉴 — 抓取通道数据化(A1) + 增量幂等(A2) + 通知分发(A3) + 日志flush(B1) | **已完成** | 2026-08-09 112/112 测试 + E2E 通过 |
 | F-019 | run-pipeline.js Docker 自愈（引擎僵尸→自动重启→健康检查→告警邮件+status file） | **已完成** | 2026-08-08 边界测试 A/B/C/D/E/F/G 全过 |
 | F-018 | 邮件升级 v2：T0/T1 精选 · 事件+中文摘要 HTML 卡片 | **已完成** | 2026-08-08 冒烟验证 72/72 |
