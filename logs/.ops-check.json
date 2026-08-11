@@ -1,0 +1,42 @@
+{
+  "ts": "2026-08-11T15:35:57.648Z",
+  "mode": "full",
+  "summary": {
+    "ok": 2,
+    "failed": 3,
+    "skipped": 1
+  },
+  "results": [
+    {
+      "label": "Docker/crawl4ai",
+      "ok": false,
+      "detail": "docker ps 失败 — Docker Desktop 未运行"
+    },
+    {
+      "label": "磁盘余量",
+      "ok": true,
+      "detail": "C: parse-fail, E: parse-fail"
+    },
+    {
+      "label": "今日 pipeline",
+      "ok": false,
+      "detail": ".last-run.json 缺失或无法解析"
+    },
+    {
+      "label": "Pipeline 日志",
+      "ok": false,
+      "detail": "pipeline-2026-08-10.log: 报告已生成, 邮件已发送, 1 行疑似错误"
+    },
+    {
+      "label": "Supabase 文章量",
+      "ok": null,
+      "detail": "SUPABASE_URL/KEY 未配置，跳过"
+    },
+    {
+      "label": "node_modules",
+      "ok": true,
+      "detail": "102 packages ok"
+    }
+  ],
+  "status": "degraded"
+}

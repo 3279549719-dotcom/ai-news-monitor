@@ -1,0 +1,43 @@
+{
+  "lastDate": "2026-08-11",
+  "todayFixCount": 2,
+  "history": [
+    {
+      "ts": "2026-08-11T15:35:58.189Z",
+      "name": "docker-restart",
+      "success": false,
+      "detail": "exit 1 | stderr: error during connect: Post \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/crawl4ai/restart\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.",
+      "date": "2026-08-11"
+    },
+    {
+      "ts": "2026-08-11T15:45:58.262Z",
+      "name": "restart-pipeline",
+      "success": false,
+      "detail": "错误: spawnSync node ETIMEDOUT",
+      "date": "2026-08-11"
+    }
+  ],
+  "lastFixAt": "2026-08-11T15:45:58.262Z",
+  "lastFixName": "restart-pipeline",
+  "lastFixSuccess": false,
+  "lastFixDetail": "错误: spawnSync node ETIMEDOUT",
+  "lastHealAttempt": "2026-08-11T15:45:58.266Z",
+  "lastHealResult": {
+    "healed": false,
+    "fixes": [
+      {
+        "name": "docker-restart",
+        "ok": false,
+        "detail": "exit 1 | stderr: error during connect: Post \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/crawl4ai/restart\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.",
+        "attempt": 2
+      },
+      {
+        "name": "restart-pipeline",
+        "ok": false,
+        "detail": "错误: spawnSync node ETIMEDOUT",
+        "attempt": 1
+      }
+    ],
+    "reason": "2 fixes failed"
+  }
+}
