@@ -9,10 +9,16 @@ AI 驱动的多关键词信息监控工具。从用户配置的白名单信源�
 ```bash
 node src/index.js              # 手动运行一次
 npm run ops:run-auto           # 手动模拟定时（含拉起 crawl4ai + 落日志）
-npm run ops:schedule           # 注册 Windows 任务计划：每日 08:00 自动跑
+npm run ops:schedule           # 注册 Windows 任务计划：每日 08:00 自动跑（退役中，见下）
 npm run ops:schedule:info      # 查看定时任务；npm run ops:unschedule 卸载
 ```
 
+> **CI 每日管线（主）**：GitHub Actions `daily-pipeline.yml`（cron `0 0 * * *` UTC = 北京 08:00）+ `workflow_dispatch` 手动触发。job 内动态 `docker run` crawl4ai → `node scripts/run-pipeline.js --ci`（crawl4ai 失败自动降级 scraper-direct + 告警；X/twikit 在 CI 跳过）。日志走 `upload-artifact`；失败 `gh issue create` 建告。手动触发：
+> ```bash
+> gh workflow run daily-pipeline.yml --repo 3279549719-dotcom/ai-news-monitor --ref master
+> ```
+> **Windows 任务计划（兜底）**：`ops:schedule` 注册的每日 08:00 任务**待 CI 稳定运行 ≥1 次后退役**（Task 5.2），当前仍保留供本地开发手动跑。
+>
 > 定时日志：`logs/pipeline-YYYY-MM-DD.log`；前端线上：`https://ai-news-monitor-silk.vercel.app`
 
 ## 目录结构
@@ -48,6 +54,7 @@ docs/               需求、决策、计划、验收、进度文档
 reports/            每日报告 YYYY-MM-DD.md
 client/             React SPA（Vite + Tailwind）
 scripts/            运维脚本（run-pipeline / install-schedule / test-scrape / backfill-resummarize / screenshot-ui / restart-docker-engine 等）
+.github/workflows/  GitHub Actions（daily-pipeline.yml 每日管线 / crawl4ai-smoke.yml 镜像冒烟 / ops-check.yml 巡检）
 ```
 
 ## 关键约束

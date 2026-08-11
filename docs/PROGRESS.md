@@ -1,6 +1,20 @@
 # ai-news-monitor 项目进度
 
-> 最后更新：2026-08-09（F-022 Dallas 内容修复：T1 X 记者评分保底 + Tim MacMahon 信源 + nba.com 抓取修复）
+> 最后更新：2026-08-11（F-023 管线搬 GitHub Actions 纯 CI + 三代理实战验证）
+
+## F-023 管线搬 GitHub Actions（纯 CI）+ 三代理实战（2026-08-11）
+
+> 文档：`docs/superpowers/plans/2026-08-11-github-pipeline-three-agent.md` + `docs/DECISION-管线搬GitHub-纯CI方案.md` + `docs/DECISION-三代理架构-自审评估.md`。三代理交接产物见 `docs/PLAN-管线搬GitHub.md` / `SPRINT-20260811-github-pipeline.md` / `PLANNER_DONE.md` / `GENERATOR_DONE.md` / `REVIEW-20260811-github-pipeline.md`。
+
+**交付内容（Planner→Generator→Evaluator 三代理文件交接实战，全部已并入 master，提交 `d056d2d`→`529c06d`+`3e20530`→`5f22140`）：**
+
+- **run-pipeline.js `--ci` 模式**：`parseArgs` / `healthCheckOutputPath` 纯函数提取（可单测），`ensureCrawl4ai` CI 分支（只健康检查，失败降级 scraper-direct + 告警，不做 docker start/引擎重启），`autoPushLogs` CI 守卫（日志交 upload-artifact），`module.exports` 追加导出。**本地不加 `--ci` 行为不变**（`if (CI_MODE)` 分支在 `if (noDocker)` 之后）。
+- **`.github/workflows/daily-pipeline.yml`**：cron `0 0 * * *`（北京 08:00 = UTC 00:00）+ `workflow_dispatch`；job 动态 `docker run` crawl4ai → 健康检查 → `node scripts/run-pipeline.js --ci`；X/twikit 跳过；`EMAIL_ENABLED` 读 `vars`（验证期已设 `false`）；失败 `gh issue create` 建告；日志 upload-artifact（7 天）。
+- **`.github/workflows/crawl4ai-smoke.yml`**：手动 dispatch 冒烟，验证 `unclecode/crawl4ai:latest` 在 ubuntu-latest 独立启动 + `/health`。
+- **测试**：`scripts/run-pipeline.test.js` 新增 5 条（parseArgs 3 + healthCheckOutputPath 2，win32/linux 两端）；`npm run check` 全绿，`npm test` **118/118**（基线 113 + 5）；actionlint 两个新 workflow exit 0。
+- **GitHub 接线**：12 个 Secrets + `EMAIL_ENABLED=false` var 已写入（值不回显）；实验分支已并入 master 并推送。
+
+**当前状态：⚠️ CI 实机验证被账户级计费阻断** —— GitHub Actions runner 无法启动任何 job（`recent account payments have failed or your spending limit needs to be increased`，全仓库 13 个历史 run 全部 failure）。`crawl4ai-smoke` / `daily-pipeline` dispatch / Supabase 落库抽查 **待计费解除后执行**（Task 4.3/4.4/4.5）。Windows 任务计划**暂未退役**（保留兜底，Task 5.2 待 CI 稳定 ≥1 次后执行）。
 
 ## 功能进度
 

@@ -23,6 +23,9 @@
 | Anthropic 需求文档 | [docs/REQ-Anthropic信源监控.md](docs/REQ-Anthropic信源监控.md) | Anthropic 信源配置与验收 |
 | Dallas 需求文档 | [docs/REQ-Dallas信源监控.md](docs/REQ-Dallas信源监控.md) | Dallas 信源配置与验收 |
 | 技术决策纪要 | [docs/DECISION-方案选型纪要.md](docs/DECISION-方案选型纪要.md) | 了解架构选型原因 |
+| 三代理架构自审 | [docs/DECISION-三代理架构-自审评估.md](docs/DECISION-三代理架构-自审评估.md) | 三代理（Planner→Generator→Evaluator）架构对齐 Anthropic Harness 的自评 + 复盘 |
+| 管线搬 GitHub 决策 | [docs/DECISION-管线搬GitHub-纯CI方案.md](docs/DECISION-管线搬GitHub-纯CI方案.md) | 每日管线搬 GitHub Actions 纯 CI 的决策（含 CI 无自愈、验证顺序） |
+| 三代理工作流需求 | [docs/REQ-三代理工作流-P0双任务.md](docs/REQ-三代理工作流-P0双任务.md) | 三代理 P0 双任务（breaking-news push + pipeline 自愈）需求 |
 
 ### 历史 Phase 文档（已完成，供回溯）
 
@@ -47,6 +50,17 @@
 | A1-A3 架构 | [docs/superpowers/plans/2026-08-09-架构借鉴-抓取通道数据化-增量幂等-通知分发.md](docs/superpowers/plans/2026-08-09-架构借鉴-抓取通道数据化-增量幂等-通知分发.md) | 抓取通道数据化设计 |
 | X 记者 spec | [docs/superpowers/specs/2026-08-07-x-journalist-feed-design.md](docs/superpowers/specs/2026-08-07-x-journalist-feed-design.md) | X 链路技术设计 |
 | 邮件摘要 spec | [docs/superpowers/specs/2026-08-08-email-digest-design.md](docs/superpowers/specs/2026-08-08-email-digest-design.md) | 邮件技术设计 |
+| 管线搬 GitHub 计划 | [docs/superpowers/plans/2026-08-11-github-pipeline-three-agent.md](docs/superpowers/plans/2026-08-11-github-pipeline-three-agent.md) | 三代理实战实施计划（Planner→Generator→Evaluator 文件交接验证） |
+
+### 三代理交接产物（2026-08-11 管线搬 GitHub 实战）
+
+| 文档 | 路径 | 说明 |
+|------|------|------|
+| 实现 PLAN | [docs/PLAN-管线搬GitHub.md](docs/PLAN-管线搬GitHub.md) | Generator 唯一依据（含代码/工作流全文 + 验收命令 + 风险回滚） |
+| Sprint Contract | [docs/SPRINT-20260811-github-pipeline.md](docs/SPRINT-20260811-github-pipeline.md) | 完成定义 + Evaluator 审核清单（C/V/S） |
+| Planner 交接 | [docs/PLANNER_DONE.md](docs/PLANNER_DONE.md) | Planner → Generator 交接信号 |
+| Generator 交接 | [docs/GENERATOR_DONE.md](docs/GENERATOR_DONE.md) | Generator → Evaluator 交接（含 A4 验收证据） |
+| Evaluator 终审 | [docs/REVIEW-20260811-github-pipeline.md](docs/REVIEW-20260811-github-pipeline.md) | 独立复核 + PASS 结论 + 待实机项 |
 
 ## 执行与计划
 
@@ -111,6 +125,9 @@
 | 增量幂等 | `src/seen.js` | 每源 200 条环形缓冲 |
 | 遗留模块 | `src/legacy/` | scraper.js / reader.js（已废弃 blog 类型） |
 | 前端 | `client/src/` | React SPA，直连 Supabase |
+| CI 每日管线 | `.github/workflows/daily-pipeline.yml` | GitHub Actions 每日 08:00（cron UTC 00:00），动态 crawl4ai + `run-pipeline --ci` + 失败建 Issue |
+| crawl4ai 冒烟 | `.github/workflows/crawl4ai-smoke.yml` | 手动 dispatch，验证镜像在 runner 独立启动 |
+| 运维巡检 | `.github/workflows/ops-check.yml` | push 触发，跑 `npm run check` |
 
 ## 输出
 

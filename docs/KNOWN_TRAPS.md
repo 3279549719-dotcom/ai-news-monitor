@@ -1,7 +1,7 @@
 # KNOWN_TRAPS — ai-news-monitor
 
 > 已知陷阱与排错手册。遇到异常/报错/工具报错/管道失败时先查本文，再从零排查。
-> 最后更新：2026-08-09（从 CLAUDE.md 独立出来）
+> 最后更新：2026-08-11（新增 GitHub Actions / crawl4ai 容器 CI 陷阱）
 
 ---
 
@@ -24,6 +24,19 @@
 - **⚠️ Docker daemon 未运行时 `docker` CLI 会长时间阻塞（实测 >120s 不返回，2026-08-05）**：自动化脚本 spawn docker 必须带超时——`spawnSync('docker', [...], { timeout: 30000 })`（参考 `run-pipeline.js` 的 `startCrawl4ai`）。容器已设 `--restart unless-stopped`（随 Docker Desktop 自启，2026-08-05），但引擎未启动时 CLI 仍会挂。自检三步：`docker ps -a --filter name=crawl4ai` → `docker logs crawl4ai --tail 50` → `curl -s http://localhost:11235/health`
 - **⚠️ Docker UI「Engine running」但 CLI 全挂 = 僵尸 backend（2026-08-05）**：只跑 `wsl --shutdown` 再 `Start-Process Docker Desktop` **不够**——旧的 `com.docker.backend.exe` 会继续占着 named pipe、UI 仍显示 running，而 WSL 里 dockerd 已死（`docker-desktop` Stopped / 无 `docker.sock`）。**正确恢复**：`powershell -ExecutionPolicy Bypass -File scripts\restart-docker-engine.ps1`（杀光 Docker 进程 → wsl --shutdown → 干净启动 → 等到 Server 版本 → `docker start crawl4ai`）
 - **⚠️ C 盘打满会渐进性杀死 Docker 引擎（2026-08-06 实测）**：磁盘 0 可用 → WSL2 VHD 无法增长 → crawl4ai 逐源 500 → 引擎崩溃 → CLI 挂死。**Docker 数据已迁 `E:\Docker\wsl`（junction：`C:\Users\asus\AppData\Local\Docker\wsl → E:\Docker\wsl`，2026-08-06）**，迁移步骤见 `docs/archive/DISK-CLEANUP-2026-08-06.md`。清理 C 盘务必预留 ≥5G 余量
+
+---
+
+## GitHub Actions / CI（2026-08-11 管线搬 GitHub 实战记录）
+
+- **⚠️ crawl4ai 容器不传 `CRAWL4AI_API_TOKEN` 时入口只绑 `[::]`，端口映射不可达**：`unclecode/crawl4ai` 的 entrypoint 仅在设置了 API token 时才监听可映射的地址；不传 token 时 `-p 11235:11235` 映射的端口无法访问 `/health`。**CI/本地启动必须带 `-e CRAWL4AI_API_TOKEN=...`**（daily-pipeline.yml / crawl4ai-smoke.yml 已带，`KNOWN_TRAPS` 补录原文以免漏）
+- **⚠️ GitHub Actions 账户级计费阻断（2026-08-11 实测）**：job 完全不启动，annotation 报 `recent account payments have failed or your spending limit needs to be increased`。这是 **GitHub 账户 Billing & plans** 问题（失败付款 / spending limit），**与代码、模型、Secret 均无关**，CLI 无法修复，只能浏览器登录 GitHub → Settings → Billing & plans 处理。影响：仓库所有 workflow（含历史）全部无法跑，`gh workflow run` 后 run 永远失败。
+- **GitHub Actions 只在默认分支跑 workflow_dispatch（2026-08-11 实测）**：`gh workflow run <file>` 报 `404 not found on default branch` —— 即使文件已在当前分支。workflow 文件必须先在默认分支（master）上存在，或用 `--ref <branch>` 指定含该文件的已推送分支。
+- **run-pipeline.js `--ci` 模式（CI 专用，2026-08-11 新增）**：CI 容器由 workflow job 启动，`--ci` 只做健康检查（失败降级 scraper-direct + 告警），跳过 docker start / Windows 引擎重启 / 日志 auto-push。本地手动跑**不要加 `--ci`**（否则跳过 docker 启动步骤，抓取直接走降级）。`X_TWIKIT_ENABLED=0` 时 X 账号跳过（runner 无法交互登录）。
+- **`EMAIL_ENABLED` 读 `vars` 而非 secret（daily-pipeline.yml）**：变量未设置时展开为空串，config.js `EMAIL_ENABLED !== '0'` 判断为**默认开启邮件**。验证期务必先 `gh variable set EMAIL_ENABLED=false`（已设），否则 SMTP secret 配齐后会发空摘要邮件。
+- **`gh` CLI 在 Git Bash 下的路径改写坑**：`gh api`/`gh workflow run` 的 URL 参数可能被 MSYS 路径转换改写（`invalid API endpoint` / `404`）。加 `MSYS_NO_PATHCONV=1` 前缀可禁用。
+- **actionlint 非 npm 包**：`npx actionlint` 报 `could not determine executable to run`。需从 GitHub Releases 下载 Windows/Linux 二进制（本机已放 `E:/claude/tools/actionlint/actionlint.exe`，不入版本库）。
+- **本地 run-pipeline 健康检查 `-o nul` vs Linux `/dev/null`**：curl 输出设备在 Windows 是 `nul`、Linux 是 `/dev/null`。`run-pipeline.js` 的 `healthCheckOutputPath(platform)` 纯函数按平台返回，单测覆盖两端。
 
 ---
 
