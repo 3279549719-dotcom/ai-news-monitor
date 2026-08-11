@@ -18,3 +18,5 @@ scripts/_crawl4ai-items.json
 .loop-js.tmp
 scripts/_check-*.js
 scripts/_verify-e2e.js
+
+scripts/_tokentest.js
