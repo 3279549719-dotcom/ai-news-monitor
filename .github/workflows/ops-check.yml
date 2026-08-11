@@ -45,17 +45,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Create issue on failure
         run: |
+          cat > /tmp/issue_body.md << 'BODYEOF'
+## Ops Check Failed
+Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+@copilot Please analyze the ops-check failure. Read the ops-check-result artifact, locate all failed checks, analyze root causes, and post your diagnosis as a comment.
+BODYEOF
           gh issue create \
-            --title "⚠️ Ops Check 巡检异常 — ${{ github.run_id }}" \
-            --body "## Ops Check 失败
-
-运行时间: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-@copilot 请分析本次 ops-check 巡检失败的原因：
-1. 读取 ops-check-result artifact 中的 logs/.ops-check.json
-2. 定位所有失败项并分析根因
-3. 给出可执行的修复建议
-4. 在此 Issue 下评论你的诊断结论" \
-            --label "ops,ai-diagnose"
+            --title "Ops Check Failed — Run ${{ github.run_id }}" \
+            --body-file /tmp/issue_body.md \
+            --label "ops,ai-diagnose" \
+            --repo ${{ github.repository }}
         env:
           GH_TOKEN: ${{ github.token }}
