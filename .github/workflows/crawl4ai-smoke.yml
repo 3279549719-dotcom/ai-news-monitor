@@ -1,0 +1,25 @@
+name: crawl4ai Smoke
+on:
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Pull + run + health-check crawl4ai
+        run: |
+          docker run -d --name crawl4ai -p 11235:11235 \
+            -e CRAWL4AI_API_TOKEN="${{ secrets.CRAWL4AI_API_TOKEN }}" \
+            unclecode/crawl4ai:latest
+          for i in $(seq 1 36); do
+            if curl -sf http://localhost:11235/health; then
+              echo "CRAWL4AI HEALTHY (${i} checks)"
+              docker logs crawl4ai 2>&1 | tail -20
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::crawl4ai 冒烟失败"
+          docker logs crawl4ai 2>&1 | tail -60
+          exit 1

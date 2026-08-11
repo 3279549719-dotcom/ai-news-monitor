@@ -28,9 +28,21 @@ const { spawn, spawnSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 process.chdir(ROOT);
 
-const args = process.argv.slice(2);
-const noDocker = args.includes('--no-docker');
-const noAlert = args.includes('--no-alert');
+/** 解析 CLI 参数（纯函数，便于单测）。 */
+function parseArgs(argv) {
+  const args = argv.slice(2);
+  return {
+    ci: args.includes('--ci'),
+    noDocker: args.includes('--no-docker'),
+    noAlert: args.includes('--no-alert'),
+  };
+}
+const { ci: CI_MODE, noDocker, noAlert } = parseArgs(process.argv);
+
+/** curl -o 输出设备：win32 用 nul，其余平台用 /dev/null。 */
+function healthCheckOutputPath(platform = process.platform) {
+  return platform === 'win32' ? 'nul' : '/dev/null';
+}
 
 /** Local-date stamp YYYY-MM-DD. */
 function localStamp(d = new Date()) {
@@ -95,7 +107,7 @@ function checkCrawl4aiHealth() {
   for (let i = 1; i <= 3; i++) {
     if (i > 1) console.log(`[pipeline] health check retry ${i}…`);
     const r = spawnSync('curl', [
-      '-s', '-o', 'nul', '-w', '%{http_code}',
+      '-s', '-o', healthCheckOutputPath(), '-w', '%{http_code}',
       '--connect-timeout', '5', '--max-time', '10',
       'http://127.0.0.1:11235/health',
     ], { encoding: 'utf8', timeout: 15000 });
@@ -146,6 +158,24 @@ function ensureCrawl4ai() {
     console.log('[pipeline] --no-docker: skipping docker start');
     writeStatusFile(false, 'skipped (--no-docker)');
     return false;
+  }
+
+  if (CI_MODE) {
+    // CI 容器由 workflow job 启动，这里只做健康检查；失败即告警 + 降级，不做 docker start/引擎重启。
+    console.log('[pipeline] --ci: 容器由 job 管理，仅健康检查');
+    const healthy = checkCrawl4aiHealth();
+    if (healthy) {
+      console.log('[pipeline] crawl4ai ready ✓ (CI)');
+      writeStatusFile(true, 'healthy');
+    } else {
+      console.error('[pipeline] crawl4ai 健康检查失败(CI)，降级 scraper-direct');
+      sendAlertEmail(
+        '⚠️ ai-news-monitor: CI crawl4ai 不可用',
+        `<p>${ts()} GitHub Actions 中 crawl4ai 健康检查失败，管线已降级运行（scraper-direct）。</p><p><small>— run-pipeline.js --ci</small></p>`,
+      );
+      writeStatusFile(false, 'unhealthy in CI');
+    }
+    return healthy;
   }
 
   const started = dockerStart(2);                   // attempt 1 + 1 retry after engine restart
@@ -231,6 +261,10 @@ function runPipeline() {
 
 // ─── Auto git push logs ──────────────────────────────────────────
 async function autoPushLogs() {
+  if (CI_MODE) {
+    console.log('[pipeline] --ci: 跳过日志 auto-push（由 upload-artifact 承担）');
+    return;
+  }
   const { execSync } = require('child_process');
   try {
     execSync('git add logs/', { cwd: ROOT, stdio: 'pipe' });
@@ -256,5 +290,5 @@ if (require.main === module) {
   runPipeline();
 } else {
   // Required as a module — export for programmatic use / testing
-  module.exports = { ensureCrawl4ai, dockerStart, checkCrawl4aiHealth, sendAlertEmail, writeStatusFile };
+  module.exports = { ensureCrawl4ai, dockerStart, checkCrawl4aiHealth, sendAlertEmail, writeStatusFile, parseArgs, healthCheckOutputPath };
 }

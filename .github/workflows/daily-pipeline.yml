@@ -1,0 +1,88 @@
+name: Daily Pipeline
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 北京 08:00 = UTC 00:00
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  daily-pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Start crawl4ai container (dynamic)
+        run: |
+          docker run -d --name crawl4ai -p 11235:11235 \
+            -e CRAWL4AI_API_TOKEN="${{ secrets.CRAWL4AI_API_TOKEN }}" \
+            unclecode/crawl4ai:latest
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:11235/health; then
+              echo "crawl4ai healthy (${i} checks)"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::crawl4ai 150s 内未就绪"
+          exit 1
+
+      - name: Run daily pipeline (--ci)
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+          DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          CRAWL4AI_URL: http://localhost:11235
+          CRAWL4AI_API_TOKEN: ${{ secrets.CRAWL4AI_API_TOKEN }}
+          X_TWIKIT_ENABLED: '0'
+          EMAIL_ENABLED: ${{ vars.EMAIL_ENABLED }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_SECURE: ${{ secrets.SMTP_SECURE }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_AUTH_CODE: ${{ secrets.EMAIL_AUTH_CODE }}
+          RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+        run: node scripts/run-pipeline.js --ci
+
+      - name: Upload pipeline logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-logs
+          path: |
+            logs/pipeline-*.log
+            logs/.last-run.json
+            logs/.seen-ids.json
+          retention-days: 7
+
+      - name: Alert on failure (create issue)
+        if: failure()
+        run: |
+          cat > /tmp/issue_body.md << 'BODYEOF'
+          ## Daily Pipeline Failed
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          请查看 pipeline-logs artifact 定位失败原因。
+          BODYEOF
+          gh issue create \
+            --title "Daily Pipeline Failed — Run ${{ github.run_id }}" \
+            --body-file /tmp/issue_body.md \
+            --label "ops" \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ github.token }}
