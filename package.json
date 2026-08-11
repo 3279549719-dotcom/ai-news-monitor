@@ -42,6 +42,11 @@
     "ops:quality": "node scripts/check-quality.js",
 
     "ops:run-auto": "node scripts/run-pipeline.js",
+    "ops:auto-heal": "node scripts/auto-heal.js",
+    "ops:stats": "node scripts/ops-stats.js",
+    "ops:stats:json": "node scripts/ops-stats.js --json",
+    "ops:issue-close": "node scripts/issue-close.js",
+    "ops:issue-close:dry": "node scripts/issue-close.js --dry-run",
     "ops:docker-restart": "powershell -ExecutionPolicy Bypass -File scripts/restart-docker-engine.ps1",
     "ops:schedule": "node scripts/install-schedule.js",
     "ops:schedule:info": "node scripts/install-schedule.js --info",

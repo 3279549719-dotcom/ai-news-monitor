@@ -1,0 +1,44 @@
+{
+  "version": "1",
+  "commands": {
+    "docker-restart": {
+      "description": "重启 crawl4ai 容器",
+      "command": "docker restart crawl4ai",
+      "timeoutMs": 60000,
+      "maxRetries": 1,
+      "reversible": false
+    },
+    "npm-install": {
+      "description": "重新安装 npm 依赖",
+      "command": "npm ci",
+      "timeoutMs": 120000,
+      "maxRetries": 1,
+      "reversible": true
+    },
+    "clear-logs": {
+      "description": "清理超过7天的日志",
+      "command": "node scripts/cleanup-logs.js",
+      "timeoutMs": 30000,
+      "maxRetries": 0,
+      "reversible": false
+    },
+    "restart-pipeline": {
+      "description": "手动触发 pipeline",
+      "command": "node scripts/run-pipeline.js --no-alert",
+      "timeoutMs": 600000,
+      "maxRetries": 0,
+      "reversible": false
+    },
+    "git-pull": {
+      "description": "拉取最新代码",
+      "command": "git pull origin master",
+      "timeoutMs": 30000,
+      "maxRetries": 1,
+      "reversible": true
+    }
+  },
+  "globalLimits": {
+    "maxFixesPerDay": 3,
+    "cooldownMinutes": 30
+  }
+}
