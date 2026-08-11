@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history for git pull to work
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,6 +50,7 @@ jobs:
           retention-days: 7
 
   # 告警 + AI 诊断：当 ops-check 失败时创建 Issue 并触发 Copilot 分析
+  # 注意：需要 GitHub Actions 有 issues:write 权限（Settings → Actions → General → Workflow permissions → Read and write）：当 ops-check 失败时创建 Issue 并触发 Copilot 分析
   alert-on-failure:
     needs: ops-check
     if: failure()
