@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 多源信息监控平台 · 产品流程</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --ink: #1f2a44;
+    --muted: #6b7a99;
+    --brand: #4f46e5;
+    --brand-soft: #eef0ff;
+    --line: #e3e7f0;
+    --card: #ffffff;
+    --amber: #f59e0b;
+    --sky: #0ea5e9;
+    --emerald: #10b981;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 48px 20px 72px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  /* ---------- Hero ---------- */
+  .hero { text-align: center; margin-bottom: 44px; }
+  .hero .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border: 1px solid #dbe1ff;
+    border-radius: 999px;
+    padding: 5px 14px;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    background: linear-gradient(120deg, #312e81, #4f46e5 55%, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    margin-top: 10px;
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  /* ---------- Phase strip ---------- */
+  .phases {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 34px;
+  }
+  .phase-chip {
+    flex: 1;
+    max-width: 250px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 8px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: var(--card);
+  }
+  .phase-chip .n { font-weight: 700; margin-right: 6px; }
+  .phase-chip.cfg .n { color: var(--amber); }
+  .phase-chip.run .n { color: var(--sky); }
+  .phase-chip.out .n { color: var(--emerald); }
+
+  /* ---------- Timeline ---------- */
+  .flow { position: relative; padding-left: 34px; }
+  .flow::before {
+    content: "";
+    position: absolute;
+    left: 15px; top: 18px; bottom: 18px;
+    width: 2px;
+    background: linear-gradient(var(--amber), var(--sky) 45%, var(--emerald));
+    opacity: .35;
+  }
+
+  .step { position: relative; margin-bottom: 22px; }
+  .step .dot {
+    position: absolute;
+    left: -34px; top: 20px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    box-shadow: 0 1px 3px rgba(31,42,68,.08);
+    z-index: 1;
+  }
+  .step.cfg .dot { border-color: #fcd9a8; }
+  .step.run .dot { border-color: #b7dffa; }
+  .step.out  .dot { border-color: #b5ead6; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 22px 18px 22px;
+    box-shadow: 0 1px 2px rgba(31,42,68,.04), 0 6px 18px rgba(31,42,68,.05);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(31,42,68,.06), 0 12px 28px rgba(31,42,68,.10);
+  }
+  .card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 .ico { font-size: 18px; }
+  .card .num {
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    border-radius: 6px;
+    padding: 1px 7px;
+    margin-left: auto;
+  }
+  .step.cfg .num { background: var(--amber); }
+  .step.run .num { background: var(--sky); }
+  .step.out  .num { background: var(--emerald); }
+  .card p {
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  /* ---------- Value footer ---------- */
+  .values {
+    margin-top: 44px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .value {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+  }
+  .value .ico { font-size: 24px; }
+  .value h4 { font-size: 14px; margin-top: 8px; }
+  .value p { font-size: 12.5px; color: var(--muted); margin-top: 5px; line-height: 1.6; }
+
+  .foot {
+    margin-top: 36px;
+    text-align: center;
+    font-size: 12px;
+    color: #9aa6bf;
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 24px; }
+    .phases { flex-direction: column; align-items: stretch; }
+    .phase-chip { max-width: none; }
+    .values { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- 产品头图 -->
+    <div class="hero">
+      <span class="tag">产品介绍 · 客户版</span>
+      <h1>AI 多源信息监控平台</h1>
+      <p>自动采集你信任的信源，AI 替你甄别重点，每天一份中文情报</p>
+    </div>
+
+    <!-- 阶段概览 -->
+    <div class="phases">
+      <div class="phase-chip cfg"><span class="n">①</span>配置</div>
+      <div class="phase-chip run"><span class="n">②</span>自动运行</div>
+      <div class="phase-chip out"><span class="n">③</span>情报产出</div>
+    </div>
+
+    <!-- 流程时间线 -->
+    <div class="flow">
+
+      <div class="step cfg">
+        <div class="dot">⚙️</div>
+        <div class="card">
+          <h3><span class="ico">🎯</span>设定关注主题<span class="num">STEP 1</span></h3>
+          <p>告诉平台你想跟踪什么——某支球队、某家公司，或某个行业动态。支持多个主题同时监控，互不干扰。</p>
+        </div>
+      </div>
+
+      <div class="step cfg">
+        <div class="dot">📋</div>
+        <div class="card">
+          <h3><span class="ico">🏷️</span>选择可信信源<span class="num">STEP 2</span></h3>
+          <p>从官方渠道、权威媒体与资深行业账号中挑选你想看的来源。平台只从你认可的信源采集，内容更可靠。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">⏰</div>
+        <div class="card">
+          <h3><span class="ico">🔄</span>自动定时巡检<span class="num">STEP 3</span></h3>
+          <p>平台按设定时间自动启动采集任务，全程无需人工值守。个别信源临时不可用时，自动切换备用通道，不漏资讯。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">📡</div>
+        <div class="card">
+          <h3><span class="ico">🗂️</span>多源信息汇总<span class="num">STEP 4</span></h3>
+          <p>把分散在你选定的信源上的最新资讯统一汇集到一起，跨媒体、跨账号，一个入口全部看到。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">🧠</div>
+        <div class="card">
+          <h3><span class="ico">✨</span>AI 智能甄别<span class="num">STEP 5</span></h3>
+          <p>AI 自动过滤无关噪音，为每条资讯标注相关度与体裁，并一键生成简明扼要的中文摘要。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">🔍</div>
+        <div class="card">
+          <h3><span class="ico">🛡️</span>交叉核验与去重<span class="num">STEP 6</span></h3>
+          <p>同一事件被多家信源印证时自动标注可信度；多家报道的同一件事，自动合并为一条，不重复刷屏。</p>
+        </div>
+      </div>
+
+      <div class="step out">
+        <div class="dot">📊</div>
+        <div class="card">
+          <h3><span class="ico">📰</span>情报沉淀与产出<span class="num">STEP 7</span></h3>
+          <p>重要资讯分类入库、长期留存，每天自动生成一份中文情报日报，网页看板随时查看。</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 客户价值 -->
+    <div class="values">
+      <div class="value">
+        <div class="ico">🕒</div>
+        <h4>省时省力</h4>
+        <p>无需天天翻十几个网站，情报自动送到你面前</p>
+      </div>
+      <div class="value">
+        <div class="ico">🧹</div>
+        <h4>少而精</h4>
+        <p>AI 过滤噪音、合并重复，只看真正重要的</p>
+      </div>
+      <div class="value">
+        <div class="ico">📈</div>
+        <h4>越用越厚</h4>
+        <p>历史资讯沉淀留存，随时回溯不遗漏</p>
+      </div>
+    </div>
+
+    <div class="foot">AI 多源信息监控平台 · 客户版流程介绍</div>
+  </div>
+</body>
+</html>

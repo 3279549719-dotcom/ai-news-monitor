@@ -14,3 +14,7 @@ logs/
 .DS_Store
 .crawl4ai-token
 scripts/_crawl4ai-items.json
+.worktrees/
+.loop-js.tmp
+scripts/_check-*.js
+scripts/_verify-e2e.js

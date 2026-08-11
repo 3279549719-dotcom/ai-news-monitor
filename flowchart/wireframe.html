@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>AI News Monitor — 布局草稿</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,sans-serif;background:#f0f4ff;color:#1e293b;height:100vh;display:flex;flex-direction:column}
+  header{background:#1d4ed8;color:#fff;padding:12px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  header h1{font-size:18px;font-weight:700;flex:1}
+  header span{font-size:12px;opacity:.75;margin-right:8px}
+  .btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:600}
+  .btn-run{background:#fff;color:#1d4ed8}
+  .btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+  .body{display:flex;flex:1;overflow:hidden}
+  aside{width:220px;background:#fff;border-right:1px solid #dbeafe;display:flex;flex-direction:column;padding:16px 0}
+  .section-title{font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;padding:0 16px;margin-bottom:8px}
+  .kw-item{padding:9px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:#334155}
+  .kw-item:hover{background:#eff6ff}
+  .kw-item.active{background:#dbeafe;color:#1d4ed8;font-weight:600}
+  .badge{font-size:11px;background:#dbeafe;color:#1d4ed8;border-radius:12px;padding:1px 7px;margin-left:auto}
+  .badge.red{background:#fee2e2;color:#dc2626}
+  .kw-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
+  aside hr{border:none;border-top:1px solid #e2e8f0;margin:12px 0}
+  .add-btn{margin:0 12px;padding:8px;border-radius:8px;border:1px dashed #93c5fd;background:#f8faff;color:#3b82f6;font-size:13px;cursor:pointer;text-align:center}
+  main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+  .toolbar{background:#fff;border-bottom:1px solid #dbeafe;padding:12px 24px;display:flex;align-items:center;gap:12px}
+  .toolbar h2{font-size:16px;font-weight:700;color:#1e3a8a;flex:1}
+  .filter-btn{padding:5px 12px;border-radius:6px;border:1px solid #cbd5e1;background:#fff;font-size:12px;cursor:pointer;color:#475569}
+  .filter-btn.active{border-color:#3b82f6;color:#1d4ed8;background:#eff6ff}
+  .search-box{border:1px solid #cbd5e1;border-radius:6px;padding:5px 10px;font-size:13px;width:180px;outline:none}
+  .cards{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:12px}
+  .card{background:#fff;border-radius:12px;padding:16px 20px;border:1px solid #dbeafe}
+  .card:hover{box-shadow:0 4px 16px rgba(29,78,216,.1)}
+  .card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:8px}
+  .score{min-width:36px;height:36px;border-radius:8px;background:#dbeafe;color:#1d4ed8;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .score.high{background:#dcfce7;color:#16a34a}
+  .card-title{font-size:15px;font-weight:600;color:#1e293b;line-height:1.4;flex:1}
+  .card-title a{color:inherit;text-decoration:none}
+  .card-title a:hover{color:#1d4ed8;text-decoration:underline}
+  .card-meta{display:flex;gap:8px;align-items:center;font-size:12px;color:#94a3b8;margin-bottom:6px}
+  .source-badge{background:#f1f5f9;color:#475569;border-radius:4px;padding:2px 7px;font-weight:600}
+  .summary{font-size:13px;color:#475569;line-height:1.6;border-left:3px solid #bfdbfe;padding-left:10px;margin-top:6px}
+  footer{background:#1e3a8a;color:#93c5fd;font-size:12px;padding:7px 24px;display:flex;gap:24px;align-items:center}
+  .status-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;display:inline-block;margin-right:5px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>&#x1F535; AI News Monitor</h1>
+  <span>上次运行: 今天 08:00</span>
+  <button class="btn btn-outline">&#x2699; 管理关键词</button>
+  <button class="btn btn-run">&#x25B6; 立即运行</button>
+</header>
+
+<div class="body">
+  <aside>
+    <div class="section-title">关键词</div>
+    <div class="kw-item"><div class="kw-dot"></div>Claude Blog<span class="badge">25</span></div>
+    <div class="kw-item"><div class="kw-dot"></div>Anthropic AI<span class="badge red">15</span></div>
+    <div class="kw-item"><div class="kw-dot"></div>Dallas Mavericks<span class="badge">14</span></div>
+    <div class="kw-item active"><div class="kw-dot"></div>Manchester United<span class="badge">15</span></div>
+    <hr>
+    <div class="add-btn">+ 添加关键词</div>
+  </aside>
+
+  <main>
+    <div class="toolbar">
+      <h2>Manchester United <span style="font-weight:400;color:#94a3b8;font-size:13px">— 15 条新结果</span></h2>
+      <input class="search-box" placeholder="搜索标题...">
+      <button class="filter-btn active">全部</button>
+      <button class="filter-btn">Google News</button>
+      <button class="filter-btn">HackerNews</button>
+      <button class="filter-btn">按日期 &#x2193;</button>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-top">
+          <div class="score high">95</div>
+          <div class="card-title"><a href="#">Inside Man United summer transfer rebuild — Santos and Tielemans bolster midfield</a></div>
+        </div>
+        <div class="card-meta">
+          <span class="source-badge">Google News</span>
+          <span>The Athletic</span>
+          <span>• 2小时前</span>
+        </div>
+        <div class="summary">曼联本夏窗完成了多笔中场补强，签下了 Tielemans 和 Santos。文章详述了两笔交易背后的谈判细节和球队战术意图，曼联中场深度大幅提升。</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="score">90</div>
+          <div class="card-title"><a href="#">Transfer news LIVE: Man Utd, Arsenal, Liverpool latest deals and signings</a></div>
+        </div>
+        <div class="card-meta">
+          <span class="source-badge">Google News</span>
+          <span>Sky Sports</span>
+          <span>• 4小时前</span>
+        </div>
+        <div class="summary">实时转会动态追踪：曼联仍在关注多名中场球员，目标之一据报道要价约4500万英镑。球队技术主管正与多家经纪人接洽。</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="score">85</div>
+          <div class="card-title"><a href="#">Benjamin Sesko targeted for transfer as Man United brace for potential problem</a></div>
+        </div>
+        <div class="card-meta">
+          <span class="source-badge">Google News</span>
+          <span>Goal.com</span>
+          <span>• 6小时前</span>
+        </div>
+        <div class="summary">曼联被报道对莱比锡前锋 Sesko 表现出兴趣，但其高昂身价和竞争对手的存在使谈判充满挑战。</div>
+      </div>
+
+      <div class="card" style="opacity:.5">
+        <div class="card-top">
+          <div class="score">80</div>
+          <div class="card-title">Man United eye one more signing despite double transfer boost</div>
+        </div>
+        <div class="card-meta"><span class="source-badge">HackerNews</span><span>• 8小时前</span></div>
+        <div class="summary" style="color:#b0b8c5">摘要内容（更多卡片向下滚动）...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<footer>
+  <span><span class="status-dot"></span>运行状态正常</span>
+  <span>|</span>
+  <span>今日新增: 54 条</span>
+  <span>|</span>
+  <span>总计: 1,234 条</span>
+  <span>|</span>
+  <span>Supabase 已连接</span>
+</footer>
+
+</body>
+</html>

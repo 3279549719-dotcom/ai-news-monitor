@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe Coder 指南 · 工具 vs 上下文</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f7f5f2;
+            color: #1e1e1e;
+            padding: 2rem 1.5rem;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.05);
+        }
+        h1 {
+            font-size: 2.4rem;
+            font-weight: 650;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .badge {
+            font-size: 0.9rem;
+            background: #e8e4e0;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-weight: 450;
+            color: #3d3a36;
+        }
+        .subhead {
+            font-size: 1.1rem;
+            color: #5b5650;
+            margin-bottom: 2.5rem;
+            border-left: 4px solid #d0c8c0;
+            padding-left: 1.2rem;
+            background: #faf8f6;
+            border-radius: 0 12px 12px 0;
+            padding: 0.8rem 1.2rem;
+        }
+        .subhead strong {
+            color: #1e1e1e;
+            font-weight: 600;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0 2.5rem 0;
+        }
+        @media (max-width: 680px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            h1 {
+                font-size: 1.9rem;
+            }
+        }
+        .card {
+            background: #fcfcfa;
+            border-radius: 24px;
+            padding: 1.8rem 1.6rem;
+            border: 1px solid #ece8e2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: all 0.1s ease;
+        }
+        .card-tools {
+            border-top: 6px solid #3b7a7a;
+        }
+        .card-context {
+            border-top: 6px solid #b8834a;
+        }
+        .card h2 {
+            font-size: 1.7rem;
+            font-weight: 620;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.75rem;
+        }
+        .card h2 span {
+            font-size: 1.8rem;
+        }
+        .pill {
+            font-size: 0.75rem;
+            background: #ece8e2;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-weight: 500;
+            color: #3d3a36;
+            margin-left: 6px;
+        }
+        .divider-light {
+            height: 1px;
+            background: #e8e2da;
+            margin: 1.2rem 0 1.5rem 0;
+        }
+        .principle {
+            background: #f5f2ed;
+            padding: 0.8rem 1.2rem;
+            border-radius: 16px;
+            margin: 1rem 0 1.2rem 0;
+            font-weight: 460;
+            border-left: 4px solid #b0a89e;
+        }
+        .principle strong {
+            color: #1e1e1e;
+        }
+        .bullet-list {
+            list-style: none;
+            padding: 0;
+        }
+        .bullet-list li {
+            padding: 0.6rem 0 0.6rem 1.8rem;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%235b5650" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>') left center no-repeat;
+            background-size: 18px;
+        }
+        .highlight-box {
+            background: #f0ede8;
+            border-radius: 18px;
+            padding: 1.2rem 1.6rem;
+            margin: 1.8rem 0 1rem 0;
+            border: 1px dashed #b8aea2;
+        }
+        .highlight-box p {
+            margin-bottom: 0.2rem;
+        }
+        .highlight-box .quote {
+            font-style: italic;
+            color: #3d3a36;
+            font-size: 0.98rem;
+        }
+        .emoji-big {
+            font-size: 2.2rem;
+            line-height: 1;
+            margin-right: 6px;
+        }
+        .footnote {
+            margin-top: 2.8rem;
+            padding-top: 1.8rem;
+            border-top: 1px solid #e0d8d0;
+            font-size: 0.95rem;
+            color: #5b5650;
+            background: #faf8f6;
+            border-radius: 20px;
+            padding: 1.8rem 2rem;
+        }
+        .footnote strong {
+            color: #1e1e1e;
+        }
+        .tag {
+            display: inline-block;
+            background: #d9d2c8;
+            padding: 0.1rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 550;
+            letter-spacing: 0.02em;
+            color: #2d2a26;
+            margin-right: 4px;
+        }
+        .inline-code {
+            background: #ece8e2;
+            padding: 0.1rem 0.5rem;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 0.85rem;
+            color: #2d2a26;
+        }
+        .comparison-table {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin: 1.2rem 0;
+        }
+        .comparison-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #eee8e0;
+        }
+        .comparison-row .label {
+            min-width: 80px;
+            font-weight: 550;
+            color: #3d3a36;
+        }
+        .comparison-row .desc {
+            color: #3d3a36;
+        }
+        @media (max-width: 500px) {
+            .comparison-row {
+                flex-direction: column;
+                gap: 2px;
+                padding-bottom: 0.8rem;
+            }
+            .comparison-row .label {
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        🧰 工具 vs 📋 上下文
+        <span class="badge">Vibe Coder 版</span>
+    </h1>
+    <div class="subhead">
+        <strong>“工具是手，上下文是大脑的工作台”</strong> —— 用 Claude 官方原话拆解这两个概念，让你写代码时不再迷糊。
+    </div>
+
+    <!-- 核心卡片 2列 -->
+    <div class="grid-2">
+        <!-- 工具卡片 -->
+        <div class="card card-tools">
+            <h2>
+                <span>🔧</span> 工具 <span class="pill">Tools</span>
+            </h2>
+            <p style="color: #3d3a36; margin-bottom: 0.6rem; font-weight: 450;">
+                <span style="background: #dce8e5; padding: 0.1rem 0.6rem; border-radius: 30px;">让 Agent 动起来的能力</span>
+            </p>
+            <div class="principle">
+                💡 <strong>“10 个聚焦工具胜过 50 个重叠工具”</strong><br>
+                <span style="font-size: 0.95rem; color: #4a4540;">给 agent 一个 <span class="inline-code">bash</span> 常常比预建一堆工具更好。</span>
+            </div>
+            <ul class="bullet-list" style="margin: 0.8rem 0 0.2rem 0;">
+                <li><strong>文件系统</strong> — 最基础的持久化原语。读写文件、创建目录、移动数据。</li>
+                <li><strong>Bash / Shell</strong> — 万能遥控器。安装依赖、运行脚本、管理进程。</li>
+                <li><strong>代码执行器</strong> — 运行测试、执行代码片段、验证逻辑。</li>
+                <li><strong>搜索 / grep</strong> — 在代码库中快速定位，比遍历文件夹高效得多。</li>
+            </ul>
+            <div style="margin-top: 1rem; background: #f2f0ec; border-radius: 14px; padding: 0.8rem 1.2rem;">
+                <p style="font-size: 0.9rem; margin: 0; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="tag">🎯 聚焦</span>
+                    <span class="tag">⚡ 直接</span>
+                    <span class="tag">🧩 少而精</span>
+                </p>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #3d3a36;">
+                    ⚠️ 不是 MCP、不是 Skill、不是浏览器插件 —— 它们是 <strong>agent 可以直接调用的“动作”</strong>。
+                </p>
+            </div>
+        </div>
+
+        <!-- 上下文管理卡片 -->
+        <div class="card card-context">
+            <h2>
+                <span>📋</span> 上下文管理 <span class="pill">Context Mgmt</span>
+            </h2>
+            <p style="color: #3d3a36; margin-bottom: 0.6rem; font-weight: 450;">
+                <span style="background: #e8ddd0; padding: 0.1rem 0.6rem; border-radius: 30px;">让 Agent 记住该记住的</span>
+            </p>
+            <div class="principle">
+                💡 <strong>“Compaction ≠ 够用”</strong><br>
+                <span style="font-size: 0.95rem; color: #4a4540;">长任务真正需要 <span class="inline-code">Context Reset</span>：清空窗口 + 靠结构化交接文件重建。</span>
+            </div>
+            <ul class="bullet-list" style="margin: 0.8rem 0 0.2rem 0;">
+                <li><strong>Compaction（就地总结）</strong> — 压缩历史对话，但 agent 仍带着“旧包袱”，容易焦虑。</li>
+                <li><strong>Context Reset（重置）</strong> — 彻底清空，用交接文件（handoff artifact）把状态传给下一个 agent。</li>
+                <li><strong>Skills 渐进式披露</strong> — 按需加载，不让 agent 一开始就吞下整个说明书。</li>
+                <li><strong>结构化交接</strong> — 把“当前进度 + 下一步计划”写进文件，让新 agent 无缝接盘。</li>
+            </ul>
+            <div style="margin-top: 1rem; background: #f2eee8; border-radius: 14px; padding: 0.8rem 1.2rem;">
+                <p style="font-size: 0.9rem; margin: 0; display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="tag">🧠 记忆</span>
+                    <span class="tag">🔄 重置</span>
+                    <span class="tag">📦 交接</span>
+                </p>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.95rem; color: #3d3a36;">
+                    ⚠️ 不是工具、不是代码逻辑 —— 它是 <strong>agent 的“工作记忆管理策略”</strong>。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 深度对比：工具 vs 上下文 -->
+    <div style="margin: 1.8rem 0 1.8rem 0;">
+        <h3 style="font-size: 1.4rem; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 0.2rem;">
+            ⚖️ 它们到底有什么区别？
+        </h3>
+        <p style="color: #5b5650; margin-bottom: 1.2rem;">用一个比喻帮你刻进脑子：</p>
+        <div style="background: #f5f2ed; border-radius: 24px; padding: 1.6rem 1.8rem; border: 1px solid #e0d8d0;">
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem 4rem; justify-content: center;">
+                <div style="flex: 1; min-width: 180px;">
+                    <div style="font-size: 2.8rem; text-align: center;">🔧</div>
+                    <div style="font-weight: 650; font-size: 1.2rem; text-align: center;">工具 = 双手</div>
+                    <ul style="list-style: none; padding: 0; margin-top: 0.5rem; text-align: center;">
+                        <li style="padding: 0.15rem 0;">✋ 执行动作</li>
+                        <li style="padding: 0.15rem 0;">📂 操作文件</li>
+                        <li style="padding: 0.15rem 0;">⚙️ 运行命令</li>
+                        <li style="padding: 0.15rem 0;">🔍 搜索代码</li>
+                    </ul>
+                </div>
+                <div style="flex: 1; min-width: 180px;">
+                    <div style="font-size: 2.8rem; text-align: center;">🧠</div>
+                    <div style="font-weight: 650; font-size: 1.2rem; text-align: center;">上下文 = 工作台</div>
+                    <ul style="list-style: none; padding: 0; margin-top: 0.5rem; text-align: center;">
+                        <li style="padding: 0.15rem 0;">📋 记住什么</li>
+                        <li style="padding: 0.15rem 0;">🧹 清理什么</li>
+                        <li style="padding: 0.15rem 0;">📦 交接什么</li>
+                        <li style="padding: 0.15rem 0;">📖 按需加载什么</li>
+                    </ul>
+                </div>
+            </div>
+            <div style="margin-top: 1.2rem; border-top: 1px solid #d5cdc2; padding-top: 1.2rem; text-align: center; font-size: 0.95rem; color: #3d3a36;">
+                <span style="background: #d9d2c8; padding: 0.1rem 1rem; border-radius: 40px;">工具是“能力”，上下文是“状态管理”</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 官方原话解读 -->
+    <div class="highlight-box">
+        <p style="font-weight: 600; display: flex; gap: 8px; align-items: center; margin-bottom: 0.2rem;">
+            <span style="font-size: 1.4rem;">📄</span> 来自 Anthropic 官方原话解读
+        </p>
+        <div class="quote">
+            <p style="margin-bottom: 0.6rem;">🗣️ <strong>“文件系统是最基础的持久化原语。”</strong></p>
+            <p style="margin-bottom: 0.6rem; padding-left: 1rem; border-left: 3px solid #b0a89e;">→ 工具层：agent 通过读写文件来保存进度、传递数据，这是最原始也最可靠的方式。</p>
+            <p style="margin-bottom: 0.6rem;">🗣️ <strong>“10 个聚焦工具胜过 50 个重叠工具” + “给 agent 一个 bash 常常比预建一堆工具更好”</strong></p>
+            <p style="margin-bottom: 0.6rem; padding-left: 1rem; border-left: 3px solid #b0a89e;">→ 工具设计原则：少而精，通用工具（如 bash）能覆盖大量场景，避免把简单的事搞复杂。</p>
+            <p style="margin-bottom: 0.6rem;">🗣️ <strong>“Compaction ≠ 够用。长任务真正需要 Context Reset：清空窗口 + 靠结构化交接文件重建。” + “Skills 的渐进式披露 = 按需加载”</strong></p>
+            <p style="padding-left: 1rem; border-left: 3px solid #b0a89e;">→ 上下文管理：不仅仅是压缩对话，而是要有策略地重置和交接，让 agent 每次起步都清醒。Skills 按需加载避免了“信息过载”。</p>
+        </div>
+    </div>
+
+    <!-- 简单对照表 -->
+    <div style="margin: 2rem 0 0.5rem 0;">
+        <h4 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.8rem;">📌 一句话总结</h4>
+        <div class="comparison-table">
+            <div class="comparison-row">
+                <div class="label">工具 (Tools)</div>
+                <div class="desc">让 agent <strong>做</strong> 事情 —— 读文件、写代码、运行测试、搜索。</div>
+            </div>
+            <div class="comparison-row">
+                <div class="label">上下文管理</div>
+                <div class="desc">让 agent <strong>知道</strong> 自己在哪、该干什么、之前发生了什么 —— 通过重置、交接、按需加载。</div>
+            </div>
+            <div class="comparison-row" style="border-bottom: none;">
+                <div class="label">它们的关系</div>
+                <div class="desc">工具负责“干活”，上下文负责“保持清醒”。<br>没有工具，agent 是空想家；没有上下文管理，agent 是健忘的苦力。</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 结尾 -->
+    <div class="footnote">
+        <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.3rem;">🎯 给 Vibe Coder 的最终提示</p>
+        <p style="margin-bottom: 0.4rem;">
+            <strong>不要混淆：</strong> 
+            <span style="background: #dce8e5; padding: 0.1rem 0.6rem; border-radius: 30px;">工具 = 动作</span> 
+            <span style="background: #e8ddd0; padding: 0.1rem 0.6rem; border-radius: 30px;">上下文 = 记忆策略</span>
+        </p>
+        <p style="margin-bottom: 0.2rem;">
+            MCP、Skill、浏览器插件 这些是 <strong>工具的具体实现</strong> 或 <strong>工具的载体</strong>，但“工具”这个概念本身，指的是 agent 能调用的任何能力单元。
+            而上下文管理，是让 agent 在长任务中 <strong>不迷路、不焦虑、不断片</strong> 的方法论。
+        </p>
+        <p style="margin-top: 0.8rem; color: #3d3a36; font-size: 0.9rem;">
+            💬 来自 Anthropic 工程师的实践：<em>“Harness 设计，既选对工具，也管好上下文——两者缺一不可。”</em>
+        </p>
+    </div>
+</div>
+</body>
+</html>

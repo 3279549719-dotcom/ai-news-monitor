@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>曼联资讯聚合 — 板块布局原型</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: #F3F4F6;
+    color: #111827;
+    padding: 24px 32px 48px;
+  }
+  .page-head { max-width: 1400px; margin: 0 auto 20px; display: flex; align-items: center; gap: 16px; }
+  .logo { width: 40px; height: 40px; border-radius: 10px; background: #DC2626; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 18px; }
+  .title h1 { font-size: 22px; font-weight: 700; }
+  .title p { font-size: 13px; color: #6B7280; margin-top: 2px; }
+
+  .toolbar {
+    max-width: 1400px; margin: 0 auto 24px; display: flex; gap: 12px; flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 8px 18px; border-radius: 999px; border: 1.5px solid #E5E7EB; background: #fff;
+    font-size: 14px; color: #374151; cursor: pointer; display: flex; align-items: center; gap: 6px;
+  }
+  .filter-btn.active { border-color: #2563EB; color: #2563EB; background: #EFF6FF; font-weight: 600; }
+  .filter-btn .arrow { font-size: 10px; opacity: .7; }
+
+  .grid {
+    max-width: 1400px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .board {
+    background: #fff; border-radius: 14px; padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  }
+  .board.official { border: 2px solid #DC2626; box-shadow: 0 1px 3px rgba(220,38,38,.12), 0 4px 16px rgba(220,38,38,.08); }
+  .board-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .board-emoji { font-size: 16px; }
+  .board-name { font-size: 15px; font-weight: 700; }
+  .board-tag {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600;
+  }
+  .tag-pin { background: #DC2626; color: #fff; }
+  .tag-core { background: #FEF3C7; color: #92400E; }
+  .tag-normal { background: #EFF6FF; color: #2563EB; }
+  .board-more { margin-left: auto; font-size: 12px; color: #2563EB; cursor: pointer; }
+
+  .card {
+    border: 1px solid #F3F4F6; border-radius: 10px; padding: 12px; margin-bottom: 10px;
+    background: #FAFBFC; transition: box-shadow .15s;
+  }
+  .card:last-child { margin-bottom: 0; }
+  .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  .meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #9CA3AF; margin-bottom: 6px; }
+  .tier-badge {
+    font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; color: #fff;
+  }
+  .t0 { background: #DC2626; }
+  .t1 { background: #F59E0B; }
+  .t2 { background: #2563EB; }
+  .meta .src { color: #4B5563; font-weight: 500; }
+  .card-title { font-size: 14px; font-weight: 600; line-height: 1.45; margin-bottom: 6px; }
+  .card-summary { font-size: 12px; color: #6B7280; line-height: 1.6; margin-bottom: 8px; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; }
+  .cat-tag { font-size: 11px; padding: 3px 10px; border-radius: 999px; background: #EFF6FF; color: #2563EB; font-weight: 600; }
+  .card-link { font-size: 11px; color: #2563EB; text-decoration: none; }
+  .card-link:hover { text-decoration: underline; }
+
+  .board.overview .stat-row { display: flex; gap: 10px; }
+  .stat { flex: 1; background: #FAFBFC; border-radius: 10px; padding: 14px 10px; text-align: center; border: 1px solid #F3F4F6; }
+  .stat .num { font-size: 24px; font-weight: 800; color: #111827; }
+  .stat .num.blue { color: #2563EB; }
+  .stat .num.red { color: #DC2626; }
+  .stat .lbl { font-size: 11px; color: #6B7280; margin-top: 4px; }
+  .overview-note { font-size: 12px; color: #6B7280; margin-top: 14px; line-height: 1.7; background: #F9FAFB; border-radius: 10px; padding: 10px 12px; }
+  .overview-note b { color: #111827; }
+  .foot-note { max-width: 1400px; margin: 24px auto 0; font-size: 12px; color: #9CA3AF; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <div class="logo">MU</div>
+  <div class="title">
+    <h1>Manchester United 资讯聚合</h1>
+    <p>白名单信源 · AI 评分 · Tier 可信度分级</p>
+  </div>
+</div>
+
+<div class="toolbar">
+  <div class="filter-btn active">Tier 筛选 <span class="arrow">▾</span></div>
+  <div class="filter-btn">搜索 <span class="arrow">⌕</span></div>
+  <div class="filter-btn">时间范围 <span class="arrow">▾</span></div>
+  <div class="filter-btn">排序 <span class="arrow">▾</span></div>
+</div>
+
+<div class="grid">
+
+  <!-- 板块1：官方公告（Tier0 置顶） -->
+  <div class="board official">
+    <div class="board-head">
+      <span class="board-emoji">🔴</span>
+      <span class="board-name">官方公告</span>
+      <span class="board-tag tag-pin">置顶 Tier0</span>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">Man Utd Official</span><span class="tier-badge t0">T0</span><span>2026-08-03</span></div>
+      <div class="card-title">曼联 2026 夏季转会窗口正式开启</div>
+      <div class="card-summary">俱乐部官方确认 2026 夏季转会窗口于今日开启，引援与离队交易即刻生效，青训外租同步开放。</div>
+      <div class="card-foot"><span class="cat-tag">官方通知</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">Man Utd Official</span><span class="tier-badge t0">T0</span><span>2026-08-01</span></div>
+      <div class="card-title">俱乐部声明：关于新赛季球票价格政策</div>
+      <div class="card-summary">董事会确认 2026/27 赛季成人票价维持不变，青训会员与老年球迷折扣扩大 10%。</div>
+      <div class="card-foot"><span class="cat-tag">官方通知</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+  </div>
+
+  <!-- 板块2：转会&合同动态 -->
+  <div class="board">
+    <div class="board-head">
+      <span class="board-emoji">🟡</span>
+      <span class="board-name">转会 &amp; 合同动态</span>
+      <span class="board-tag tag-core">核心情报</span>
+      <span class="board-more">更多 ›</span>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">Sky Sports</span><span class="tier-badge t2">T2</span><span>2026-08-03</span></div>
+      <div class="card-title">曼联与乌加特经纪人重启谈判，个人条款接近达成</div>
+      <div class="card-summary">天空体育获悉，曼联已就 5500 万欧元转会费与巴黎圣日耳曼达成初步共识，目前聚焦球员个人条款。</div>
+      <div class="card-foot"><span class="cat-tag">转会动态</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">ESPN</span><span class="tier-badge t2">T2</span><span>2026-08-02</span></div>
+      <div class="card-title">拉什福德续约谈判进入最终阶段</div>
+      <div class="card-summary">多方信源交叉印证，续约报价已提交，周薪 32.5 万英镑，预计下周内完成签约。</div>
+      <div class="card-foot"><span class="cat-tag">续约谈判</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+  </div>
+
+  <!-- 板块3：伤病&停赛 -->
+  <div class="board">
+    <div class="board-head">
+      <span class="board-emoji">🏥</span>
+      <span class="board-name">伤病 &amp; 停赛</span>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">Man Utd Official</span><span class="tier-badge t0">T0</span><span>2026-08-03</span></div>
+      <div class="card-title">马奎尔肌肉拉伤，预计缺席两周</div>
+      <div class="card-summary">队医组确认左腿腘绳肌一级拉伤，将缺席季前赛收官阶段，目标赶在英超揭幕战前复出。</div>
+      <div class="card-foot"><span class="cat-tag">伤病更新</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">ESPN</span><span class="tier-badge t2">T2</span><span>2026-08-01</span></div>
+      <div class="card-title">梅努恢复合练，回归时间表确认</div>
+      <div class="card-summary">梅努已参加完整合练，预计下周对阵里昂的热身赛进入替补名单。</div>
+      <div class="card-foot"><span class="cat-tag">恢复训练</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+  </div>
+
+  <!-- 板块4：管理层&教练组 -->
+  <div class="board">
+    <div class="board-head">
+      <span class="board-emoji">🏛️</span>
+      <span class="board-name">管理层 · 教练组 · 更衣室</span>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">Sky Sports</span><span class="tier-badge t2">T2</span><span>2026-08-02</span></div>
+      <div class="card-title">拉特克利夫：青训体系将获得优先投资</div>
+      <div class="card-summary">英力士集团在球迷论坛确认，未来两个转会窗预算优先用于青训设施升级与一线队补强平衡。</div>
+      <div class="card-foot"><span class="cat-tag">高层决策</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">ESPN</span><span class="tier-badge t2">T2</span><span>2026-08-01</span></div>
+      <div class="card-title">滕哈格教练组新赛季分工调整</div>
+      <div class="card-summary">定位球教练增配一名助理，专注提升上赛季定位球防守短板。</div>
+      <div class="card-foot"><span class="cat-tag">教练组动态</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+  </div>
+
+  <!-- 板块5：赛事竞技资讯 -->
+  <div class="board">
+    <div class="board-head">
+      <span class="board-emoji">⚽</span>
+      <span class="board-name">赛事竞技资讯</span>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">ESPN</span><span class="tier-badge t2">T2</span><span>2026-08-03</span></div>
+      <div class="card-title">季前赛：曼联 3-1 逆转马德里竞技</div>
+      <div class="card-summary">姆贝乌莫梅开二度，B费补时点球锁定胜局，新援首秀表现亮眼。</div>
+      <div class="card-foot"><span class="cat-tag">比赛战报</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+    <div class="card">
+      <div class="meta"><span class="src">Sky Sports</span><span class="tier-badge t2">T2</span><span>2026-08-02</span></div>
+      <div class="card-title">滕哈格赛前发布会：新赛季阵型构想</div>
+      <div class="card-summary">主帅确认将延续 4-2-3-1 体系，边锋内收战术为今夏重点演练内容。</div>
+      <div class="card-foot"><span class="cat-tag">赛前发布会</span><a class="card-link" href="#">原始链接 ↗</a></div>
+    </div>
+  </div>
+
+  <!-- 右侧概览卡（替代原折叠面板，静态统计） -->
+  <div class="board overview">
+    <div class="board-head">
+      <span class="board-emoji">📊</span>
+      <span class="board-name">今日概览</span>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num">12</div><div class="lbl">今日新增</div></div>
+      <div class="stat"><div class="num blue">7</div><div class="lbl">高置信</div></div>
+      <div class="stat"><div class="num red">1</div><div class="lbl">待核实</div></div>
+    </div>
+    <div class="overview-note">
+      <b>⚠ 冲突提示：</b>关于乌加特转会费，Sky Sports（5500万欧）与 90min（4800万欧）存在分歧，以官方公告为准。
+    </div>
+  </div>
+
+</div>
+
+<div class="foot-note">示例数据，仅用于布局确认 · 原型 v0.1 · 2026-08-03</div>
+
+</body>
+</html>

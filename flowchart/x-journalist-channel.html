@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>X 记者链路 · 改造设计</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --ink: #1f2a44;
+    --muted: #6b7a99;
+    --brand: #4f46e5;
+    --brand-soft: #eef0ff;
+    --line: #e3e7f0;
+    --card: #ffffff;
+    --amber: #f59e0b;
+    --sky: #0ea5e9;
+    --emerald: #10b981;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 48px 20px 72px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+
+  .hero { text-align: center; margin-bottom: 40px; }
+  .hero .tag {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--brand);
+    background: var(--brand-soft);
+    border: 1px solid #dbe1ff;
+    border-radius: 999px;
+    padding: 5px 14px;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: .01em;
+    background: linear-gradient(120deg, #312e81, #4f46e5 55%, #7c3aed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p { margin-top: 10px; font-size: 16px; color: var(--muted); }
+
+  .phases { display: flex; gap: 12px; justify-content: center; margin-bottom: 34px; }
+  .phase-chip {
+    flex: 1; max-width: 210px; text-align: center;
+    font-size: 13px; font-weight: 600;
+    padding: 10px 8px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--card);
+  }
+  .phase-chip .n { font-weight: 700; margin-right: 6px; }
+  .phase-chip.cfg .n { color: var(--amber); }
+  .phase-chip.run .n { color: var(--sky); }
+  .phase-chip.out .n { color: var(--emerald); }
+
+  .flow { position: relative; padding-left: 34px; }
+  .flow::before {
+    content: "";
+    position: absolute;
+    left: 15px; top: 18px; bottom: 18px;
+    width: 2px;
+    background: linear-gradient(var(--amber), var(--sky) 45%, var(--emerald));
+    opacity: .35;
+  }
+
+  .step { position: relative; margin-bottom: 22px; }
+  .step .dot {
+    position: absolute; left: -34px; top: 20px;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    background: var(--card); border: 2px solid var(--line);
+    box-shadow: 0 1px 3px rgba(31,42,68,.08);
+    z-index: 1;
+  }
+  .step.cfg .dot { border-color: #fcd9a8; }
+  .step.run .dot { border-color: #b7dffa; }
+  .step.out  .dot { border-color: #b5ead6; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 22px;
+    box-shadow: 0 1px 2px rgba(31,42,68,.04), 0 6px 18px rgba(31,42,68,.05);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(31,42,68,.06), 0 12px 28px rgba(31,42,68,.10);
+  }
+  .card h3 {
+    font-size: 16px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card h3 .ico { font-size: 18px; }
+  .card .num {
+    font-size: 12px; font-weight: 700; color: #fff;
+    border-radius: 6px; padding: 1px 7px; margin-left: auto;
+  }
+  .step.cfg .num { background: var(--amber); }
+  .step.run .num { background: var(--sky); }
+  .step.out  .num { background: var(--emerald); }
+  .card p { margin-top: 8px; font-size: 14px; line-height: 1.7; color: var(--muted); }
+  .card code {
+    font-family: "Cascadia Code", Consolas, monospace;
+    font-size: 12.5px;
+    background: var(--brand-soft);
+    color: var(--brand);
+    padding: 1px 5px; border-radius: 4px;
+  }
+  .card strong { color: var(--ink); }
+  .chip {
+    display: inline-block;
+    font-size: 12px; font-weight: 600;
+    background: var(--brand-soft); color: var(--brand);
+    border: 1px solid #dbe1ff;
+    border-radius: 999px;
+    padding: 3px 10px; margin: 2px 4px 2px 0;
+  }
+  .chip.new { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+
+  /* 降级链 */
+  .degrade {
+    margin-top: 36px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 22px;
+  }
+  .degrade-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--ink); }
+  .chain {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .node {
+    font-size: 13px; font-weight: 600;
+    background: var(--brand-soft); color: var(--brand);
+    border: 1px solid #dbe1ff; border-radius: 8px;
+    padding: 7px 14px;
+  }
+  .chain .arrow { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .degrade-note { margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+
+  .values {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .value {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+  }
+  .value .ico { font-size: 24px; }
+  .value h4 { font-size: 14px; margin-top: 8px; }
+  .value p { font-size: 12.5px; color: var(--muted); margin-top: 5px; line-height: 1.6; }
+
+  .foot { margin-top: 36px; text-align: center; font-size: 12px; color: #9aa6bf; }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 24px; }
+    .phases { flex-direction: column; align-items: stretch; }
+    .phase-chip { max-width: none; }
+    .values { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="hero">
+      <span class="tag">内部设计 · 2026-08-07</span>
+      <h1>X 记者链路 · 改造设计</h1>
+      <p>曼联 X 记者原帖推文直接进 feed —— Ornstein · Stone · Whitwell · Mitten</p>
+    </div>
+
+    <div class="phases">
+      <div class="phase-chip cfg"><span class="n">①</span>配置</div>
+      <div class="phase-chip run"><span class="n">②</span>抓取</div>
+      <div class="phase-chip run"><span class="n">③</span>甄别</div>
+      <div class="phase-chip out"><span class="n">④</span>产出</div>
+    </div>
+
+    <div class="flow">
+
+      <div class="step cfg">
+        <div class="dot">🔑</div>
+        <div class="card">
+          <h3><span class="ico">🔐</span>凭证与小号<span class="num">配置 1</span></h3>
+          <p>X 凭证注入 <code>.env</code>：优先 cookie（<code>X_AUTH_TOKEN</code> + <code>X_CT0</code>），后备账号密码（<code>X_USERNAME</code> / <code>X_PASSWORD</code>）。<strong>用低调小号，不用主号</strong>（登录爬取有封号风险）；保持日频一次。</p>
+        </div>
+      </div>
+
+      <div class="step cfg">
+        <div class="dot">📋</div>
+        <div class="card">
+          <h3><span class="ico">🗞️</span>记者名单 · 4 个 T1 账号<span class="num">配置 2</span></h3>
+          <p><span class="chip">David Ornstein</span><span class="chip">Simon Stone</span><span class="chip new">Laurie Whitwell · 新增</span><span class="chip new">Andy Mitten · 新增</span></p>
+          <p>新增两个走 Supabase <code>keyword_sources</code> 一行记录（tier=1），不动代码。旧 t.co 短链提取被替换为推文卡。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">📡</div>
+        <div class="card">
+          <h3><span class="ico">🐍</span>twikit 主通道抓取<span class="num">抓取 1</span></h3>
+          <p>宿主 Python venv → <code>scripts/x-fetch-tweets.py</code>（~40 行，读 .env 凭证）→ <code>get_user_tweets()</code> 返回<strong>结构化 JSON</strong>：正文 / 绝对发推时间 / 状态 ID。用维护中 fork <code>twifork</code>（上游 twikit 已坏）。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">🛟</div>
+        <div class="card">
+          <h3><span class="ico">📦</span>crawl4ai 兜底通道<span class="num">抓取 2</span></h3>
+          <p>twikit 失败（会话过期 / 被封 / 依赖缺失）→ 回退 crawl4ai guest 抓账号页 → markdown 解析推文卡（状态链接 + 正文 + 雪花 ID 解码时间）。两者都失败 → <strong>跳过该源，不降级 Direct</strong>。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">🃏</div>
+        <div class="card">
+          <h3><span class="ico">💬</span>推文卡解析<span class="num">抓取 3</span></h3>
+          <p>每条推文 = 一张卡：<strong>标题 = 推文正文</strong>（≤280 字符）、<strong>主链 = 原推状态链接</strong>、<strong>时间 = 真实发推时刻</strong>。纯文字爆料（无文章链接）不再漏。</p>
+        </div>
+      </div>
+
+      <div class="step run">
+        <div class="dot">🧠</div>
+        <div class="card">
+          <h3><span class="ico">⚖️</span>预过滤 + AI 评分<span class="num">甄别</span></h3>
+          <p>推文专用<strong>收紧词根</strong>预过滤（manchester / mufc / 红魔 / 球员名…）→ DeepSeek 评分 <strong>≥60 入库</strong>。别队消息（West Ham / Baleba…）score &lt;60 照旧过滤，不误入库。</p>
+        </div>
+      </div>
+
+      <div class="step out">
+        <div class="dot">📊</div>
+        <div class="card">
+          <h3><span class="ico">🗃️</span>入库与前端<span class="num">产出</span></h3>
+          <p>状态 URL 天然唯一 → <strong>URL 去重生效</strong>（裸 t.co 短链问题消失）；多记者同事件走现有交叉验证。前端 T1 推文卡按真实发推时间排序，30 天窗口正常命中。</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="degrade">
+      <div class="degrade-title">🛟 降级链</div>
+      <div class="chain">
+        <div class="node">twikit</div>
+        <span class="arrow">→ 失败</span>
+        <div class="node">crawl4ai guest</div>
+        <span class="arrow">→ 0 条</span>
+        <div class="node">跳过该源</div>
+      </div>
+      <p class="degrade-note">全程不阻塞管线其余信源；X 源不降级 Direct。</p>
+    </div>
+
+    <div class="values">
+      <div class="value"><div class="ico">⚡</div><h4>不漏</h4><p>纯文字爆料也能进 feed</p></div>
+      <div class="value"><div class="ico">🛡️</div><h4>稳</h4><p>twikit 主 + crawl4ai 双通道兜底</p></div>
+      <div class="value"><div class="ico">🧹</div><h4>净</h4><p>别队消息照旧过滤</p></div>
+    </div>
+
+    <div class="foot">X 记者链路 · 改造设计 · 2026-08-07</div>
+  </div>
+</body>
+</html>
