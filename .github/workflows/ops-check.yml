@@ -1,14 +1,12 @@
 name: Ops Check
 
-# 每日运维巡检 — GitHub Actions 免费额度足够跑
-#   · 每日两次：08:00 UTC（北京 16:00）和 16:00 UTC（北京 00:00）
-#   · 手动触发：Actions 页面 → Run workflow
-#   · Copilot AI 诊断：失败时 Issue body 含 @copilot 指令自动触发分析
-
 on:
   schedule:
     - cron: '0 8,16 * * *'
   workflow_dispatch:
+
+permissions:
+  issues: write
 
 jobs:
   ops-check:
@@ -30,7 +28,7 @@ jobs:
         run: node scripts/ops-check.js --actions
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: *** secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       - name: Upload result
         if: always()
         uses: actions/upload-artifact@v4
@@ -43,8 +41,6 @@ jobs:
     needs: ops-check
     if: failure()
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
     steps:
       - uses: actions/checkout@v4
       - name: Create issue on failure
