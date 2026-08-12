@@ -11,36 +11,27 @@
     "start": "node src/index.js",
     "run:cron": "cross-env CRON_SCHEDULE=\"0 8 * * *\" node src/index.js",
     "run:mu": "node scripts/run-mu-only.js",
-
     "dev": "npm run dev:client",
     "dev:client": "npm --prefix client run dev",
     "preview": "npm --prefix client run preview",
-
     "prebuild": "npm run type-check",
     "build": "npm run build:client",
     "build:client": "npm --prefix client run build",
-
     "test": "node --test \"src/*.test.js\" \"scripts/*.test.js\"",
     "test:watch": "node --test --watch \"src/*.test.js\"",
-
     "lint": "npm run lint:backend && npm run lint:client",
     "lint:backend": "node scripts/check-syntax.js",
     "lint:client": "npm --prefix client run lint",
-
     "format": "prettier --write \"src/**/*.js\" \"scripts/**/*.js\" \"client/src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.js\" \"scripts/**/*.js\" \"client/src/**/*.{ts,tsx}\"",
-
     "type-check": "npm --prefix client run type-check",
-
     "check": "npm run lint && npm run type-check && npm test",
     "commit": "node scripts/git-commit.js",
     "commit:push": "node scripts/git-commit.js --push --all",
-
     "ops:backfill": "node scripts/backfill-resummarize.js",
     "ops:dedup": "node scripts/dedup-existing.js",
     "ops:screenshot": "node scripts/screenshot-ui.js",
     "ops:quality": "node scripts/check-quality.js",
-
     "ops:run-auto": "node scripts/run-pipeline.js",
     "ops:auto-heal": "node scripts/auto-heal.js",
     "ops:stats": "node scripts/ops-stats.js",
@@ -51,9 +42,7 @@
     "ops:schedule": "node scripts/install-schedule.js",
     "ops:schedule:info": "node scripts/install-schedule.js --info",
     "ops:unschedule": "node scripts/install-schedule.js --remove",
-
     "serve": "npm run build:client && npm --prefix client run preview -- --host 127.0.0.1 --port 5173",
-
     "clean": "rimraf client/dist",
     "clean:all": "npm run clean && rimraf node_modules client/node_modules"
   },
@@ -62,7 +51,7 @@
     "axios": "^1.7.0",
     "cheerio": "^1.0.0",
     "dotenv": "^16.0.0",
-    "node-cron": "^3.0.0",
+    "node-cron": "^4.6.0",
     "nodemailer": "^9.0.5",
     "openai": "^4.0.0"
   },
@@ -70,6 +59,6 @@
     "cross-env": "^7.0.3",
     "playwright-core": "^1.62.1",
     "prettier": "^3.3.0",
-    "rimraf": "^5.0.0"
+    "rimraf": "^6.1.3"
   }
 }
