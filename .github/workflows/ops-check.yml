@@ -27,7 +27,7 @@ jobs:
         run: node scripts/ops-check.js --actions
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: *** secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
       - name: Upload result
         if: always()
         uses: actions/upload-artifact@v4
@@ -45,16 +45,16 @@ jobs:
       - name: Create issue on failure
         run: |
           cat > /tmp/issue_body.md << 'BODYEOF'
-## Ops Check Failed
+          ## Ops Check Failed
 
-Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
-@copilot Please analyze the ops-check failure. Read the ops-check-result artifact, locate all failed checks, analyze root causes, and post your diagnosis as a comment.
-BODYEOF
+          @copilot Please analyze the ops-check failure. Read the ops-check-result artifact, locate all failed checks, analyze root causes, and post your diagnosis as a comment.
+          BODYEOF
           gh issue create \
             --title "Ops Check Failed — Run ${{ github.run_id }}" \
             --body-file /tmp/issue_body.md \
             --label "ops,ai-diagnose" \
             --repo ${{ github.repository }}
         env:
-          GH_TOKEN: *** github.token }}
+          GH_TOKEN: ${{ github.token }}
