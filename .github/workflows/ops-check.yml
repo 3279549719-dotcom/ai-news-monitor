@@ -1,8 +1,8 @@
 name: Ops Check
 on:
-  workflow_dispatch:
   schedule:
     - cron: '0 8,16 * * *'
+  workflow_dispatch:
 
 permissions:
   issues: write
