@@ -213,7 +213,7 @@ function openLog() {
 }
 
 /** Run the real pipeline as a child, teeing output to console + log. */
-function runPipeline() {
+function runPipeline(startMs) {
   const log = openLog();
   log.write(`\n=== ${ts()} ===\n`);
   const child = spawn(process.execPath, ['src/index.js'], {
@@ -257,6 +257,7 @@ function runPipeline() {
     if (process.argv.includes('--json')) {
       outputJsonStatus(true, code ?? 0);
     }
+    logUsage(code === 0, Date.now() - (startMs || Date.now()), { exit_code: code });
     finishLog(code ?? 1, signal, null);
   });
 }
@@ -310,9 +311,18 @@ function outputJsonStatus(crawl4aiReady, exitCode) {
 if (require.main === module) {
   const isJson = process.argv.includes('--json');
   if (!isJson) console.log(`\n=== ai-news-monitor pipeline ${ts()} ===\n`);
+  const t0 = Date.now();
   ensureCrawl4ai();
-  runPipeline();
+  runPipeline(t0);
 } else {
   // Required as a module — export for programmatic use / testing
-  module.exports = { ensureCrawl4ai, dockerStart, checkCrawl4aiHealth, sendAlertEmail, writeStatusFile, parseArgs, healthCheckOutputPath, outputJsonStatus };
+  module.exports = { ensureCrawl4ai, dockerStart, checkCrawl4aiHealth, sendAlertEmail, writeStatusFile, parseArgs, healthCheckOutputPath, outputJsonStatus, logUsage };
+}
+
+/** 记录管线工具使用日志（静默降级）。 */
+function logUsage(success, durationMs, meta) {
+  try {
+    const { logToolUse } = require('../src/tools/usage-logger');
+    logToolUse({ tool: 'pipeline_run', trigger: 'pipeline', success, durationMs, meta });
+  } catch (e) { /* 日志失败不影响管线 */ }
 }

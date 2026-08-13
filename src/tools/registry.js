@@ -933,12 +933,27 @@ function getStats() {
   };
 }
 
-// 模块守卫：直接运行此文件时输出统计信息
+// 模块守卫：直接运行此文件时输出统计信息 + 与 tool-graph.json 的一致性校验（建议 6）
 if (require.main === module) {
   const stats = getStats();
   console.log('\n=== tools/registry.js — 工具注册表统计 ===\n');
   console.log(`总工具数: ${stats.total}`);
   console.log(`始终加载: ${stats.core} | 按需加载: ${stats.deferred}`);
+
+  // 一致性校验：registry 与 tool-graph.json 双源数据不同步时警告（不阻断）
+  try {
+    const { validateGraph } = require('./graph');
+    const v = validateGraph(REGISTRY);
+    if (!v.ok) {
+      console.warn('\n⚠️  tool-graph.json 与 registry 不同步：');
+      if (v.missingInGraph.length) console.warn(`   缺失于 tool-graph.json: ${v.missingInGraph.join(', ')}`);
+      if (v.missingInRegistry.length) console.warn(`   缺失于 registry.js: ${v.missingInRegistry.join(', ')}`);
+      console.warn('   请同步更新 src/tools/tool-graph.json 或 registry.js。\n');
+    } else {
+      console.log('  ✓ tool-graph.json 与 registry 工具名一致');
+    }
+  } catch (e) { /* graph 不可用时跳过校验 */ }
+
   console.log('\n按命名空间分布:');
   for (const [ns, count] of Object.entries(stats.byNamespace)) {
     const names = Object.values(REGISTRY)

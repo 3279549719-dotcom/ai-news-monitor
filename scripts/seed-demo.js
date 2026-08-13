@@ -1,6 +1,6 @@
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
-const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY);
+const { getDb } = require('./lib/common');
+const s = getDb();
 
 // 演示数据：给空板块补几条（仅用于前端效果验证，真实运行由 AI 分类产生）
 const demo = [

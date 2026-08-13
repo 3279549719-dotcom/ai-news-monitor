@@ -25,10 +25,12 @@ const { spawnSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 const AUTO_HEAL_PATH = path.join(ROOT, 'logs', '.auto-heal.json');
 
-/* ===== helpers ===== */
+/* ===== helpers（ts 改用共享 ops-common；带前缀的 log 保留本地） ===== */
+
+const { tsIso } = require('./lib/ops-common');
 
 function ts() {
-  return new Date().toISOString();
+  return tsIso(); // 行为不变：原实现就是 toISOString()
 }
 
 function log(msg) {

@@ -1,0 +1,101 @@
+{
+  "$comment": "tool-graph.json — 工具关系数据文件（数据驱动 hook + 工具链图）。与 src/tools/registry.js 的工具名一一对应。新增/修改工具时同步更新此文件。",
+  "$comment_triggers_on": "triggers_on: 文件变更匹配规则（glob 风格）。harness-check.js 读此表决定改哪些文件该触发哪个检查工具。规则用正则字符串表示。",
+  "$comment_suggest_next": "suggest_next: 基于返回值关键字段的下一步建议。字段 when = 条件描述（人读），if = 返回值匹配规则（代码读，简化的 key:value 包含匹配），then = 建议的工具名 + 原因。Phase 3 只建议不自动执行。",
+  "tools": {
+    "check_all": {
+      "triggers_on": ["^src/.*\\.js$", "^scripts/.*\\.js$", "^client/src/.*\\.(ts|tsx)$"],
+      "suggest_next": []
+    },
+    "check_test": {
+      "triggers_on": ["^src/.*\\.js$"],
+      "suggest_next": [
+        { "when": "测试失败", "if": { "passed": false }, "then": { "tool": "harness_diagnose", "reason": "测试失败，建议读取 harness 诊断定位失败用例" } }
+      ]
+    },
+    "check_syntax": {
+      "triggers_on": ["^src/.*\\.js$", "^scripts/.*\\.js$"],
+      "suggest_next": []
+    },
+    "check_type": {
+      "triggers_on": ["^client/src/.*\\.(ts|tsx)$"],
+      "suggest_next": []
+    },
+    "check_quality": {
+      "triggers_on": ["^reports/.*\\.md$"],
+      "suggest_next": [
+        { "when": "日报质量 FAIL", "if": { "passed": false }, "then": { "tool": "data_backfill", "reason": "质量验收未通过，建议回填重算问题文章摘要" } }
+      ]
+    },
+    "commit_git": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "提交成功但未推送", "if": { "pushed": false }, "then": { "tool": "pipeline_schedule", "reason": "可选：确认定时管线是否正常（勿自动推送，推送需用户授权）" } }
+      ]
+    },
+    "pipeline_run": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "crawl4ai 未就绪", "if": { "crawl4ai_ready": false }, "then": { "tool": "ops_check", "reason": "crawl4ai 不可用，建议巡检 Docker/容器健康" } },
+        { "when": "管线失败", "if": { "success": false }, "then": { "tool": "ops_check", "reason": "管线异常退出，建议巡检基础设施" } },
+        { "when": "管线成功", "if": { "success": true }, "then": { "tool": "check_quality", "reason": "管线完成，建议验收日报质量" } }
+      ]
+    },
+    "pipeline_schedule": {
+      "triggers_on": [],
+      "suggest_next": []
+    },
+    "pipeline_auto_heal": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "自愈失败", "if": { "healed": false }, "then": { "tool": "ops_check", "reason": "自动修复失败，建议人工诊断" } }
+      ]
+    },
+    "ops_check": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "容器不可达", "if": { "healthy": false }, "then": { "tool": "pipeline_auto_heal", "reason": "基础设施异常，建议尝试自动修复" } }
+      ]
+    },
+    "ops_screenshot": {
+      "triggers_on": ["^client/src/.*\\.(tsx|ts|css)$"],
+      "suggest_next": []
+    },
+    "ops_docker_restart": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "重启成功", "if": { "success": true }, "then": { "tool": "ops_check", "reason": "Docker 已重启，建议确认容器恢复健康" } }
+      ]
+    },
+    "data_backfill": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "回填完成", "if": { "processed": 0 }, "then": { "tool": "check_quality", "reason": "回填完成，建议重新验收日报质量" } }
+      ]
+    },
+    "data_dedup": {
+      "triggers_on": [],
+      "suggest_next": []
+    },
+    "seed_demo": {
+      "triggers_on": [],
+      "suggest_next": []
+    },
+    "update_sources": {
+      "triggers_on": ["^src/source-tiers\\.json$", "^src/article-patterns\\.json$"],
+      "suggest_next": [
+        { "when": "信源配置更新后", "if": { "success": true }, "then": { "tool": "test_scrape", "reason": "信源已更新，建议测试抓取验证" } }
+      ]
+    },
+    "test_scrape": {
+      "triggers_on": [],
+      "suggest_next": []
+    },
+    "harness_diagnose": {
+      "triggers_on": [],
+      "suggest_next": [
+        { "when": "诊断发现语法错误", "if": { "issue_count": 1 }, "then": { "tool": "check_all", "reason": "诊断发现问题，修复后建议跑全套验证" } }
+      ]
+    }
+  }
+}

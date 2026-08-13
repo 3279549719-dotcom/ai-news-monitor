@@ -389,46 +389,68 @@ checks.push({
   }
 });
 
-// ── 主流程 ──
+// ── 主流程（重构建议 10：拆分 main 为三个职责清晰的模块级函数） ──
 
-function main() {
+/** 解析报告与日志内容（含路径默认值）。 */
+function loadInputs(argv) {
   const today = new Date().toISOString().split('T')[0];
-  const reportPath = process.argv[2] || path.join(__dirname, '..', 'reports', `${today}.md`);
-  const logPath = process.argv[3] || path.join(process.cwd(), 'run.log');
+  const reportPath = argv[2] || path.join(__dirname, '..', 'reports', `${today}.md`);
+  const logPath = argv[3] || path.join(process.cwd(), 'run.log');
 
   let report = '';
   let runLog = '';
   try { report = fs.readFileSync(reportPath, 'utf8'); } catch { /* 文件不存在 */ }
   try { runLog = fs.readFileSync(logPath, 'utf8'); } catch { /* 文件不存在 */ }
+  return { reportPath, logPath, report, runLog };
+}
+
+/** 逐项执行检查，返回结构化汇总（不打印）。 */
+function runChecks(report, reportPath, runLog) {
+  const summary = { passCount: 0, failCount: 0, warnCount: 0, skipCount: 0, requiredFails: [], lines: [] };
+  for (const check of checks) {
+    const [status, msg, details] = check.run(report, reportPath, runLog);
+    summary.lines.push({ status, id: check.id, label: check.label, msg, details });
+    if (status === PASS) summary.passCount++;
+    else if (status === FAIL) { summary.failCount++; if (check.required) summary.requiredFails.push(check.id); }
+    else if (status === WARN) summary.warnCount++;
+    else summary.skipCount++;
+  }
+  return summary;
+}
+
+/** 打印检查结果与汇总。 */
+function printSummary(summary) {
+  for (const l of summary.lines) {
+    console.log(`${tag(l.status)} ${l.id} ${l.label}: ${l.msg}`);
+    if (l.details && Array.isArray(l.details) && l.details.length > 0) {
+      for (const d of l.details) console.log(`       ${d}`);
+    }
+  }
+  console.log('');
+  console.log(`SUMMARY: ${summary.passCount} PASS, ${summary.failCount} FAIL, ${summary.warnCount} WARN, ${summary.skipCount} SKIP`);
+  if (summary.requiredFails.length > 0) {
+    console.log(`\x1b[31m红线 FAIL: ${summary.requiredFails.join(', ')}\x1b[0m`);
+  }
+}
+
+function main() {
+  const { reportPath, logPath, report, runLog } = loadInputs(process.argv);
 
   console.log(`=== Phase 7 质量验收 ===`);
   console.log(`日报: ${reportPath} (${report.length} bytes)`);
   console.log(`日志: ${logPath} (${runLog.length} bytes)`);
   console.log('');
 
-  let passCount = 0, failCount = 0, warnCount = 0, skipCount = 0;
-  const requiredFails = [];
+  const summary = runChecks(report, reportPath, runLog);
+  printSummary(summary);
 
-  for (const check of checks) {
-    const [status, msg, details] = check.run(report, reportPath, runLog);
-    console.log(`${tag(status)} ${check.id} ${check.label}: ${msg}`);
-    if (details && Array.isArray(details) && details.length > 0) {
-      for (const d of details) console.log(`       ${d}`);
-    }
-    if (status === PASS) passCount++;
-    else if (status === FAIL) { failCount++; if (check.required) requiredFails.push(check.id); }
-    else if (status === WARN) warnCount++;
-    else skipCount++;
-  }
-
-  console.log('');
-  console.log(`SUMMARY: ${passCount} PASS, ${failCount} FAIL, ${warnCount} WARN, ${skipCount} SKIP`);
-  if (requiredFails.length > 0) {
-    console.log(`\x1b[31m红线 FAIL: ${requiredFails.join(', ')}\x1b[0m`);
-  }
-
-  if (failCount > 0) process.exit(1);
+  if (summary.failCount > 0) process.exit(1);
   process.exit(0);
 }
 
-main();
+// 模块守卫：直接运行才执行验收；被 require 时只导出（避免导入副作用）
+if (require.main === module) {
+  main();
+}
+
+module.exports = { loadInputs, runChecks, printSummary };
