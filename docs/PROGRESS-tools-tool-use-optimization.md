@@ -73,7 +73,7 @@
 | 8 | pipeline --json 状态 | ✅ done | `run-pipeline.js --json` 返回 JSON 结构化流水线状态 |
 | 9 | ai.js function calling v2 | ✅ 已接线 v2（AI_FC=v1 可回退，观察期） | `analyzeResultV2` + `selectArticleLinksV2`，v1 保留为 fallback |
 | 10 | 工具链图 + response_format | 🔲 planned (Phase 3) | 工具间调用链可视化 + AI response 格式约束 |
-| 11 | 自愈闭环 | 🔲 planned (Phase 4) | Docker 宕机自动拉起 + 管线失败自动重试 + 告警收敛 |
+| 11 | 自愈闭环 | ⏸️ 搁置 (Phase 4) | 2026-08-13 用户裁定暂不开发：采集已移交 CI（ubuntu），本地 Docker 不再关键；评测集/日志分析判为过度工程。如日后需要再评估 |
 
 ---
 
@@ -105,7 +105,7 @@
 - Phase 1 ✅ — 梳理工具清单、定义命名空间
 - Phase 2 ✅ — 注册表实现、按需加载、harness 诊断、commit --generate、pipeline --json、ai.js v2
 - Phase 3 ✅ — hook 数据驱动（tool-graph.json + graph.js）、工具使用日志（usage-logger.js）、工具链图（suggest_next）
-- Phase 4 🔲 — 自愈闭环（Docker 自动拉起、失败重试、告警收敛）+ 评测集 + 使用日志数据分析
+- Phase 4 ⏸️ 搁置 — 自愈闭环（Docker 自动拉起、失败重试、告警收敛）+ 评测集 + 使用日志数据分析。**2026-08-13 用户裁定暂不开发**：采集已移交 CI，本地 Docker 不再关键；评测集/日志分析过度工程。使用日志按需查：`node src/tools/usage-logger.js`
 
 **使用日志分析入口**：`node src/tools/usage-logger.js`（直接运行输出各工具调用统计）
 
