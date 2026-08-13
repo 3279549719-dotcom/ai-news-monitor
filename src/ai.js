@@ -364,8 +364,8 @@ async function analyzeResultV2(options) {
         { role: 'user', content: userPrompt },
       ],
       tools: [ANALYZE_TOOL],
-      tool_choice: { type: 'function', function: { name: 'report_article_analysis' } },
-      max_tokens: 600,
+      tool_choice: 'auto',
+      max_tokens: 4000,
       temperature: 0.1,
     });
 
@@ -413,7 +413,7 @@ async function selectArticleLinksV2(links, sourceName, pageUrl, logPrefix = '') 
         { role: 'user', content: list },
       ],
       tools: [SELECT_LINKS_TOOL],
-      tool_choice: { type: 'function', function: { name: 'select_articles' } },
+      tool_choice: 'auto',
       temperature: 0,
       max_tokens: 2000,
     });
