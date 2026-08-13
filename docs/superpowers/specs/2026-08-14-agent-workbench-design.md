@@ -1,6 +1,6 @@
 # Agent 工作台（Local Agent Workbench）设计
 
-> 状态: **Spec（已获用户认可，2026-08-14）** ｜ 依据: `docs/2026-08-13-agent-workbench-draft.md` + `docs/2026-08-13-agent-workbench-research.html`（双 subagent 调研，repo 均已验证）
+> 状态: **Spec（已获用户认可，2026-08-14；补充：工具注册表动态化 + 会话使用记录）** ｜ 依据: `docs/2026-08-13-agent-workbench-draft.md` + `docs/2026-08-13-agent-workbench-research.html`（双 subagent 调研，repo 均已验证）
 > 定位: 本地网页工作台，输入一句话目标 → 让 agent 自主完成「调研→设计→编码→验证→交付」软件项目 → 人只审最终结果
 > 决策方式: 用户逐条确认范围/界面/引擎/持久性 → 调研后认可「薄壳复用」方案 → 本文为正式设计
 
@@ -20,7 +20,7 @@
 |--------|------|------|
 | 任务范围 | 开发软件项目为主 | 操作文件系统/构建/测试是刚需 |
 | 界面形态 | 本地网页界面 | Node 起服务 + 浏览器打开；轻量，后续可打包 |
-| 执行引擎 | 让 Claude 干活（claude -p，复用现有 harness） | 复用 18 工具 + 5 hook + superpowers 协议，不自建 agent 引擎 |
+| 执行引擎 | 让 Claude 干活（claude -p，复用现有 harness） | 复用现有工具注册表（**动态 getToolIndex/getTool，不硬编码数量**，随项目演进增减）+ 5 hook + superpowers 协议，不自建 agent 引擎 |
 | 持久性 | 几小时 + 断点续跑 | 任务状态落盘 + 恢复 |
 | 编排框架 | **不引入** LangGraph/CrewAI/MetaGPT | 它们是"换引擎"不是"加壳"；引入=丢现有资产。思路可抄，不当依赖 |
 | 网页壳 | **自研最薄版**（参考 OpenHands 四视图布局） | 网页壳不难，不依赖小众现成仓库 |
@@ -92,6 +92,7 @@ E:\claude\agent-workbench\
 - `spawn('claude', ['-p', prompt, '--output-format', 'json', '--max-turns', N], {cwd: taskDir})`
 - prompt 注入：`claude.config.md`（约束）+ `progress.md`（上次状态）+ 当前 feature 指令
 - 结束回写 `progress.md`（由 agent 在会话内维护；runner 兜底追加执行摘要）
+- **使用记录**：会话产物（含工具调用 JSON）落盘 `tasks/<id>/notes/session-<step>.json`；每 feature 汇总「工具使用明细」供网页与交付说明引用（复用 harness 使用记录的思路）
 - 每 feature 完成后 `git commit -m "feature: <name>"`（checkpoint）
 - 续跑 = 重读 progress → 找下一个未完成 feature → 重新 spawn
 
@@ -114,6 +115,7 @@ E:\claude\agent-workbench\
 ### 5.7 claude.config.md — 任务目录约束模板
 - 明确护栏：禁止 force-push、禁止删除未备份数据、危险动作（删/覆盖/外部发送）先写入 progress 请求人工批准
 - 提示 agent 每步更新 progress.md、feature 完成即自报
+- 工具复用：任务会话按需经 `getToolIndex`/`getTool` 挂载既有结构化工具注册表（如 ai-news-monitor 的 check/commit），**引用而非硬编码**；注册表变化不阻塞任务
 
 ## 6. 任务生命周期（核心流程）
 
