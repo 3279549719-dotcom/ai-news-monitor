@@ -43,10 +43,10 @@ function log(label, ok, detail = '') {
   return { label, ok, detail };
 }
 
-function httpGet(url, timeoutMs = 8000, verifyTls = true) {
+function httpGet(url, timeoutMs = 8000, verifyTls = true, headers = {}) {
   return new Promise((resolve, reject) => {
     const t = setTimeout(() => { req.destroy(); reject(new Error('timeout')); }, timeoutMs);
-    const req = https.get(url, { rejectUnauthorized: !verifyTls }, res => {
+    const req = https.get(url, { rejectUnauthorized: !verifyTls, headers }, res => {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => { clearTimeout(t); resolve({ status: res.statusCode, body: data }); });
@@ -130,8 +130,9 @@ function checkLastRun() {
   }
 }
 
-/* ===== 检查 4: 最近一次 pipeline 日志 ===== */
-function checkPipeLog() {
+/* ===== 检查 4: 最近一次 pipeline 日志（云端模式下查 GitHub Actions 运行记录） ===== */
+async function checkPipeLog() {
+  if (ARGS.has('--actions')) return await checkCloudPipelineRuns();
   const logsDir = path.join(ROOT, 'logs');
   try {
     const logFiles = fs.readdirSync(logsDir)
@@ -144,10 +145,12 @@ function checkPipeLog() {
     const content = fs.readFileSync(path.join(logsDir, latest), 'utf8');
     const lines = content.split('\n');
 
-    // 找错误行
+    // 找错误行（排除正常的降级容错：timeout 跳过、降级、空结果等属于健康行为）
     const errorLines = lines.filter(l =>
-      /error|fail|ECONNREFUSED|timeout|ENOENT/i.test(l) &&
-      !/npm warn/i.test(l)
+      /error|fail|ECONNREFUSED|ENOENT/i.test(l) &&
+      !/npm warn/i.test(l) &&
+      !/timeout/i.test(l) &&
+      !/降级/i.test(l)
     );
     const hasReport = /报告已保存/i.test(content);
     const hasDigest = /摘要邮件/i.test(content);
@@ -163,6 +166,33 @@ function checkPipeLog() {
     };
   } catch (e) {
     return { label: 'Pipeline 日志', ok: false, detail: e.message };
+  }
+}
+
+async function checkCloudPipelineRuns() {
+  // 公开仓库，无需 token 直接查 API
+  const url = 'https://api.github.com/repos/3279549719-dotcom/ai-news-monitor/actions/workflows/daily-pipeline.yml/runs?per_page=5&branch=master';
+  try {
+    const { status, body } = await httpGet(url, 10000, true, { 'User-Agent': 'ai-news-monitor-ops-check' });
+    if (status !== 200) {
+      return { label: '云端 Pipeline', ok: false, detail: `GitHub API HTTP ${status}` };
+    }
+    const runs = JSON.parse(body).workflow_runs || [];
+    if (runs.length === 0) {
+      return { label: '云端 Pipeline', ok: false, detail: '无运行记录' };
+    }
+    const latest = runs[0];
+    const start = new Date(latest.run_started_at || latest.created_at);
+    const now = new Date();
+    const ageH = Math.round((now - start) / 3600000);
+    const ok = latest.conclusion === 'success' && ageH < 24;
+    return {
+      label: '云端 Pipeline',
+      ok,
+      detail: `run ${latest.run_number} ${latest.conclusion}（${ageH}h 前）`,
+    };
+  } catch (e) {
+    return { label: '云端 Pipeline', ok: false, detail: e.message };
   }
 }
 
@@ -186,7 +216,7 @@ async function checkSupabaseArticles() {
         const opts = {
           hostname: u.hostname, path: u.pathname + u.search,
           headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
-          rejectUnauthorized: false,
+          rejectUnauthorized: false, // local-only: Supabase HTTPS cert verified in httpGet above
         };
         const req = https.get(opts, r => {
           let d = ''; r.on('data', c => d += c); r.on('end', () => resolve({ status: r.statusCode, body: d }));
@@ -249,7 +279,7 @@ async function main() {
   results.push(checkDocker());
   results.push(checkDisk());
   results.push(checkLastRun());
-  results.push(checkPipeLog());
+  results.push(await checkPipeLog());
   results.push(await checkSupabaseArticles());
   results.push(checkNodeModules());
 

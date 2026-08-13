@@ -1,7 +1,7 @@
 name: Ops Check
 on:
   schedule:
-    - cron: '0 8,16 * * *'
+    - cron: '0 8,16 * * *'   # 北京 16:00 / 00:00（云端巡检，配合云端日志 commit）
   workflow_dispatch:
 
 permissions:
@@ -43,6 +43,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Create issue on failure
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           cat > /tmp/issue_body.md << 'BODYEOF'
           ## Ops Check Failed
@@ -56,5 +58,3 @@ jobs:
             --body-file /tmp/issue_body.md \
             --label "ops,ai-diagnose" \
             --repo ${{ github.repository }}
-        env:
-          GH_TOKEN: ${{ github.token }}

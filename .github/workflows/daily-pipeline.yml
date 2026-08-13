@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   issues: write
 
 jobs:
@@ -69,6 +69,20 @@ jobs:
             logs/.last-run.json
             logs/.seen-ids.json
           retention-days: 7
+
+      - name: Commit report and status files
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/ logs/.last-run.json logs/.seen-ids.json
+          if git diff --cached --quiet; then
+            echo "no changes to commit"
+          else
+            git commit -m "ops: pipeline run ${{ github.run_id }} output"
+            git pull --rebase origin "$GITHUB_REF_NAME" || true
+            git push origin "$GITHUB_REF_NAME"
+          fi
 
       - name: Alert on failure (create issue)
         if: failure()

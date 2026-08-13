@@ -24,6 +24,8 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Download ops-check artifact + failed logs
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p ./diag
           gh run download ${{ github.event.workflow_run.id }} -n ops-check-result -D ./diag || echo "no artifact"
@@ -33,9 +35,11 @@ jobs:
           echo "" >> ./diag/materials.txt
           echo "=== failed run logs ===" >> ./diag/materials.txt
           cat ./diag/failed.log >> ./diag/materials.txt
-        env:
-          GH_TOKEN: ${{ github.token }}
       - name: AI diagnose with DeepSeek
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+          DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
         run: |
           node scripts/ai-diagnose.js --ci < ./diag/materials.txt > ./diag/diagnosis.md 2> ./diag/diagnose.err || {
             echo "## 诊断服务暂不可用" > ./diag/diagnosis.md
@@ -43,16 +47,14 @@ jobs:
             echo "AI 诊断调用失败，详情：" >> ./diag/diagnosis.md
             cat ./diag/diagnose.err >> ./diag/diagnosis.md
           }
-        env:
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-          DEEPSEEK_MODEL: ${{ secrets.DEEPSEEK_MODEL }}
       - name: Find related issue and post diagnosis
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
-          RUN_ID="${{ github.event.workflow_run.id }}"
-          ISSUE_NUM=$(gh issue list --search "Run ${{ RUN_ID }} in:title" --state open --json number --jq '.[0].number' --repo ${{ github.repository }})
+          ISSUE_NUM=$(gh issue list --search "Run ${RUN_ID} in:title" --state open --json number --jq '.[0].number' --repo ${{ github.repository }})
           if [ -z "$ISSUE_NUM" ] || [ "$ISSUE_NUM" = "null" ]; then
-            echo "no open issue found for run ${{ RUN_ID }}; creating diagnosis comment on latest ops issue"
+            echo "no open issue found for run ${RUN_ID}; creating diagnosis comment on latest ops issue"
             ISSUE_NUM=$(gh issue list --label ops --state open --json number --jq '.[0].number' --repo ${{ github.repository }})
           fi
           if [ -n "$ISSUE_NUM" ] && [ "$ISSUE_NUM" != "null" ]; then
@@ -63,5 +65,3 @@ jobs:
             echo "no issue found; diagnosis content:"
             cat ./diag/diagnosis.md
           fi
-        env:
-          GH_TOKEN: ${{ github.token }}
