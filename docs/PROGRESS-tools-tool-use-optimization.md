@@ -111,6 +111,8 @@
 
 **重构化简执行清单**：见 [REFACTOR-tools-phase3-analysis.md](REFACTOR-tools-phase3-analysis.md) §七，分三批执行（第一批零风险归档+公共lib，第二批含验证，第三批观察期后）。
 
+**重构已落地并合并（2026-08-13）**：三批重构已执行、验证、合并到 master 并推送到远端（`89cadcc`）。详见 [REFACTOR-tools-cleanup-report.md](REFACTOR-tools-cleanup-report.md)。9/10 建议落地，legacy 删除（建议3）待 DB 清理 `claude-blog` 关键词后执行，ai.js v1 收口（建议5）待 v2 观察期后执行。新增公共层：`scripts/lib/common.js`、`scripts/lib/check-js.js`、`scripts/lib/ops-common.js`；共享核心：`src/run-single-keyword.js`。
+
 ---
 
-*最后更新: 2026-08-11*
+*最后更新: 2026-08-13*
