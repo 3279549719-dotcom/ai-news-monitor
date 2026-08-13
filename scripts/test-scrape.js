@@ -25,9 +25,19 @@ async function test(url, name) {
   }
 }
 
+const argv = process.argv.slice(2);
+// 命名参数：--url <url>、--source <source_name>（另兼容 --source-name / --source_name 别名）
+function argVal(flag) {
+  const i = argv.indexOf(flag);
+  return i !== -1 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : null;
+}
+
 async function main() {
-  for (const {url, name} of urls) {
-    await test(url, name);
+  const url = argVal('--url');
+  const name = argVal('--source') || argVal('--source-name') || argVal('--source_name');
+  const targets = url ? [{ url, name: name || 'custom' }] : urls;
+  for (const {url: u, name: n} of targets) {
+    await test(u, n);
   }
 }
 main();

@@ -8,7 +8,7 @@
  * 本项目的可用工具，不再靠裸 bash("npm run xxx") 猜参数。
  *
  * 每个工具定义包含：
- *   - name: 工具名（kebab-case，语义前缀命名空间）
+ *   - name: 工具名（snake_case，语义前缀命名空间）
  *   - description: 3-4 句详细描述（做什么、何时用/何时不用、边界条件、限制）
  *   - parameters: JSON Schema 规范参数
  *   - input_examples: 1-3 个真实场景示例
@@ -27,6 +27,9 @@
 // ============================================================================
 // 工具定义
 // ============================================================================
+
+const path = require('path');
+const fs = require('fs');
 
 const REGISTRY = {
   // ── 始终加载的核心工具（高频，defer_loading=false）────────────────────
@@ -77,6 +80,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run check',
+    cli_template: 'npm run check',
     defer_loading: false,
     namespace: 'check',
     tags: ['验证', '高频'],
@@ -118,6 +122,7 @@ const REGISTRY = {
       },
     },
     command: 'npm test',
+    cli_template: 'npm test',
     defer_loading: false,
     namespace: 'check',
     tags: ['验证', '高频'],
@@ -176,6 +181,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run commit --',
+    cli_template: 'node scripts/git-commit.js "<message>" [-p] [-n] [-a]',
     defer_loading: false,
     namespace: 'commit',
     tags: ['Git', '高频'],
@@ -229,6 +235,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/run-pipeline.js',
+    cli_template: 'node scripts/run-pipeline.js [--no-docker] [--no-alert] [--ci]',
     defer_loading: false,
     namespace: 'pipeline',
     tags: ['运维', '管线', '高频'],
@@ -284,6 +291,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/ops-check.js',
+    cli_template: 'node scripts/ops-check.js [--light|--actions]',
     defer_loading: false,
     namespace: 'ops',
     tags: ['运维', '诊断', '高频'],
@@ -318,6 +326,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run lint:backend',
+    cli_template: 'npm run lint:backend',
     defer_loading: true,
     namespace: 'check',
     tags: ['验证'],
@@ -348,6 +357,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run type-check',
+    cli_template: 'npm run type-check',
     defer_loading: true,
     namespace: 'check',
     tags: ['验证', '前端'],
@@ -396,6 +406,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run ops:quality',
+    cli_template: 'node scripts/check-quality.js [--report-path <report_path>] [--log-path <log_path>]',
     defer_loading: true,
     namespace: 'check',
     tags: ['质量', '验收'],
@@ -443,6 +454,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/install-schedule.js',
+    cli_template: 'node scripts/install-schedule.js [--info|--remove]',
     defer_loading: true,
     namespace: 'pipeline',
     tags: ['运维', '定时任务'],
@@ -478,6 +490,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/auto-heal.js',
+    cli_template: 'node scripts/auto-heal.js',
     defer_loading: true,
     namespace: 'pipeline',
     tags: ['运维', '自愈'],
@@ -535,6 +548,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run ops:backfill',
+    cli_template: 'node scripts/backfill-resummarize.js [--dry-run] [--lt60] [--keyword <keyword>] [--limit <limit>] [--pool <pool>]',
     defer_loading: true,
     namespace: 'data',
     tags: ['数据', '回填'],
@@ -594,6 +608,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run ops:dedup',
+    cli_template: 'node scripts/dedup-existing.js [--dry-run|--apply] [--keyword <keyword>] [--days <days>] [--keep-ids <keep_ids>]',
     defer_loading: true,
     namespace: 'data',
     tags: ['数据', '去重', '危险操作'],
@@ -641,6 +656,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run ops:screenshot',
+    cli_template: 'node scripts/screenshot-ui.js [--url <url>] [--out <out>] [--wait <wait>] [--width <width>] [--height <height>]',
     defer_loading: true,
     namespace: 'ops',
     tags: ['前端', '截图'],
@@ -673,6 +689,7 @@ const REGISTRY = {
       },
     },
     command: 'npm run ops:docker-restart',
+    cli_template: 'npm run ops:docker-restart',
     defer_loading: true,
     namespace: 'ops',
     tags: ['运维', 'Docker'],
@@ -712,6 +729,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/test-scrape.js',
+    cli_template: 'node scripts/test-scrape.js [--url <url>] [--source <source_name>]',
     defer_loading: true,
     namespace: 'test',
     tags: ['测试', '调试'],
@@ -745,6 +763,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/seed-demo.js',
+    cli_template: 'node scripts/seed-demo.js',
     defer_loading: true,
     namespace: 'data',
     tags: ['数据', '开发'],
@@ -784,6 +803,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/update-sources.js',
+    cli_template: 'node scripts/update-sources.js --keyword <keyword>',
     defer_loading: true,
     namespace: 'data',
     tags: ['数据', '配置'],
@@ -848,6 +868,7 @@ const REGISTRY = {
       },
     },
     command: null, // 纯信息汇总，不执行命令
+    cli_template: 'node scripts/harness-diagnose.js --harness <harness_type> [--file <file_path>] [--json]',
     defer_loading: true,
     namespace: 'harness',
     tags: ['诊断', 'harness'],
@@ -933,6 +954,39 @@ function getStats() {
   };
 }
 
+/**
+ * 校验每个工具的 parameters 名是否在对应脚本文件中出现（best-effort，非阻断）。
+ *
+ * 策略：
+ *   - 脚本路径优先从 command 提取 `node scripts/xxx.js`；npm 包装的命令（npm run …）
+ *     回退到 cli_template 里取真实脚本（如 commit_git → scripts/git-commit.js）。
+ *   - 语义参数（mode/action/skipCheck/stageAll 等）的真实 flag 与 kebab 名不同
+ *     （--light/--info/--no-check/--all），因此会有警告——这是设计内行为，非阻断。
+ *   - message 等位置参数豁免。
+ * @param {Object} [reg=REGISTRY] - 工具注册表
+ * @returns {string[]} 警告列表（空数组 = 全部一致）
+ */
+function validateCli(reg = REGISTRY) {
+  const warnings = [];
+  for (const [name, t] of Object.entries(reg)) {
+    // 定位真实脚本：command 直接是 node scripts/…，否则 npm 包装时从 cli_template 取
+    let cmd = t.command || '';
+    if (!/node scripts\//.test(cmd) && /^npm/.test(cmd)) cmd = t.cli_template || '';
+    const scriptPath = /node scripts\/([\w-]+)\.js/.exec(cmd);
+    if (!scriptPath) continue;
+    const fp = path.join(__dirname, '..', '..', 'scripts', `${scriptPath[1]}.js`);
+    let text = '';
+    try { text = fs.readFileSync(fp, 'utf8'); } catch { warnings.push(`${name}: 找不到脚本 ${fp}`); continue; }
+    for (const p of Object.keys(t.parameters.properties || {})) {
+      const kebab = p.replace(/([a-z])([A-Z])/g, '$1-$2').replace(/_/g, '-').toLowerCase();
+      if (!text.includes(`--${kebab}`) && !text.includes(`--${p}`) && p !== 'message') {
+        warnings.push(`${name}: 参数 ${p}（--${kebab}）未在脚本 ${scriptPath[1]}.js 中发现`);
+      }
+    }
+  }
+  return warnings;
+}
+
 // 模块守卫：直接运行此文件时输出统计信息 + 与 tool-graph.json 的一致性校验（建议 6）
 if (require.main === module) {
   const stats = getStats();
@@ -954,6 +1008,16 @@ if (require.main === module) {
     }
   } catch (e) { /* graph 不可用时跳过校验 */ }
 
+  if (process.argv.includes('--check-cli')) {
+    const warns = validateCli();
+    if (warns.length) {
+      console.warn('\n⚠️  cli 一致性警告（best-effort，非阻断）:');
+      warns.forEach(w => console.warn('  - ' + w));
+    } else {
+      console.log('  ✓ 工具参数与脚本 flag 大体一致（脚本未见参数名的会列在警告）');
+    }
+  }
+
   console.log('\n按命名空间分布:');
   for (const [ns, count] of Object.entries(stats.byNamespace)) {
     const names = Object.values(REGISTRY)
@@ -966,4 +1030,4 @@ if (require.main === module) {
   console.log('\n✅ 注册表加载完成\n');
 }
 
-module.exports = { REGISTRY, getCoreTools, getDeferredTools, getToolsByNamespace, getToolsByTag, getToolIndex, getTool, getStats };
+module.exports = { REGISTRY, getCoreTools, getDeferredTools, getToolsByNamespace, getToolsByTag, getToolIndex, getTool, getStats, validateCli };

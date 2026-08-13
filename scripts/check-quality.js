@@ -394,8 +394,17 @@ checks.push({
 /** 解析报告与日志内容（含路径默认值）。 */
 function loadInputs(argv) {
   const today = new Date().toISOString().split('T')[0];
-  const reportPath = argv[2] || path.join(__dirname, '..', 'reports', `${today}.md`);
-  const logPath = argv[3] || path.join(process.cwd(), 'run.log');
+  // 命名 flag 优先（--report-path / --log-path），向后兼容位置参数 argv[2]/argv[3]
+  function argFlag(name) {
+    for (const a of argv) {
+      if (a.startsWith(`--${name}=`)) return a.slice(`--${name}=`.length);
+      const i = argv.indexOf(`--${name}`);
+      if (i !== -1 && argv[i + 1] && !argv[i + 1].startsWith('--')) return argv[i + 1];
+    }
+    return null;
+  }
+  const reportPath = argFlag('report-path') || argv[2] || path.join(__dirname, '..', 'reports', `${today}.md`);
+  const logPath = argFlag('log-path') || argv[3] || path.join(process.cwd(), 'run.log');
 
   let report = '';
   let runLog = '';
