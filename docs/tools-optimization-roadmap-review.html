@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ai-news-monitor 工具体系优化路线图（评审版）</title>
+<style>
+  :root{
+    --bg:#0f1419; --card:#1a222b; --card2:#202a35; --line:#2c3845;
+    --txt:#dbe4ee; --dim:#8aa0b4; --green:#4ade80; --red:#f87171;
+    --amber:#fbbf24; --blue:#60a5fa; --purple:#c084fc; --mono:#7dd3fc;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font-family:"Segoe UI",system-ui,-apple-system,"Microsoft YaHei",sans-serif;line-height:1.6}
+  .wrap{max-width:1060px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:26px;margin:0 0 4px}
+  .sub{color:var(--dim);margin-bottom:22px}
+  h2{font-size:19px;margin:36px 0 12px;padding-left:10px;border-left:4px solid var(--blue)}
+  h3{font-size:15px;margin:18px 0 8px;color:var(--mono)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:14px}
+  .card.amber{border-left:4px solid var(--amber)}
+  .card.green{border-left:4px solid var(--green)}
+  .card.red{border-left:4px solid var(--red)}
+  .card.blue{border-left:4px solid var(--blue)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0}
+  .stat{background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;text-align:center}
+  .stat b{display:block;font-size:26px}
+  .stat span{font-size:12px;color:var(--dim)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--dim);font-weight:600;white-space:nowrap}
+  code{background:#0d131a;border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-family:Consolas,"Cascadia Code",monospace;font-size:12.5px;color:var(--mono)}
+  pre{background:#0d131a;border:1px solid var(--line);border-radius:8px;padding:12px 14px;overflow-x:auto;font-family:Consolas,"Cascadia Code",monospace;font-size:12.5px;line-height:1.5}
+  .tag{display:inline-block;font-size:11px;border-radius:4px;padding:1px 7px;font-weight:600;margin-right:6px}
+  .t-p0{background:#7f1d1d;color:#fecaca}.t-p1{background:#7c2d12;color:#fed7aa}
+  .t-p2{background:#78350f;color:#fde68a}.t-p3{background:#1e3a5f;color:#bfdbfe}
+  .ok{color:var(--green)} .bad{color:var(--red)} .warn{color:var(--amber)}
+  .mono{font-family:Consolas,"Cascadia Code",monospace}
+  .small{font-size:12.5px;color:var(--dim)}
+  .bar{height:8px;border-radius:4px;background:#26313d;overflow:hidden;margin-top:6px}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}
+  .phase{display:flex;gap:10px;align-items:flex-start}
+  .phase .dot{width:34px;height:34px;border-radius:50%;background:var(--card2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--blue);flex-shrink:0}
+  .col2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:720px){.col2{grid-template-columns:1fr}}
+  .before,.after{border-radius:8px;padding:10px 12px;font-size:13px}
+  .before{background:#2a1215;border:1px solid #4c1d24}
+  .after{background:#10291a;border:1px solid #14532d}
+  .foot{margin-top:44px;color:var(--dim);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+  .chk{display:inline-block;width:14px;height:14px;border:1px solid var(--dim);border-radius:3px;vertical-align:-2px;margin-right:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>🧭 工具体系优化路线图 — 评审版</h1>
+  <div class="sub">ai-news-monitor · 2026-08-13 · 基于代码评审 + 真实运行日志（不是纸面数据）</div>
+
+  <div class="card blue">
+    <b>一句话结论</b><br>
+    方向对，18 工具的<b>文档层价值已落地</b>（对所有经手 AI 有结构性帮助）。但有 <b>2 项「宣称已交付、实际未接线」</b>和 <b>2 个真实 bug</b>——修完后这套工具才从「文档」变成「可信工具」。
+  </div>
+
+  <h2>① 现状（实测）</h2>
+  <div class="grid">
+    <div class="stat"><b>18</b><span>结构化工具</span></div>
+    <div class="stat"><b>5 核 / 13 按需</b><span>对齐 Anthropic 3-5 常驻</span></div>
+    <div class="stat"><b>7</b><span>命名空间</span></div>
+    <div class="stat"><b>15</b><span>graph 单测通过</span></div>
+    <div class="stat"><b>5 条</b><span>现有使用日志（全 harness_check）</span></div>
+  </div>
+
+  <div class="card green"><b>✅ 做得好（6 项）</b><br>
+    工具描述按「何时用/何时不用」写（官方最高杠杆）· &lt;20 工具 + 按需发现 · enum + additionalProperties 防幻觉参数 · JSONL 日志静默降级 · graph 纯函数可测 · REQ/DECISION/PROGRESS 文档纪律</div>
+
+  <div class="card red"><b>❌ 悬空（2 项）— 宣称已交付，实际没接线</b><br>
+    <span class="bad">P0-1</span> ai.js v2 function calling：<b>全仓库 0 调用方</b>，管线全走 v1（文档却标 ✅）<br>
+    <span class="bad">P0-2</span> 使用日志只接 3 处，<b>记不到 15 个工具</b>，无法回答「18 工具真实使用率」</div>
+
+  <div class="card red"><b>⚠️ 真实 bug（2 项）— 有日志证据</b><br>
+    <span class="bad">P1-3</span> 前端 .tsx 被误跑 <code>node --check</code> → 假失败 + 白跑 21s 后端测试<br>
+    <span class="bad">P1-4</span> harness 回退分支引用未定义变量 → 日志静默失效</div>
+
+  <h3>日志证据（logs/.tool-usage.jsonl，5 条全是 harness_check）</h3>
+  <pre>{"tool":"harness_check","files":["client/src/App.tsx"],"success":false,
+   "durationMs":21569,"meta":{"triggered":"check_all,check_type,ops_screenshot"}}</pre>
+  <div class="small">↑ 前端 .tsx 编辑被误判失败、白跑 21.5 秒——这是 P1-3 的实证，修前/修后对比见 ③。</div>
+
+  <h2>② 问题清单（按优先级，来自代码评审）</h2>
+  <div class="card">
+  <table>
+    <tr><th>ID</th><th>问题</th><th>证据 / 根因</th></tr>
+    <tr><td><span class="tag t-p0">P0-1</span></td><td>v2 function calling 死代码</td><td><code>ai.js:343/402</code> 定义导出，4 个调用方全用 v1；DECISION 自标 <code>[ ] 待实施</code></td></tr>
+    <tr><td><span class="tag t-p0">P0-2</span></td><td>使用日志记不到真实工具</td><td>只接 git-commit / harness-check / run-pipeline 3 处；tool 名还是裸字符串</td></tr>
+    <tr><td><span class="tag t-p1">P1-3</span></td><td>前端 .tsx 误触发后端检查</td><td>graph 把 <code>check_all</code> 映射成 syntax+test；Node 对 .tsx 抛 <code>ERR_UNKNOWN_FILE_EXTENSION</code></td></tr>
+    <tr><td><span class="tag t-p1">P1-4</span></td><td>回退分支 ReferenceError（被吞）</td><td><code>harness-check.js:119</code> 引用未定义的 <code>triggered</code></td></tr>
+    <tr><td><span class="tag t-p2">P2-5</span></td><td>suggest_next 语义错乱</td><td><code>processed:0→"回填完成"</code>（反了）；<code>issue_count:1</code> 精确匹配；<code>pushed:false→pipeline_schedule</code> 无关</td></tr>
+    <tr><td><span class="tag t-p2">P2-6</span></td><td>graphSuggestNext 无生产消费方</td><td>只有测试引用；运行时 AI 看不到建议</td></tr>
+    <tr><td><span class="tag t-p2">P2-7</span></td><td>update_sources 触发规则是脚枪</td><td>改本地 JSON 会「暗示」跑写库工具</td></tr>
+    <tr><td><span class="tag t-p2">P2-8</span></td><td>registry 参数 ↔ 真实 flag 对不上</td><td>test_scrape 不消费参数（硬编码 6 个 URL）；check_quality 是位置参数等 4 例</td></tr>
+    <tr><td><span class="tag t-p3">P3-9</span></td><td>双源校验无 CI 覆盖</td><td>只在直跑 registry.js 时告警，CI 零匹配</td></tr>
+    <tr><td><span class="tag t-p3">P3-10</span></td><td>注释 kebab-case 实为 snake_case</td><td><code>registry.js:11</code></td></tr>
+  </table>
+  </div>
+
+  <h2>③ 分阶段优化 → 每项的实际效果</h2>
+
+  <div class="phase"><div class="dot">A</div><div class="card" style="flex:1">
+    <b>Phase A — 修真实 bug（前端误触发 + 回退 ReferenceError）</b> <span class="small">· 最优先，每次前端改动都在产生噪声</span>
+    <div class="bar"><i style="width:0%"></i></div>
+    <div class="col2" style="margin-top:10px">
+      <div class="before">✗ <b>修前</b>：改一个 <code>App.tsx</code><br>→ 假报 syntax 失败 + 白跑 21s 后端测试<br>→ 误导 AI 以为有语法错</div>
+      <div class="after">✓ <b>修后</b>：前端只跑 type_check + lint<br>→ 约 3s，零假失败<br>→ 决策逻辑抽纯函数 <code>planChecksForFile</code>，可单测</div>
+    </div>
+    <div class="small" style="margin-top:8px">验证：新增 plan-checks.test.js，断言 tsx → ['type_check','lint'] 不含 syntax/test。</div>
+  </div></div>
+
+  <div class="phase"><div class="dot">B</div><div class="card" style="flex:1">
+    <b>Phase B — 接线（v2 function calling + 使用日志真实捕获）</b> <span class="small">· 兑现两个「悬空」承诺</span>
+    <div class="bar"><i style="width:0%"></i></div>
+    <div class="col2" style="margin-top:10px">
+      <div class="before">✗ <b>v2 修前</b>：0 调用方，原生 function calling 是空头支票</div>
+      <div class="after">✓ <b>v2 修后</b>：管线默认走 function calling，<code>AI_FC=v1</code> 可回退，<code>ai.js</code> 已内置 fallback</div>
+      <div class="before">✗ <b>usage 修前</b>：5 条全 harness_check，18 工具使用率无从谈起</div>
+      <div class="after">✓ <b>usage 修后</b>：Bash 每次调用经 <code>command-map</code> 映射到工具名 → 攒一周能出「使用率 + 失败率」表</div>
+    </div>
+    <div class="small" style="margin-top:8px">注意：usage hook 需要往 <code>.claude/settings.json</code> 加一条 PostToolUse Bash 钩子（改你的本地 harness 配置）。</div>
+  </div></div>
+
+  <div class="phase"><div class="dot">C</div><div class="card" style="flex:1">
+    <b>Phase C — 数据与映射（suggest 语义 + param↔flag + CI + 文档对齐）</b> <span class="small">· 让注册表成为「可信单源」</span>
+    <div class="bar"><i style="width:0%"></i></div>
+    <div class="col2" style="margin-top:10px">
+      <div class="before">✗ <b>修前</b>：AI 照 registry 填 <code>test_scrape({url})</code> → 脚本不消费，白调；<code>processed:0</code> 建议「回填完成」</div>
+      <div class="after">✓ <b>修后</b>：18 工具全带 <code>cli_template</code>（AI 直接照模板填）；脚本补 <code>--url</code>/<code>--report-path</code>；suggest 语义修正 + 支持 <code>$gte</code>；pipeline --json 输出 <code>suggested_next</code></div>
+    </div>
+    <div class="small" style="margin-top:8px">对 AI 的净效果：<b>修前</b>=「文档价值」（还得打开脚本核对 flag）→ <b>修后</b>=「可信单源」（照 cli_template 直接用）。</div>
+  </div></div>
+
+  <h2>④ 与官方文章的对照（诚实标注）</h2>
+  <div class="card">
+  <table>
+    <tr><th>官方建议</th><th>状态</th><th>说明</th></tr>
+    <tr><td>工具描述 = 最高杠杆（Anthropic）</td><td class="ok">✅ 已落地</td><td>「何时用/何时不用」四段式，直接命中</td></tr>
+    <tr><td>&lt;20 工具 + 按需发现（OpenAI）</td><td class="ok">✅ 已落地</td><td>18 个，5 核常驻 + 13 延迟</td></tr>
+    <tr><td>原生 function calling（Anthropic/OpenAI）</td><td class="warn">⏳ 本次接线</td><td>Phase B 把 v2 接入管线（带 v1 回退）</td></tr>
+    <tr><td>评测 / 使用数据驱动</td><td class="warn">⏳ 本次接线</td><td>Phase B 让使用日志真正捕获工具调用</td></tr>
+  </table>
+  </div>
+
+  <h2>⑤ 对「所有经手 AI 的帮助」——诚实预期</h2>
+  <div class="card">
+    <b>修前</b>：AI 能「发现」工具（CLAUDE.md + registry），但调用时仍要打开脚本核对 flag；v2 不生效；无使用数据。<br>
+    <b>修后</b>：AI 直接照 <code>cli_template</code> 调用 → 少走弯路；管线默认 function calling → 输出更稳；使用日志能沉淀出「哪些工具好用、哪些没人用」→ 驱动 Phase 4 自愈闭环。<br>
+    <span class="ok">结构性收益对所有经手 AI 一致生效</span>——因为入口在 CLAUDE.md + registry，不在某个具体 AI 的记忆里。
+  </div>
+
+  <div class="foot">
+    <b>证据来源</b>：代码评审（registry.js / tool-graph.json / graph.js / harness-check.js / ai.js / test-scrape.js / check-quality.js / run-pipeline.js）+ 实测复现（<code>node --check App.tsx</code> → ERR_UNKNOWN_FILE_EXTENSION）+ 真实日志 logs/.tool-usage.jsonl。<br>
+    <b>诚实声明</b>：本页所有「修后」效果均为改造后可通过测试/日志验证的标准，不是预估话术。
+  </div>
+
+</div>
+</body>
+</html>
