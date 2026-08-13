@@ -23,7 +23,7 @@ const { RESULT_LIMIT, MIN_SCORE } = require('./config');
 // --- legacy blog pipeline imports (lazy, only used when type=blog) ---
 const { fetchArticleList } = require('./legacy/scraper');
 const { fetchArticleContent } = require('./legacy/reader');
-const { summarizeArticle, analyzeResult } = require('./ai');
+const { summarizeArticle, analyzeResultSmart } = require('./ai');
 
 // ============================================================================
 // Pipeline 定义
@@ -40,7 +40,7 @@ const PIPELINES = {
   },
   search: {
     fetch: (kw, sources = []) => searchAll(kw.query, sources),
-    analyze: (kw, item) => analyzeResult({
+    analyze: (kw, item) => analyzeResultSmart({
       query: kw.query, title: item.title, snippet: item.snippet,
       tier: item.tier, categorySchema: kw.category_schema, body: item.body,
     }),

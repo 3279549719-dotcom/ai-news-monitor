@@ -19,7 +19,7 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
-const { selectArticleLinks } = require('./ai');
+const { selectArticleLinksSmart: selectArticleLinks } = require('./ai');
 const { CRAWL4AI_URL, JS_SOURCES, JS_WAIT_MS, getSecret } = require('./config');
 const { toItem } = require('./items');
 const { extractPublishDateFromUrl } = require('./dates');

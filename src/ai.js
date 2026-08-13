@@ -436,6 +436,27 @@ async function selectArticleLinksV2(links, sourceName, pageUrl, logPrefix = '') 
   }
 }
 
+/**
+ * 评审修复 P0-1：v2 接线入口。
+ * AI_FC env：auto（默认）→ v2（内部自带 v1 fallback）；v1 → 强制旧路径。
+ * _impl 为测试注入点（可选），生产不传。
+ */
+function fcMode() {
+  return process.env.AI_FC || 'auto';
+}
+
+async function analyzeResultSmart(options, _impl) {
+  const impl = _impl || { v2: analyzeResultV2, v1: analyzeResult };
+  return fcMode() === 'v1' ? impl.v1(options) : impl.v2(options);
+}
+
+async function selectArticleLinksSmart(links, sourceName, pageUrl, logPrefix = '', _impl) {
+  const impl = _impl || { v2: selectArticleLinksV2, v1: selectArticleLinks };
+  return fcMode() === 'v1'
+    ? impl.v1(links, sourceName, pageUrl, logPrefix)
+    : impl.v2(links, sourceName, pageUrl, logPrefix);
+}
+
 module.exports = {
   getOpenAI,
   summarizeArticle,
@@ -446,4 +467,7 @@ module.exports = {
   selectArticleLinksV2,
   buildAnalyzePrompt,
   buildCategoryHint,
+  fcMode,
+  analyzeResultSmart,
+  selectArticleLinksSmart,
 };

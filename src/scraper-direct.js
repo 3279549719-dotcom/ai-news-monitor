@@ -9,7 +9,7 @@
  */
 
 const axios = require('axios');
-const { selectArticleLinks } = require('./ai');
+const { selectArticleLinksSmart: selectArticleLinks } = require('./ai');
 const { HTTP_USER_AGENT, HTTP_TIMEOUT_MS } = require('./config');
 const { toItem } = require('./items');
 const { extractPublishDateFromUrl } = require('./dates');

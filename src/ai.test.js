@@ -3,6 +3,7 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { parseAnalyzeResult, buildCategoryHint, buildAnalyzePrompt } = require('./ai');
+const ai = require('./ai');
 
 test('解析合法 JSON', () => {
   const r = parseAnalyzeResult('{"score": 82, "summary": "概述", "event": "事件", "category": "transfer"}');
@@ -77,4 +78,50 @@ test('JSON 输出格式含 event_type', () => {
 test('正文片段按 body 渲染（可选事实锚点）', () => {
   const prompt = buildAnalyzePrompt({ query: 'anthropic', title: 'Anthropic 宣布攻破 3 家公司', snippet: 'snippet', tierHint: '', categoryHint: '', body: '攻击者利用 Anyscale 环境变量泄露窃取了机密训练权重。' });
   assert.ok(prompt.includes('正文片段：攻击者利用 Anyscale 环境变量泄露窃取了机密训练权重。'));
+});
+
+// ── P0-1 Smart 路由 DI 测试（不触网，注入 fake {v1,v2}）──
+
+test('analyzeResultSmart 默认（auto）走 v2 实现', async () => {
+  const calls = [];
+  const smart = ai.analyzeResultSmart({ query: 'q', title: 't', snippet: 's' }, {
+    v1: async () => { calls.push('v1'); return { relevant: true, score: 70, summary: '', event: '', event_type: '', category: '' }; },
+    v2: async () => { calls.push('v2'); return { relevant: true, score: 88, summary: '', event: '', event_type: '', category: '' }; },
+  });
+  const r = await smart;
+  assert.deepEqual(calls, ['v2']);
+  assert.equal(r.score, 88);
+});
+
+test('analyzeResultSmart AI_FC=v1 强制走 v1 实现', async () => {
+  process.env.AI_FC = 'v1';
+  try {
+    const calls = [];
+    await ai.analyzeResultSmart({ query: 'q', title: 't', snippet: 's' }, {
+      v1: async () => { calls.push('v1'); return { relevant: true, score: 55, summary: '', event: '', event_type: '', category: '' }; },
+      v2: async () => { calls.push('v2'); return { relevant: false, score: 0, summary: '', event: '', event_type: '', category: '' }; },
+    });
+    assert.deepEqual(calls, ['v1']);
+  } finally {
+    delete process.env.AI_FC;
+  }
+});
+
+test('selectArticleLinksSmart 默认走 v2，AI_FC=v1 走 v1', async () => {
+  process.env.AI_FC = 'v1';
+  try {
+    const calls = [];
+    await ai.selectArticleLinksSmart([], 'src', 'http://x', 'T', {
+      v1: async () => { calls.push('v1'); return [{ title: 'a', url: 'u' }]; },
+      v2: async () => { calls.push('v2'); return []; },
+    });
+    assert.deepEqual(calls, ['v1']);
+  } finally {
+    delete process.env.AI_FC;
+  }
+});
+
+test('fcMode 默认 auto', () => {
+  delete process.env.AI_FC;
+  assert.equal(ai.fcMode(), 'auto');
 });

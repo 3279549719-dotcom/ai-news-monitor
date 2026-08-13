@@ -17,7 +17,7 @@
 
 const { loadKeywords, loadKeywordSources, filterNewItems, saveArticles } = require('./store');
 const { searchAll } = require('./search');
-const { analyzeResult } = require('./ai');
+const { analyzeResultSmart: analyzeResult } = require('./ai');
 const { crosscheck } = require('./crosscheck');
 
 /**
@@ -27,7 +27,7 @@ const { crosscheck } = require('./crosscheck');
  * @param {Array} opts.items - 候选 items（[{title, url, snippet, tier, publishedAt, source}]）。
  * @param {string} opts.itemsLabel - items 来源描述（日志用）。
  * @param {number} [opts.limit=15] - 最多分析条数。
- * @param {Function} [opts.analyze] - 分析函数（默认 ai.analyzeResult），便于测试注入。
+ * @param {Function} [opts.analyze] - 分析函数（默认 ai.analyzeResultSmart），便于测试注入。
  * @param {boolean} [opts.dryRun=false] - true 时不入库（只跑分析+交叉验证）。
  * @returns {Promise<{keyword:Object, analyzed:Array, crosschecked:Array, saved:Array}>}
  */
