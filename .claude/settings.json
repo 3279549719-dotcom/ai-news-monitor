@@ -10,6 +10,15 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /e/claude/ai-news-monitor && node scripts/harness-usage.js"
+          }
+        ]
       }
     ],
     "PreToolUse": [
