@@ -121,7 +121,10 @@ function matchesCondition(cond, result) {
       }
       continue;
     }
-    if (Array.isArray(v)) return Array.isArray(result[k]) && v.every(x => result[k].includes(x));
+    if (Array.isArray(v)) {
+      if (!(Array.isArray(result[k]) && v.every(x => result[k].includes(x)))) return false;
+      continue;
+    }
     if (result[k] !== v) return false;
   }
   return true;

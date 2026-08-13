@@ -101,6 +101,11 @@ test('matchesCondition: 数组包含匹配', () => {
   assert.strictEqual(matchesCondition({ tags: ['c'] }, { tags: ['a', 'b'] }), false);
 });
 
+test('matchesCondition: 多键含数组条件不提前退出', () => {
+  assert.equal(matchesCondition({ tags: ['a'], count: 1 }, { tags: ['a', 'b'], count: 2 }), false);
+  assert.equal(matchesCondition({ tags: ['a'], count: 2 }, { tags: ['a', 'b'], count: 2 }), true);
+});
+
 test('matchesCondition: $gte 数值比较', () => {
   assert.equal(matchesCondition({ issue_count: { $gte: 1 } }, { issue_count: 3 }), true);
   assert.equal(matchesCondition({ issue_count: { $gte: 1 } }, { issue_count: 0 }), false);
