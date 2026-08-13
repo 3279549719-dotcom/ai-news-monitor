@@ -59,8 +59,8 @@
   <div class="sub">ai-news-monitor · 2026-08-13 · 基于代码评审 + 真实运行日志（不是纸面数据）</div>
 
   <div class="card blue">
-    <b>一句话结论</b><br>
-    方向对，18 工具的<b>文档层价值已落地</b>（对所有经手 AI 有结构性帮助）。但有 <b>2 项「宣称已交付、实际未接线」</b>和 <b>2 个真实 bug</b>——修完后这套工具才从「文档」变成「可信工具」。
+    <b>一句话结论（2026-08-13 已执行完毕）</b><br>
+    评审发现的 P0-P3 全部问题已修复并合并到 master（10 commits，`b087136..cf3dc1f6`），最终全分支审查判定 <b>Ready to merge ✓</b>。工具体系从「文档价值」升级为「可信单源工具」。下方①②③④逐项对应真实执行结果，不是计划话术。
   </div>
 
   <h2>① 现状（实测）</h2>
@@ -77,11 +77,13 @@
 
   <div class="card red"><b>❌ 悬空（2 项）— 宣称已交付，实际没接线</b><br>
     <span class="bad">P0-1</span> ai.js v2 function calling：<b>全仓库 0 调用方</b>，管线全走 v1（文档却标 ✅）<br>
-    <span class="bad">P0-2</span> 使用日志只接 3 处，<b>记不到 15 个工具</b>，无法回答「18 工具真实使用率」</div>
+    <span class="bad">P0-2</span> 使用日志只接 3 处，<b>记不到 15 个工具</b>，无法回答「18 工具真实使用率」<br>
+    <span class="ok" style="font-weight:600">→ 已修复（见 ③ 执行结果）</span></div>
 
   <div class="card red"><b>⚠️ 真实 bug（2 项）— 有日志证据</b><br>
     <span class="bad">P1-3</span> 前端 .tsx 被误跑 <code>node --check</code> → 假失败 + 白跑 21s 后端测试<br>
-    <span class="bad">P1-4</span> harness 回退分支引用未定义变量 → 日志静默失效</div>
+    <span class="bad">P1-4</span> harness 回退分支引用未定义变量 → 日志静默失效<br>
+    <span class="ok" style="font-weight:600">→ 已修复（见 ③ 执行结果）</span></div>
 
   <h3>日志证据（logs/.tool-usage.jsonl，5 条全是 harness_check）</h3>
   <pre>{"tool":"harness_check","files":["client/src/App.tsx"],"success":false,
@@ -109,7 +111,7 @@
 
   <div class="phase"><div class="dot">A</div><div class="card" style="flex:1">
     <b>Phase A — 修真实 bug（前端误触发 + 回退 ReferenceError）</b> <span class="small">· 最优先，每次前端改动都在产生噪声</span>
-    <div class="bar"><i style="width:0%"></i></div>
+    <div class="bar"><i style="width:100%"></i></div>
     <div class="col2" style="margin-top:10px">
       <div class="before">✗ <b>修前</b>：改一个 <code>App.tsx</code><br>→ 假报 syntax 失败 + 白跑 21s 后端测试<br>→ 误导 AI 以为有语法错</div>
       <div class="after">✓ <b>修后</b>：前端只跑 type_check + lint<br>→ 约 3s，零假失败<br>→ 决策逻辑抽纯函数 <code>planChecksForFile</code>，可单测</div>
@@ -119,7 +121,7 @@
 
   <div class="phase"><div class="dot">B</div><div class="card" style="flex:1">
     <b>Phase B — 接线（v2 function calling + 使用日志真实捕获）</b> <span class="small">· 兑现两个「悬空」承诺</span>
-    <div class="bar"><i style="width:0%"></i></div>
+    <div class="bar"><i style="width:100%"></i></div>
     <div class="col2" style="margin-top:10px">
       <div class="before">✗ <b>v2 修前</b>：0 调用方，原生 function calling 是空头支票</div>
       <div class="after">✓ <b>v2 修后</b>：管线默认走 function calling，<code>AI_FC=v1</code> 可回退，<code>ai.js</code> 已内置 fallback</div>
@@ -131,7 +133,7 @@
 
   <div class="phase"><div class="dot">C</div><div class="card" style="flex:1">
     <b>Phase C — 数据与映射（suggest 语义 + param↔flag + CI + 文档对齐）</b> <span class="small">· 让注册表成为「可信单源」</span>
-    <div class="bar"><i style="width:0%"></i></div>
+    <div class="bar"><i style="width:100%"></i></div>
     <div class="col2" style="margin-top:10px">
       <div class="before">✗ <b>修前</b>：AI 照 registry 填 <code>test_scrape({url})</code> → 脚本不消费，白调；<code>processed:0</code> 建议「回填完成」</div>
       <div class="after">✓ <b>修后</b>：18 工具全带 <code>cli_template</code>（AI 直接照模板填）；脚本补 <code>--url</code>/<code>--report-path</code>；suggest 语义修正 + 支持 <code>$gte</code>；pipeline --json 输出 <code>suggested_next</code></div>
@@ -157,9 +159,26 @@
     <span class="ok">结构性收益对所有经手 AI 一致生效</span>——因为入口在 CLAUDE.md + registry，不在某个具体 AI 的记忆里。
   </div>
 
+  <h2>⑥ 执行结果（2026-08-13，全部经测试/复现验证）</h2>
+  <div class="card green">
+  <table>
+    <tr><th>项</th><th>结果</th></tr>
+    <tr><td>提交</td><td>10 commits：<code>b087136</code>（路线图+计划）→ <code>9aa7426</code>（P1-3/4）→ <code>4489a30</code>+<code>f6756a8</code>（P2-5/6/7）→ <code>10dea5e</code>+<code>fccb478</code>（P0-1 v2）→ <code>b22689f</code>（P0-2 usage）→ <code>2e92d9b</code>（P2-8 cli_template）→ <code>e20d33a</code>（P3-9 CI+文档）→ <code>cf3dc1f6</code>（最终修复 wave）</td></tr>
+    <tr><td>测试</td><td>npm test <b>164/164</b>；tools 套件 40/40（graph 23 + plan-checks 8 + command-map 8 + registry 3 含 Task5 补的 1 例）；<code>npm run check</code> 全绿；<code>npm run check:tools</code> 通过</td></tr>
+    <tr><td>P1-3 前端误触发</td><td>修前：App.tsx 假失败 + 21.5s（日志实证）→ 修后：只跑 type_check+lint，约 3s，无假失败（冒烟验证）</td></tr>
+    <tr><td>P0-1 v2 接线</td><td>修前：0 调用方 → 修后：管线默认走 function calling；live 验证 <code>finish_reason:"tool_calls"</code>，score 88/85；<code>AI_FC=v1</code> 可回退</td></tr>
+    <tr><td>P0-2 usage 捕获</td><td>修后：每次 Bash 调用经 <code>command-map</code> 映射到工具名写入 <code>logs/.tool-usage.jsonl</code>；冒烟确认 <code>tool_response.exit_code</code> 路径 success:true</td></tr>
+    <tr><td>P2-8 参数映射</td><td>18 工具全带 <code>cli_template</code>；test-scrape/check-quality 补命名参数；<code>--check-cli</code> 暴露 update_sources 假参数已修</td></tr>
+  </table>
+  </div>
+
+  <div class="card amber"><b>两个诚实提醒</b><br>
+  1. <b>成本</b>：v2 <code>analyzeResultV2</code> max_tokens 600→4000（思考模型在 600 时截断会静默 score0 丢数据，属正确性必要）。单篇分析 token 预算上限上升，实际消耗看模型。<br>
+  2. <b>遗留</b>：<code>update_sources</code> 工具标记 DEPRECATED（硬编码 manchester-united、写旧 firecrawl schema），推荐用 Supabase 控制台改信源——是否下架由最终审查裁断为「保留+警示」，见 ② P2-8。</div>
+
   <div class="foot">
-    <b>证据来源</b>：代码评审（registry.js / tool-graph.json / graph.js / harness-check.js / ai.js / test-scrape.js / check-quality.js / run-pipeline.js）+ 实测复现（<code>node --check App.tsx</code> → ERR_UNKNOWN_FILE_EXTENSION）+ 真实日志 logs/.tool-usage.jsonl。<br>
-    <b>诚实声明</b>：本页所有「修后」效果均为改造后可通过测试/日志验证的标准，不是预估话术。
+    <b>证据来源</b>：代码评审（registry.js / tool-graph.json / graph.js / harness-check.js / ai.js / test-scrape.js / check-quality.js / run-pipeline.js）+ 实测复现（<code>node --check App.tsx</code> → ERR_UNKNOWN_FILE_EXTENSION）+ 真实日志 logs/.tool-usage.jsonl + live DeepSeek 调用（v2 tool_calls 验证）。<br>
+    <b>诚实声明</b>：本页「修后」效果均已通过测试 / 复现 / live 调用验证，非预估话术。
   </div>
 
 </div>
