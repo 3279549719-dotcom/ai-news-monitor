@@ -323,7 +323,11 @@ function matchesCondition(cond, result) {
       }
       continue;
     }
-    if (Array.isArray(v)) return Array.isArray(result[k]) && v.every(x => result[k].includes(x));
+    if (Array.isArray(v)) {
+      // 数组包含匹配：不匹配即返回 false，匹配则继续检查其余键（与运算符分支一致，避免提前退出）
+      if (!(Array.isArray(result[k]) && v.every(x => result[k].includes(x)))) return false;
+      continue;
+    }
     if (result[k] !== v) return false;
   }
   return true;
@@ -720,16 +724,19 @@ test('getStats: 18 工具 / 5 核 / 13 按需', () => {
   assert.equal(s.deferred, 13);
 });
 
-test('每个工具都有 cli_template 且含自己的参数名', () => {
+test('每个工具都有非空 cli_template（真实命令模板）', () => {
   for (const [name, t] of Object.entries(REGISTRY)) {
-    assert.ok(t.cli_template && t.cli_template.includes('node') || t.cli_template.includes('npm'),
-      `${name} 缺 cli_template`);
-    for (const p of Object.keys(t.parameters.properties || {})) {
-      const kebab = p.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-      assert.ok(t.cli_template.includes(`--${kebab}`) || t.cli_template.includes(`<${p}>`) || t.cli_template.includes('${' + p + '}') || p === 'message',
-        `${name} 的 cli_template 未覆盖参数 --${kebab}`);
-    }
+    assert.ok(t.cli_template && /(node |npm )/.test(t.cli_template),
+      `${name} 缺 cli_template（应含 node 或 npm 调用）`);
   }
+});
+
+// 说明：不做"每个参数名必须出现在 cli_template"的强断言——语义参数（mode/action/skipCheck
+// 等）的真实 flag 与 kebab 名不同（--light/--info/--no-check），模板本就用真实 flag。
+// 参数↔flag 一致性由 registry --check-cli 的 validateCli() 做 best-effort 警告（非阻断）。
+test('validateCli 不抛异常且返回数组', () => {
+  const warns = validateCli();
+  assert.ok(Array.isArray(warns));
 });
 ```
 
@@ -827,7 +834,7 @@ function validateCli(reg = REGISTRY) {
   return warnings;
 }
 ```
-`registry.js` 顶部需 `const path = require('path'); const fs = require('fs');`（检查是否已有）。守卫里：
+`registry.js` 顶部需 `const path = require('path'); const fs = require('fs');`（检查是否已有）。`module.exports` 需把 `validateCli` 一并导出（registry.test.js 从 './registry' 导入它）。守卫里：
 ```js
 if (process.argv.includes('--check-cli')) {
   const warns = validateCli();
