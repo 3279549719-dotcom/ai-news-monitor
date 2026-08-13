@@ -224,10 +224,10 @@ function executeCommand(cmdDef) {
  * 按优先级排序：排在前面的先执行。
  */
 const DIAGNOSIS_TO_COMMAND = [
-  { label: 'Docker/crawl4ai', command: 'docker-restart' },
   { label: 'node_modules', command: 'npm-install' },
   { label: '今日 pipeline', command: 'restart-pipeline' },
   { label: 'Pipeline 日志', command: 'restart-pipeline' },
+  { label: '云端 Pipeline', command: 'restart-pipeline' },
 ];
 
 /**

@@ -132,7 +132,7 @@ function checkLastRun() {
 
 /* ===== 检查 4: 最近一次 pipeline 日志（云端模式下查 GitHub Actions 运行记录） ===== */
 async function checkPipeLog() {
-  if (ARGS.has('--actions')) return await checkCloudPipelineRuns();
+  if (ARGS.has('--actions') || ARGS.has('--light')) return await checkCloudPipelineRuns();
   const logsDir = path.join(ROOT, 'logs');
   try {
     const logFiles = fs.readdirSync(logsDir)

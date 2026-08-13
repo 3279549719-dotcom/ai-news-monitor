@@ -1,38 +1,24 @@
 {
   "version": "1",
   "commands": {
-    "docker-restart": {
-      "description": "重启 crawl4ai 容器",
-      "command": "docker restart crawl4ai",
+    "restart-pipeline": {
+      "description": "触发云端 GitHub Actions 管线 daily-pipeline.yml（替代本机 run-pipeline，云端自起 crawl4ai 容器）",
+      "command": "gh workflow run daily-pipeline.yml --repo 3279549719-dotcom/ai-news-monitor --ref master",
       "timeoutMs": 60000,
       "maxRetries": 1,
       "reversible": false
     },
     "npm-install": {
-      "description": "重新安装 npm 依赖",
+      "description": "重装本机 ops 脚本依赖（ops-check/auto-heal 等仍在本机运行的巡检与自愈脚本）",
       "command": "npm ci",
       "timeoutMs": 120000,
       "maxRetries": 1,
       "reversible": true
     },
-    "clear-logs": {
-      "description": "清理超过7天的日志",
-      "command": "node scripts/cleanup-logs.js",
-      "timeoutMs": 30000,
-      "maxRetries": 0,
-      "reversible": false
-    },
-    "restart-pipeline": {
-      "description": "手动触发 pipeline",
-      "command": "node scripts/run-pipeline.js --no-alert",
-      "timeoutMs": 600000,
-      "maxRetries": 0,
-      "reversible": false
-    },
     "git-pull": {
-      "description": "拉取最新代码",
+      "description": "同步远端仓库提交（代码/workflow 变更 + 云端回写的 .last-run.json 状态）",
       "command": "git pull origin master",
-      "timeoutMs": 30000,
+      "timeoutMs": 60000,
       "maxRetries": 1,
       "reversible": true
     }
