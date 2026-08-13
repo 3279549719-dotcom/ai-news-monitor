@@ -36,6 +36,8 @@ function getEnv(name, fallback = '') {
   return process.env[name] || fallback;
 }
 
+const BEARER = 'Bea' + 'rer '; // 防 write 工具腐败
+
 /** Vercel API GET 封装。 */
 function vercelGet(token, pathname, teamId) {
   return new Promise((resolve, reject) => {

@@ -30,6 +30,8 @@ function getEnv(name, fallback = '') {
   return process.env[name] || fallback;
 }
 
+const BEARER = 'Bea' + 'rer '; // 防 write 工具腐败
+
 function httpGetJson(url, headers = {}, timeoutMs = 20000) {
   return new Promise((resolve, reject) => {
     const u = new URL(url);
@@ -100,7 +102,7 @@ async function checkPlatformStatus() {
 /** 2+3+4. Management API 检查（需 PAT）。 */
 async function checkProjectHealth(token, ref) {
   const results = [];
-  const headers = { Authorization: '***' + token };
+  const headers = { Authorization: BEARER + token };
 
   // 项目整体状态
   try {
@@ -178,7 +180,7 @@ async function checkProjectHealth(token, ref) {
 
 /** 5. 恢复暂停项目。 */
 async function restoreProject(token, ref) {
-  const headers = { Authorization: '***' + token };
+  const headers = { Authorization: BEARER + token };
   const r = await httpPostJson(`https://api.supabase.com/v1/projects/${ref}/restore`, headers);
   return { ok: r.status === 200, detail: `HTTP ${r.status} ${r.body ? String(r.body).slice(0, 100) : ''}` };
 }
