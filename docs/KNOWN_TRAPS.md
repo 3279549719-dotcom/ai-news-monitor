@@ -82,6 +82,7 @@
 
 - **Vercel 部署：项目未创建时报 `project_not_found`**：`vercel deploy --project <name>` 不会自动建项目，需先 `vercel project add <name> --scope <team>`；`VITE_*` 构建变量用 `vercel env add` 持久化到项目级
 - **⚠️ Vercel 前端部署标准姿势（2026-08-07 实测）**：`cd client && vercel deploy --prod`。⚠️ **勿用仓库根 `vercel deploy client --prod`**——`.vercel` 链接错乱时会误建项目。部署前先 `cat client/.vercel/project.json` 确认 `projectName` 是 `ai-news-monitor`
+- **前端部署快捷命令（2026-08-13 新增）**：直接 `npm run deploy`（含校验 project.json + 交互确认；`--no-confirm` 自动化，`--build` 先本地预检）。校验失败会打印修复指引，不要再手动折腾构建队列/项目根目录
 - **⚠️ Vercel 构建 `npm install` 503 陷阱（2026-08-07）**：本机 `.npmrc` 的 npmmirror 会被 Vercel 构建机继承，对美国节点不稳定。**项目级加 `NPM_CONFIG_REGISTRY=https://registry.npmjs.org/` 环境变量**
 
 ---

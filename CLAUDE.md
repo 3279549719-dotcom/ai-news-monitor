@@ -9,6 +9,7 @@ AI 驱动的多关键词信息监控工具。从用户配置的白名单信源�
 ```bash
 node src/index.js              # 手动运行一次
 npm run ops:run-auto           # 手动模拟定时（含拉起 crawl4ai + 落日志）
+npm run deploy                 # Vercel 前端部署（校验 project.json 链接 + 确认 + deploy --prod）
 npm run ops:schedule           # 本地开发手动用：注册 Windows 任务计划（每日 08:00 已退役移交 CI）
 npm run ops:schedule:info      # 查看定时任务；npm run ops:unschedule 卸载
 ```
