@@ -26,7 +26,7 @@ function fmtDate() {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-function main() {
+async function main() {
   const today = fmtDate();
   const lines = [`📊 ai-news-monitor 运维日报 | ${today}`, '---'];
 
@@ -72,6 +72,24 @@ function main() {
   }
   lines.push(`今日 pipeline：${pipelineLine}`);
 
+  // 4. 外部平台（Vercel + Supabase；无凭据时跳过）
+  try {
+    const { checkVercel } = require('./vercel-check');
+    const vc = await checkVercel();
+    if (vc.ok !== null) {
+      lines.push(`Vercel 部署：${vc.ok ? '✅ 正常' : '⚠️ ' + vc.detail.slice(0, 50)}`);
+    }
+  } catch (e) { /* 忽略外部平台错误 */ }
+  try {
+    const { checkSupabase } = require('./supabase-check');
+    const sbs = await checkSupabase();
+    const bad = sbs.filter((r) => r.ok === false);
+    const platform = sbs.find((r) => r.label === 'Supabase 平台状态');
+    if (platform && platform.ok !== null) {
+      lines.push(`Supabase：${bad.length === 0 ? '✅ 正常' : '⚠️ ' + bad.length + ' 项异常'}`);
+    }
+  } catch (e) { /* 忽略外部平台错误 */ }
+
   // 4. 结语
   lines.push('---');
   if (failCount === 0) {
@@ -83,5 +101,5 @@ function main() {
   console.log(lines.join('\n'));
 }
 
-if (require.main === module) main();
+if (require.main === module) main().catch((e) => { console.error(e); process.exit(2); });
 module.exports = { main };

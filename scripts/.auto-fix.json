@@ -21,6 +21,20 @@
       "timeoutMs": 60000,
       "maxRetries": 1,
       "reversible": true
+    },
+    "vercel-redeploy": {
+      "description": "重新部署 Vercel 最新失败部署（带 1 小时冷却防循环）",
+      "command": "node scripts/vercel-check.js --redeploy",
+      "timeoutMs": 60000,
+      "maxRetries": 0,
+      "reversible": true
+    },
+    "supabase-restore": {
+      "description": "恢复被暂停的 Supabase 项目",
+      "command": "node scripts/supabase-check.js --restore",
+      "timeoutMs": 60000,
+      "maxRetries": 0,
+      "reversible": false
     }
   },
   "globalLimits": {

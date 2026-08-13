@@ -283,6 +283,18 @@ async function main() {
   results.push(await checkSupabaseArticles());
   results.push(checkNodeModules());
 
+  // 外部平台巡检（Vercel / Supabase 平台级；无凭据时自动跳过）
+  const { checkVercel } = require('./vercel-check');
+  const { checkSupabase } = require('./supabase-check');
+  const vercelResult = await checkVercel();
+  if (vercelResult.ok !== null) {
+    results.push({ label: 'Vercel 部署', ok: vercelResult.ok, detail: vercelResult.detail });
+  }
+  const supabaseResults = await checkSupabase();
+  for (const r of supabaseResults) {
+    if (r.ok !== null) results.push({ label: r.label, ok: r.ok, detail: r.detail });
+  }
+
   const failed = results.filter(r => r.ok === false);
   const ok = results.filter(r => r.ok === true);
   const skipped = results.filter(r => r.ok === null);
