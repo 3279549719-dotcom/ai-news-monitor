@@ -25,6 +25,8 @@ const fs = require('fs');
 const path = require('path');
 const { spawn, spawnSync } = require('child_process');
 
+const { graphSuggestNext } = require('../src/tools/graph');
+
 const ROOT = path.join(__dirname, '..');
 process.chdir(ROOT);
 
@@ -298,6 +300,7 @@ function outputJsonStatus(crawl4aiReady, exitCode) {
 
   console.log(JSON.stringify({
     success: exitCode === 0,
+    suggested_next: graphSuggestNext('pipeline_run', { success: exitCode === 0, crawl4ai_ready: crawl4aiReady }),
     exit_code: exitCode,
     date: localStamp(),
     crawl4ai_ready: crawl4aiReady,

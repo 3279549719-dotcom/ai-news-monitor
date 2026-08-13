@@ -91,21 +91,40 @@ function graphSuggestNext(toolName, result) {
   return out;
 }
 
-/**
- * 简化条件匹配：if 里所有 key 在 result 中的值 === 预期值（浅比较）。
- * 空 if 视为恒真。
- * @param {Object|null} cond - 条件对象。
- * @param {Object|null} result - 实际返回值。
- * @returns {boolean}
- */
 function matchesCondition(cond, result) {
   if (!cond || Object.keys(cond).length === 0) return true;
   if (!result || typeof result !== 'object') return false;
-  return Object.entries(cond).every(([k, v]) => {
-    const rv = result[k];
-    if (Array.isArray(v)) return Array.isArray(rv) && v.every(x => rv.includes(x));
-    return rv === v;
-  });
+
+  // $and / $or 顶层组合
+  if (cond.$and && Array.isArray(cond.$and)) {
+    if (!cond.$and.every(c => matchesCondition(c, result))) return false;
+  }
+  if (cond.$or && Array.isArray(cond.$or)) {
+    if (!cond.$or.some(c => matchesCondition(c, result))) return false;
+  }
+
+  for (const [k, v] of Object.entries(cond)) {
+    if (k === '$and' || k === '$or') continue;
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      // 操作符对象，如 { $gte: 1 }
+      const rv = result[k];
+      for (const [op, target] of Object.entries(v)) {
+        switch (op) {
+          case '$gte': if (!(rv >= target)) return false; break;
+          case '$gt':  if (!(rv > target))  return false; break;
+          case '$lte': if (!(rv <= target)) return false; break;
+          case '$lt':  if (!(rv < target))  return false; break;
+          case '$ne':  if (rv === target)   return false; break;
+          case '$eq':  if (rv !== target)   return false; break;
+          default: return false; // 未知操作符保守不匹配
+        }
+      }
+      continue;
+    }
+    if (Array.isArray(v)) return Array.isArray(result[k]) && v.every(x => result[k].includes(x));
+    if (result[k] !== v) return false;
+  }
+  return true;
 }
 
 /**

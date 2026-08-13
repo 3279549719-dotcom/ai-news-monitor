@@ -29,9 +29,7 @@
     },
     "commit_git": {
       "triggers_on": [],
-      "suggest_next": [
-        { "when": "提交成功但未推送", "if": { "pushed": false }, "then": { "tool": "pipeline_schedule", "reason": "可选：确认定时管线是否正常（勿自动推送，推送需用户授权）" } }
-      ]
+      "suggest_next": []
     },
     "pipeline_run": {
       "triggers_on": [],
@@ -70,7 +68,7 @@
     "data_backfill": {
       "triggers_on": [],
       "suggest_next": [
-        { "when": "回填完成", "if": { "processed": 0 }, "then": { "tool": "check_quality", "reason": "回填完成，建议重新验收日报质量" } }
+        { "when": "回填处理了文章", "if": { "processed": { "$gt": 0 } }, "then": { "tool": "check_quality", "reason": "回填处理了文章，建议重新验收日报质量" } }
       ]
     },
     "data_dedup": {
@@ -82,7 +80,7 @@
       "suggest_next": []
     },
     "update_sources": {
-      "triggers_on": ["^src/source-tiers\\.json$", "^src/article-patterns\\.json$"],
+      "triggers_on": [],
       "suggest_next": [
         { "when": "信源配置更新后", "if": { "success": true }, "then": { "tool": "test_scrape", "reason": "信源已更新，建议测试抓取验证" } }
       ]
@@ -94,7 +92,7 @@
     "harness_diagnose": {
       "triggers_on": [],
       "suggest_next": [
-        { "when": "诊断发现语法错误", "if": { "issue_count": 1 }, "then": { "tool": "check_all", "reason": "诊断发现问题，修复后建议跑全套验证" } }
+        { "when": "诊断发现问题", "if": { "issue_count": { "$gte": 1 } }, "then": { "tool": "check_all", "reason": "诊断发现问题，修复后建议跑全套验证" } }
       ]
     }
   }

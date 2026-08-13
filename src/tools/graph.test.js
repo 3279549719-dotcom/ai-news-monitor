@@ -100,3 +100,37 @@ test('matchesCondition: 数组包含匹配', () => {
   assert.strictEqual(matchesCondition({ tags: ['a'] }, { tags: ['a', 'b'] }), true);
   assert.strictEqual(matchesCondition({ tags: ['c'] }, { tags: ['a', 'b'] }), false);
 });
+
+test('matchesCondition: $gte 数值比较', () => {
+  assert.equal(matchesCondition({ issue_count: { $gte: 1 } }, { issue_count: 3 }), true);
+  assert.equal(matchesCondition({ issue_count: { $gte: 1 } }, { issue_count: 0 }), false);
+});
+
+test('matchesCondition: $gt / $lt / $lte', () => {
+  assert.equal(matchesCondition({ processed: { $gt: 0 } }, { processed: 2 }), true);
+  assert.equal(matchesCondition({ processed: { $lt: 5 } }, { processed: 2 }), true);
+  assert.equal(matchesCondition({ score: { $lte: 60 } }, { score: 60 }), true);
+});
+
+test('matchesCondition: 未知操作符保守不匹配', () => {
+  assert.equal(matchesCondition({ n: { $bogus: 1 } }, { n: 1 }), false);
+});
+
+test('matchesCondition: $and / $or 组合', () => {
+  assert.equal(matchesCondition({ $and: [{ a: 1 }, { b: { $gte: 2 } }] }, { a: 1, b: 3 }), true);
+  assert.equal(matchesCondition({ $or: [{ a: 1 }, { b: 1 }] }, { a: 0, b: 0 }), false);
+});
+
+test('graphSuggestNext: data_backfill processed>0 → check_quality（语义修复）', () => {
+  const r = graphSuggestNext('data_backfill', { processed: 3 });
+  assert.deepEqual(r, [{ tool: 'check_quality', reason: '回填处理了文章，建议重新验收日报质量' }]);
+});
+
+test('graphSuggestNext: data_backfill processed=0 → 无建议', () => {
+  assert.deepEqual(graphSuggestNext('data_backfill', { processed: 0 }), []);
+});
+
+test('graphSuggestNext: harness_diagnose issue_count>=1 → check_all', () => {
+  const r = graphSuggestNext('harness_diagnose', { issue_count: 3 });
+  assert.deepEqual(r, [{ tool: 'check_all', reason: '诊断发现问题，修复后建议跑全套验证' }]);
+});
