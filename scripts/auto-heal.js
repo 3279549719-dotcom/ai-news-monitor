@@ -24,6 +24,9 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const ROOT = path.join(__dirname, '..');
+// 平台巡检子进程（vercel-check/supabase-check 不自行加载 dotenv）依赖本进程注入 .env
+try { require('dotenv').config({ path: path.join(ROOT, '.env') }); } catch (e) { console.warn('[auto-heal] dotenv 加载失败: ' + e.message); }
+
 const WHITELIST_PATH = path.join(__dirname, '.auto-fix.json');
 const LAST_RUN_PATH = path.join(ROOT, 'logs', '.last-run.json');
 const AUTO_HEAL_PATH = path.join(ROOT, 'logs', '.auto-heal.json');
@@ -220,6 +223,10 @@ function executeCommand(cmdDef) {
  * 按优先级排序：排在前面的先执行。
  */
 const DIAGNOSIS_TO_COMMAND = [
+  { label: 'Vercel 部署', command: 'vercel-redeploy' },
+  { label: 'Supabase 项目管理', command: 'supabase-restore' },
+  { label: 'Supabase 项目状态', command: 'supabase-restore' },
+
   { label: 'node_modules', command: 'npm-install' },
   { label: '今日 pipeline', command: 'restart-pipeline' },
   { label: 'Pipeline 日志', command: 'restart-pipeline' },
