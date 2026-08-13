@@ -40,9 +40,15 @@ function mapCommandToTool(command) {
     const script = npmScripts()[npmRun[1]];
     if (script) {
       const resolved = normalize(script);
+      const compound = /&&/.test(resolved);
       for (const t of Object.values(REGISTRY)) {
         const c = normalize(t.command || '');
-        if (c && resolved.startsWith(c)) return t.name;
+        if (!c) continue;
+        // 1) 脚本名精确匹配 registry 的 `npm run <name>` 命令
+        const npmCmd = /^npm\s+run\s+([\w:-]+)$/.exec(c);
+        if (npmCmd && npmCmd[1] === npmRun[1]) return t.name;
+        // 2) resolved 命令前缀匹配（复合脚本不做，避免误归属）
+        if (!compound && (resolved === c || resolved.startsWith(c + ' '))) return t.name;
       }
     }
   }

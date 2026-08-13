@@ -18,9 +18,10 @@ const exitCode = input.exit_code ?? tr.exit_code;
 logToolUse({
   tool,
   trigger: 'ai_call',
-  success: exitCode === 0,
+  success: exitCode == null ? undefined : exitCode === 0,
   durationMs: input.duration_ms || 0,
   files: ti.file_path ? [ti.file_path] : [],
-  meta: { command: command.slice(0, 120) },
+  // 脱敏：擦掉行内 env 赋值（如 SUPABASE_KEY=xxx），再截断
+  meta: { command: command.replace(/([A-Z_]{3,})(=)([^\s"']+)/g, '$1$2***').slice(0, 120) },
 });
 process.exit(0);

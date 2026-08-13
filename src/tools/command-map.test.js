@@ -19,6 +19,14 @@ test('npm run ops:quality --report-path=x → check_quality', () => {
   assert.equal(mapCommandToTool('npm run ops:quality --report-path=x'), 'check_quality');
 });
 
+test('npm run lint（复合脚本）→ null，不误归属 check_syntax', () => {
+  assert.equal(mapCommandToTool('npm run lint'), null);
+});
+
+test('npm run ops:auto-heal → pipeline_auto_heal（经 resolved 命令匹配）', () => {
+  assert.equal(mapCommandToTool('npm run ops:auto-heal'), 'pipeline_auto_heal');
+});
+
 test('未知命令 → null', () => {
   assert.equal(mapCommandToTool('echo hello'), null);
 });

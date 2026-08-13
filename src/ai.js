@@ -375,7 +375,12 @@ async function analyzeResultV2(options) {
       return normalizeV2Result(args);
     }
     // fallback: 如果模型没返回 tool_call（兼容性），降级到 v1
-    return parseAnalyzeResult(response.choices[0].message.content || '');
+    const content = response.choices[0].message.content || '';
+    if (!content) {
+      console.warn('[ai.js] analyzeResultV2: 模型未返回 tool_calls 且内容为空，回退 v1');
+      return analyzeResult(options);
+    }
+    return parseAnalyzeResult(content);
   } catch (e) {
     // API 错误时回退到 v1
     console.warn(`[ai.js] function calling failed, fallback to v1: ${e.message}`);

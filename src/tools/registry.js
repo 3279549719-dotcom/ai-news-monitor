@@ -772,6 +772,7 @@ const REGISTRY = {
   update_sources: {
     name: 'update_sources',
     description: [
+      '⚠️ DEPRECATED：脚本已废弃——无参数、硬编码 manchester-united，写旧 fetch_type=firecrawl schema；改信源请用 Supabase 控制台（keyword_sources 表）。',
       '更新 Supabase 中关键词的信源配置（keyword_sources 表）。',
       '支持新增/替换信源 URL、tier 等级、fetch_type（crawl4ai/firecrawl）。',
       '',
@@ -782,18 +783,11 @@ const REGISTRY = {
     ].join('\n'),
     parameters: {
       type: 'object',
-      properties: {
-        keyword: {
-          type: 'string',
-          description: '关键词标识（如 manchester-united、anthropic、dallas-mavericks）',
-        },
-      },
-      required: ['keyword'],
+      properties: {},
+      required: [],
       additionalProperties: false,
     },
-    input_examples: [
-      { keyword: 'manchester-united' },
-    ],
+    input_examples: [{}],
     return_schema: {
       type: 'object',
       properties: {
@@ -803,7 +797,7 @@ const REGISTRY = {
       },
     },
     command: 'node scripts/update-sources.js',
-    cli_template: 'node scripts/update-sources.js --keyword <keyword>',
+    cli_template: 'node scripts/update-sources.js  # ⚠️ DEPRECATED：无参数，硬编码 manchester-united，写旧 firecrawl schema；改信源请用 Supabase 控制台',
     defer_loading: true,
     namespace: 'data',
     tags: ['数据', '配置'],
