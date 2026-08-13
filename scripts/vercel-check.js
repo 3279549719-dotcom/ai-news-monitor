@@ -11,7 +11,7 @@
  *   3. （可选 --redeploy）对失败部署自动重部署，带冷却文件防循环
  *
  * 环境变量：
- *   VERCEL_TOKEN     — 必填，vercel.com/account/tokens 创建（vca_ 开头）
+ *   VERCEL_TOKEN     — 必填，vercel.com/account/tokens 创建（实测本机为 vcp_ 前缀，vca_ 亦为合法格式）
  *   VERCEL_PROJECT   — 可选，项目名（如 ai-news-monitor），不填自动按仓库搜索
  *   VERCEL_TEAM_ID   — 可选，团队项目需要
  *
