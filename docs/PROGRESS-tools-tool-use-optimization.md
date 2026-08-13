@@ -71,7 +71,7 @@
 | 6 | harness --json 诊断 | ✅ done | `harness-check.js --json` + `harness-diagnose.js` 双通道 |
 | 7 | 智能 commit message | ✅ done | `git-commit.js --generate` 调 AI 分析 diff 生成 message |
 | 8 | pipeline --json 状态 | ✅ done | `run-pipeline.js --json` 返回 JSON 结构化流水线状态 |
-| 9 | ai.js function calling v2 | ✅ done | `analyzeResultV2` + `selectArticleLinksV2`，v1 保留为 fallback |
+| 9 | ai.js function calling v2 | ✅ 已接线 v2（AI_FC=v1 可回退，观察期） | `analyzeResultV2` + `selectArticleLinksV2`，v1 保留为 fallback |
 | 10 | 工具链图 + response_format | 🔲 planned (Phase 3) | 工具间调用链可视化 + AI response 格式约束 |
 | 11 | 自愈闭环 | 🔲 planned (Phase 4) | Docker 宕机自动拉起 + 管线失败自动重试 + 告警收敛 |
 
@@ -108,6 +108,10 @@
 - Phase 4 🔲 — 自愈闭环（Docker 自动拉起、失败重试、告警收敛）+ 评测集 + 使用日志数据分析
 
 **使用日志分析入口**：`node src/tools/usage-logger.js`（直接运行输出各工具调用统计）
+
+**usage hook 已接入（PostToolUse Bash）**：`scripts/harness-usage.js` 经 `src/tools/command-map.js` 把每次 Bash 调用归一到 18 工具名，追加到 `logs/.tool-usage.jsonl`。
+
+**评审修复已合并（2026-08-13）**：前端误触发修复（P1-3）/ v2 接线（P0-1，AI_FC=v1 可回退）/ usage hook（P0-2）/ suggest 语义修复（P2-5/6/7）/ cli_template + --check-cli（P2-8/P3-10）。
 
 **重构化简执行清单**：见 [REFACTOR-tools-phase3-analysis.md](REFACTOR-tools-phase3-analysis.md) §七，分三批执行（第一批零风险归档+公共lib，第二批含验证，第三批观察期后）。
 

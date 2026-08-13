@@ -209,7 +209,7 @@ harness 当前产出文本格式。增加 `--json` 模式（可选，不加 flag
 - [x] `getToolIndex()` 返回 18 条索引，每条含 name + summary + namespace + defer_loading
 - [x] 每个工具的 `parameters` 通过 JSON Schema 语法校验（`type: object`、`properties`、`required` 字段齐全）
 - [x] 命名空间分组一致：check(4) / commit(1) / pipeline(3) / ops(3) / data(4) / test(1) / harness(1) = 18
-- [ ] `analyzeResultV2` function calling 路径 + v1 fallback 端到端验证（待实施）
+- [x] `analyzeResultV2` function calling 路径 + v1 fallback 端到端验证（已接线，AI_FC=v1 回退已验证）
 - [ ] harness `--json` 模式与现有文本模式兼容（待实施）
 
 ---

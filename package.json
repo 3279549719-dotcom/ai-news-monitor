@@ -19,6 +19,7 @@
     "build:client": "npm --prefix client run build",
     "test": "node --test \"src/*.test.js\" \"src/tools/*.test.js\" \"scripts/*.test.js\"",
     "test:watch": "node --test --watch \"src/*.test.js\"",
+    "check:tools": "node src/tools/registry.js --check-cli && node --test \"src/tools/*.test.js\"",
     "lint": "npm run lint:backend && npm run lint:client",
     "lint:backend": "node scripts/check-syntax.js",
     "lint:client": "npm --prefix client run lint",

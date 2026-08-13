@@ -71,7 +71,7 @@
 | 5 | harness-diagnose | 可读取 harness 输入生成结构化诊断（issues 含 severity/message/suggestion）| ✅ |
 | 6 | git-commit --generate | 支持 `--generate` AI 生成 commit message，`--generate --json` 输出结构化 JSON | ✅ |
 | 7 | run-pipeline --json | 支持 `--json` 输出结构化状态（success/exit_code/crawl4ai_ready 等）| ✅ |
-| 8 | ai.js function calling | `analyzeResultV2` + `selectArticleLinksV2` 用原生 tools 参数，有 fallback 到 v1 | ✅ |
+| 8 | ai.js function calling | `analyzeResultV2` + `selectArticleLinksV2` 用原生 tools 参数，有 fallback 到 v1 | ✅ 已接线 v2（env AI_FC=v1 可回退） |
 | 9 | 命名空间分组 | 工具按 check/commit/pipeline/ops/data/harness/test 命名空间分组 | ✅ |
 
 ## 六、数据/权限影响
