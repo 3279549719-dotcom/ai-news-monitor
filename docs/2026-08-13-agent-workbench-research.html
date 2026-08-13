@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>长时 Agent 框架调研 · 工作台设计输入</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2230; --border:#2d333b;
+    --text:#e6edf3; --muted:#8b949e; --blue:#58a6ff; --green:#3fb950;
+    --amber:#d29922; --red:#f85149; --purple:#bc8cff; --cyan:#39c5cf;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:-apple-system,"Segoe UI","Microsoft YaHei",system-ui,sans-serif;line-height:1.65;padding:28px 20px;max-width:1080px;margin:0 auto}
+  header{margin-bottom:20px}
+  h1{font-size:26px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:14px;margin-top:6px}
+  .meta{color:var(--muted);font-size:12.5px;margin-top:4px;font-family:var(--mono)}
+
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin:18px 0 14px}
+  .tab{background:var(--panel2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:14px;font-family:inherit}
+  .tab:hover{border-color:var(--blue)}
+  .tab.active{background:var(--blue);color:#0d1117;border-color:var(--blue);font-weight:700}
+  .pane{display:none}.pane.show{display:block}
+
+  /* find cards */
+  .find{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:14px}
+  .find h3{font-size:16px;margin-bottom:8px;display:flex;gap:10px;align-items:center}
+  .num{background:var(--blue);color:#0d1117;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex:none}
+  .find p{font-size:14px;color:#c9d1d9}
+  .find .k{font-size:13px;color:var(--muted);margin-top:8px;font-family:var(--mono)}
+  .pill{display:inline-block;padding:1px 9px;border-radius:20px;font-size:11.5px;font-weight:600;margin-right:6px}
+  .pill.b{background:rgba(88,166,255,.15);color:var(--blue)}
+  .pill.g{background:rgba(63,185,80,.15);color:var(--green)}
+  .pill.a{background:rgba(210,153,34,.15);color:var(--amber)}
+  .pill.r{background:rgba(248,81,73,.15);color:var(--red)}
+
+  /* blueprint svg */
+  .bpwrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+  .bpwrap svg{max-width:100%;height:auto}
+  .bpnote{color:var(--muted);font-size:12.5px;margin-top:10px;text-align:left;padding:0 8px}
+
+  /* table */
+  .tblwrap{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;position:sticky;top:0;background:var(--panel)}
+  tr:last-child td{border-bottom:none}
+  td a{color:var(--blue);text-decoration:none;font-family:var(--mono);font-size:12px}
+  td a:hover{text-decoration:underline}
+  .stars{color:var(--amber);font-family:var(--mono);font-size:12px}
+  .strong{color:var(--green);font-weight:700}
+  .weak{color:var(--red)}
+  .mid{color:var(--amber)}
+  .tiny{color:var(--muted);font-size:11.5px}
+
+  .verdict{background:linear-gradient(180deg,rgba(88,166,255,.08),rgba(88,166,255,.02));border:1px solid rgba(88,166,255,.4);border-radius:12px;padding:16px 20px;margin-top:14px}
+  .verdict h3{color:var(--blue);font-size:15px;margin-bottom:6px}
+  .verdict p{font-size:14px}
+  footer{color:var(--muted);font-size:12px;text-align:center;padding:24px 0 10px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🔭 长时 Agent 框架调研报告</h1>
+  <div class="sub">输入：为「本地网页工作台（一句话目标 → agent 长时自主做软件项目 → 断点续跑）」做技术选型输入</div>
+  <div class="meta">2026-08-13 · 2 个调研 subagent（loop/编排 + 持久化/监控）· 所有 repo URL 均经 GitHub API 验证真实可 clone</div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-t="find">① 三个核心发现</button>
+  <button class="tab" data-t="bp">② 架构蓝图</button>
+  <button class="tab" data-t="list">③ 框架清单</button>
+</div>
+
+<!-- ============ 核心发现 ============ -->
+<div class="pane show" id="pane-find">
+  <div class="find">
+    <h3><span class="num">1</span>断点续跑别自研——有官方现成件，且要分两层</h3>
+    <p>会话层用现成件：<b>Claude Agent SDK</b>（`resume(session_id)` / `continue` 一条语句接回上次会话，进程重启上下文不丢），或 <b>LangGraph</b> checkpoint（`thread_id` 快照 + SQLite/Postgres）。产物层用「文件系统即状态」：agent 每完成一个原子任务就把 <span class="pill g">PROGRESS.md</span><span class="pill b">git commit</span> 写盘（官方 `commit-on-stop` 兜底）。<b>两层都做</b>才扛得住几小时长跑 + 随机断电。</p>
+    <p class="k">→ 参考: anthropics/claude-agent-sdk · langchain-ai/langgraph · anthropics/cwc-long-running-agents</p>
+  </div>
+  <div class="find">
+    <h3><span class="num">2</span>长跑不跑偏靠「质量门」，不靠更长上下文</h3>
+    <p>Anthropic 官方 `cwc-long-running-agents`（`/goal` 背后的最小实现）的质量闭环三原语：① <b>Default-FAIL 契约</b>——验收项从 `false` 开始，agent 必须先用 Read 看过证据（截图/日志）才允许标 pass（"没看证据不许说完成"）；② <b>Fresh-context evaluator</b>——无写权限的独立 subagent 审查 diff，返回 PASS/NEEDS_WORK，<b>NEEDS_WORK 直接成为下一轮起始 prompt</b>；③ <b>Agent-maintained handoff</b>——每个会话只做一个 feature，agent 自己写 PROGRESS.md。这正是你说的 <span class="pill b">G↔E 独立 loop</span> 的官方验证版，可直接映射到 hooks。</p>
+    <p class="k">→ 这就是「AI 挑自己的错不靠谱」的正解：评估器必须独立 + 无写权限 + 看证据</p>
+  </div>
+  <div class="find">
+    <h3><span class="num">3</span>网页壳不用从零造——现成三层可拼</h3>
+    <p>界面层抄 <b>OpenHands</b> 的 React SPA（Agent Canvas：聊天 + Xterm 终端 + 文件树 + 浏览器四视图，事件流驱动刷新）；控制面参考 <b>OpenClaw</b> 的 Gateway 单点管全部会话 + 设备配对认证；会话层用 SDK 的 SessionStore adapter 把 transcript 镜像到共享存储实现跨进程恢复。<b>轻量现成品</b>也有：HolyClaude（docker 一键起）、`claudecode_webui`（包 Agent SDK + FastAPI + Vue3）、`claude-code-webui`（从 JSONL transcript 推导状态）。</p>
+    <p class="k">→ 结论: 最小可用 = 网页壳(抄 OpenHands 交互) + 调度(claude-agent-sdk / claude -p) + 质量门(cwc 三原语)</p>
+  </div>
+  <div class="verdict">
+    <h3>📌 对本工作台的落地启示（方案 A 升级版）</h3>
+    <p>断点续跑用 <b>claude-agent-sdk 的 session 持久化</b>（不用自研状态机）；质量闭环直接搬 <b>cwc 三原语</b>（Default-FAIL + 无写权限 evaluator + PROGRESS/git）；网页壳先抄 <b>OpenHands 四视图交互</b>，自研 ~50 行 Express 状态接口 + SSE 推进度。MetaGPT（一句话→软件仓库）是产品形态最接近的参照。重型方案（Temporal/trigger.dev/AgentOps/Letta）一致判为 <span class="pill r">过度工程</span>，不碰。</p>
+  </div>
+</div>
+
+<!-- ============ 架构蓝图 ============ -->
+<div class="pane" id="pane-bp">
+  <div class="bpwrap">
+  <svg viewBox="0 0 800 430" xmlns="http://www.w3.org/2000/svg" font-family="Microsoft YaHei, sans-serif">
+    <defs>
+      <marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#58a6ff"/></marker>
+    </defs>
+    <!-- 用户 -->
+    <rect x="280" y="14" width="240" height="42" rx="10" fill="#1c2230" stroke="#58a6ff"/>
+    <text x="400" y="40" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="bold">🧑 你 — 浏览器打开 localhost</text>
+    <line x1="400" y1="56" x2="400" y2="76" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar)"/>
+    <text x="412" y="70" fill="#8b949e" font-size="11">输一句话目标 / 看进度 / 点批准</text>
+
+    <!-- 网页壳 -->
+    <rect x="200" y="80" width="400" height="62" rx="10" fill="#161b22" stroke="#bc8cff"/>
+    <text x="400" y="104" text-anchor="middle" fill="#bc8cff" font-size="13" font-weight="bold">① 网页壳（OpenHands 式）</text>
+    <text x="400" y="124" text-anchor="middle" fill="#8b949e" font-size="11.5">聊天 + 终端 + 文件树 + 浏览器四视图 · 事件流驱动刷新</text>
+    <line x1="400" y1="142" x2="400" y2="162" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- 控制面 -->
+    <rect x="200" y="166" width="400" height="52" rx="10" fill="#161b22" stroke="#39c5cf"/>
+    <text x="400" y="188" text-anchor="middle" fill="#39c5cf" font-size="13" font-weight="bold">② 控制面（OpenClaw 式 Gateway）</text>
+    <text x="400" y="207" text-anchor="middle" fill="#8b949e" font-size="11.5">Node 服务：任务列表 · 状态落盘 · 成本/预算护栏 · 危险动作门禁</text>
+    <line x1="400" y1="218" x2="400" y2="238" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- 会话层 -->
+    <rect x="200" y="242" width="400" height="52" rx="10" fill="#161b22" stroke="#58a6ff"/>
+    <text x="400" y="264" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="bold">③ 会话层（claude-agent-sdk / claude -p）</text>
+    <text x="400" y="283" text-anchor="middle" fill="#8b949e" font-size="11.5">session_id 落盘 + resume 断点续跑 · max_turns/预算上限</text>
+    <line x1="400" y1="294" x2="400" y2="314" stroke="#58a6ff" stroke-width="2" marker-end="url(#ar)"/>
+
+    <!-- 质量门 -->
+    <rect x="200" y="318" width="400" height="60" rx="10" fill="#161b22" stroke="#3fb950"/>
+    <text x="400" y="340" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="bold">④ 质量门（cwc 三原语）</text>
+    <text x="400" y="360" text-anchor="middle" fill="#8b949e" font-size="11.5">Default-FAIL（看证据才许说完成）</text>
+    <text x="400" y="374" text-anchor="middle" fill="#8b949e" font-size="11.5">Fresh-context evaluator（无写权限，NEEDS_WORK→下轮）</text>
+
+    <!-- 产物层 -->
+    <rect x="200" y="384" width="400" height="36" rx="10" fill="#161b22" stroke="#d29922"/>
+    <text x="400" y="407" text-anchor="middle" fill="#d29922" font-size="12" font-weight="bold">⑤ 产物层 = PROGRESS.md + git commit（唯一跨会话状态）</text>
+  </svg>
+  <div class="bpnote">
+    五层自上而下；②③④是工作台要写的核心（薄壳），①抄 OpenHands 交互，⑤复用文档链模式。
+    断点续跑靠 ③session 落盘 + ⑤git 提交两层；跑偏靠 ④质量门收敛；乱花钱/危险动作靠 ② 门禁 + 网页批准。
+  </div>
+  </div>
+</div>
+
+<!-- ============ 框架清单 ============ -->
+<div class="pane" id="pane-list">
+  <div class="tblwrap">
+  <table>
+    <thead><tr><th>框架</th><th>仓库</th><th>★</th><th>断点续跑</th><th>网页壳</th><th>借鉴点</th></tr></thead>
+    <tbody>
+      <tr><td><b>claude-agent-sdk</b></td><td><a href="https://github.com/anthropics/claude-agent-sdk-typescript">anthropics/claude-agent-sdk-typescript</a></td><td class="stars">1.7k</td><td class="strong">原生强</td><td>无(需自建)</td><td>session 落盘+resume 断点续跑；预算上限；SessionStore 跨进程恢复</td></tr>
+      <tr><td><b>cwc-long-running-agents</b></td><td><a href="https://github.com/anthropics/cwc-long-running-agents">anthropics/cwc-long-running-agents</a></td><td class="stars">643</td><td class="strong">强(文件+git)</td><td>无</td><td>质量闭环三原语：Default-FAIL + 无写权限 evaluator + PROGRESS/git</td></tr>
+      <tr><td><b>LangGraph</b></td><td><a href="https://github.com/langchain-ai/langgraph">langchain-ai/langgraph</a></td><td class="stars">39.6k</td><td class="strong">强</td><td>Studio</td><td>checkpoint+thread_id；"副作用包 task、重放不重复执行"的重放语义</td></tr>
+      <tr><td><b>MetaGPT</b></td><td><a href="https://github.com/FoundationAgents/MetaGPT">FoundationAgents/MetaGPT</a></td><td class="stars">69.8k</td><td class="mid">中(产物落盘)</td><td>无</td><td>一句话→软件仓库，产品形态最接近；角色产结构化工件接力</td></tr>
+      <tr><td><b>CrewAI</b></td><td><a href="https://github.com/crewAIInc/crewAI">crewAIInc/crewAI</a></td><td class="stars">57k</td><td class="mid">中</td><td>无</td><td>每 task 强制 expected_output(=验收标准)；hierarchical manager 委派</td></tr>
+      <tr><td><b>AutoGen</b></td><td><a href="https://github.com/microsoft/autogen">microsoft/autogen</a></td><td class="stars">60.4k</td><td class="weak">弱</td><td>Studio</td><td>循环必须带安全退出条件(防死循环)；LLM 选下一位 speaker</td></tr>
+      <tr><td><b>OpenHands</b></td><td><a href="https://github.com/OpenHands/OpenHands">OpenHands/OpenHands</a></td><td class="stars">83.9k</td><td class="mid">中</td><td class="strong">React SPA</td><td>Agent Canvas 四视图 + 事件流驱动；网页壳 UI 直接抄</td></tr>
+      <tr><td><b>OpenClaw</b></td><td><a href="https://github.com/openclaw/openclaw">openclaw/openclaw</a></td><td class="stars">386k</td><td class="strong">强(daemon)</td><td>有</td><td>Gateway 控制面单点管会话；网页控制台+设备配对认证 ⚠️曾出安全事件</td></tr>
+      <tr><td><b>HolyClaude</b></td><td><a href="https://github.com/CoderLuii/HolyClaude">CoderLuii/HolyClaude</a></td><td class="stars">2.5k</td><td class="mid">中</td><td class="strong">有</td><td>docker compose 一键起 Claude Code + 8 CLI + 浏览器</td></tr>
+      <tr><td><b>claudecode_webui</b></td><td><a href="https://github.com/EdanStarfire/claudecode_webui">EdanStarfire/claudecode_webui</a></td><td class="stars">15</td><td class="mid">中</td><td class="strong">有</td><td>直接包 Agent SDK + FastAPI + Vue3；multi-minion 子会话 + cron</td></tr>
+      <tr><td><b>claude-code-webui</b></td><td><a href="https://github.com/gooooloo/claude-code-webui">gooooloo/claude-code-webui</a></td><td class="stars">—</td><td class="mid">中</td><td class="strong">有</td><td>从 JSONL transcript 推导状态(无服务端状态机)；浏览器批准工具调用</td></tr>
+      <tr><td><b>ruflo(claude-flow)</b></td><td><a href="https://github.com/ruvnet/ruflo">ruvnet/ruflo</a></td><td class="stars">67.8k</td><td class="mid">中</td><td>有</td><td>"输出落盘即进度"；⚠️供应链注入前科+星标增速异常，选型谨慎</td></tr>
+      <tr><td><b>browser-use</b></td><td><a href="https://github.com/browser-use/browser-use">browser-use/browser-use</a></td><td class="stars">109k</td><td class="weak">弱</td><td>无</td><td>loop 检测 + 行为 nudges 防死循环；"确认动作真生效再继续"</td></tr>
+      <tr><td><b>swarm</b></td><td><a href="https://github.com/openai/swarm">openai/swarm</a></td><td class="stars">21.9k</td><td class="weak">无(已退役)</td><td>无</td><td>handoff 交接模式(返回 Agent 对象)；适合主控→专业 agent 路由</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tiny" style="margin-top:10px">★ 为 2026-08-13 实测星标。断点续跑强度 = subagent 对"长时间运行/进程重启恢复"的评估。⚠️ = 有安全/供应链风险提示。</p>
+</div>
+
+<footer>调研输入 → docs/2026-08-13-agent-workbench-draft.md · 综合 2 个 subagent 报告 · 2026-08-13</footer>
+
+<script>
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.pane').forEach(x=>x.classList.remove('show'));
+    t.classList.add('active');
+    document.getElementById('pane-'+t.dataset.t).classList.add('show');
+  };
+});
+</script>
+</body>
+</html>
