@@ -133,16 +133,34 @@ function main() {
   if (amend) cargs.push('--amend', '--no-edit');
   if (message) cargs.push('-m', message);
 
+  const t0 = Date.now();
   const c = run('git', cargs);
-  if (c.status !== 0) process.exit(c.status || 1);
+  if (c.status !== 0) {
+    logUsage('commit_git', false, Date.now() - t0, { mode: 'manual', message: message ? 'provided' : 'amend' });
+    process.exit(c.status || 1);
+  }
 
   if (push) {
     const br = run('git', ['branch', '--show-current']).stdout.trim();
     const p = run('git', ['push', 'origin', br]);
-    if (p.status !== 0) process.exit(p.status || 1);
+    if (p.status !== 0) {
+      logUsage('commit_git', false, Date.now() - t0, { mode: 'manual', pushed: false });
+      process.exit(p.status || 1);
+    }
     console.log(`✓ 已推送 origin/${br}`);
+    logUsage('commit_git', true, Date.now() - t0, { mode: 'manual', pushed: true, branch: br });
+  } else {
+    logUsage('commit_git', true, Date.now() - t0, { mode: 'manual', pushed: false });
   }
   console.log('✓ 提交完成');
+}
+
+/** 记录工具使用日志（静默降级）。 */
+function logUsage(tool, success, durationMs, meta) {
+  try {
+    const { logToolUse } = require('../src/tools/usage-logger');
+    logToolUse({ tool, trigger: 'ai_call', success, durationMs, meta });
+  } catch (e) { /* 日志失败不影响提交 */ }
 }
 
 // ── AI 生成 commit message ──────────────────────────────────────────
@@ -261,14 +279,24 @@ function doCommit(msg, opts) {
   if (opts.noCheck) cargs.push('--no-verify');
   cargs.push('-m', msg);
 
+  const t0 = Date.now();
   const c = run('git', cargs);
-  if (c.status !== 0) process.exit(c.status || 1);
+  if (c.status !== 0) {
+    logUsage('commit_git', false, Date.now() - t0, { mode: 'generate', message: msg });
+    process.exit(c.status || 1);
+  }
 
   if (opts.push) {
     const br = run('git', ['branch', '--show-current']).stdout.trim();
     const p = run('git', ['push', 'origin', br]);
-    if (p.status !== 0) process.exit(p.status || 1);
+    if (p.status !== 0) {
+      logUsage('commit_git', false, Date.now() - t0, { mode: 'generate', pushed: false });
+      process.exit(p.status || 1);
+    }
     console.log(`✓ 已推送 origin/${br}`);
+    logUsage('commit_git', true, Date.now() - t0, { mode: 'generate', pushed: true, branch: br, message: msg });
+  } else {
+    logUsage('commit_git', true, Date.now() - t0, { mode: 'generate', pushed: false, message: msg });
   }
   console.log(`✓ 提交完成: ${msg}`);
 }

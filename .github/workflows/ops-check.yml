@@ -34,6 +34,7 @@ jobs:
         with:
           name: ops-check-result
           path: logs/.ops-check.json
+          include-hidden-files: true
           retention-days: 7
 
   alert-on-failure:

@@ -33,49 +33,81 @@ try {
 
 const fp = (input.tool_input && (input.tool_input.file_path || input.tool_input.path)) || '';
 const norm = String(fp).replace(/\\/g, '/');
-const isFrontend = /^client\//.test(norm) && /\.(ts|tsx|js|jsx|css)$/.test(norm);
-const isBackend = /^(src|scripts)\//.test(norm) && /\.js$/.test(norm);
+
+// ─── 数据驱动 hook：优先读 tool-graph.json，缺失时回退旧硬编码 ───
+let graph = null;
+try {
+  graph = require('../src/tools/graph');
+} catch (e) {
+  graph = null; // graph 模块不可用时回退硬编码
+}
 
 const results = [];
 
-if (isFrontend) {
-  const typeCheck = run('npm', ['run', 'type-check'], path.join(ROOT, 'client'));
-  results.push({
-    stage: 'type_check',
-    passed: typeCheck.ok,
-    summary: typeCheck.ok ? 'TypeScript 类型检查通过' : (typeCheck.stderr || '类型检查失败'),
-  });
-  const lint = run('npm', ['run', 'lint'], path.join(ROOT, 'client'));
-  results.push({
-    stage: 'lint',
-    passed: lint.ok,
-    summary: lint.ok ? 'ESLint 通过' : (lint.stderr || 'Lint 检查失败'),
-  });
-} else if (isBackend) {
-  const syntax = run('node', ['--check', fp], ROOT);
-  results.push({
-    stage: 'syntax',
-    passed: syntax.ok,
-    summary: syntax.ok ? '语法检查通过' : (syntax.stderr || '语法检查失败'),
-    file: fp,
-    suggestion: syntax.ok ? null : suggestSyntaxFix(fp, syntax.stderr),
-  });
-  if (syntax.ok) {
-    const test = run('npm', ['test'], ROOT);
+if (graph) {
+  // 新逻辑：用 tool-graph.json 的 triggers_on 匹配
+  const triggered = graph.graphForFiles([norm]);
+  const tasks = [];
+  if (triggered.includes('check_type')) tasks.push({ label: 'type_check', fn: () => run('npm', ['run', 'type-check'], path.join(ROOT, 'client')) });
+  if (triggered.includes('check_all') || triggered.includes('check_test') || triggered.includes('check_syntax')) {
+    tasks.push({ label: 'syntax', fn: () => run('node', ['--check', fp], ROOT) });
+    if (triggered.includes('check_all') || triggered.includes('check_test')) {
+      tasks.push({ label: 'test', fn: () => run('npm', ['test'], ROOT) });
+    }
+  }
+  if (triggered.includes('ops_screenshot')) {
+    tasks.push({ label: 'lint', fn: () => run('npm', ['run', 'lint'], path.join(ROOT, 'client')) });
+  }
+
+  const t0 = Date.now();
+  for (const t of tasks) {
+    const r = t.fn();
     results.push({
-      stage: 'test',
-      passed: test.ok,
-      summary: test.ok ? '测试全部通过' : (test.stderr || '测试失败'),
+      stage: t.label,
+      passed: r.ok,
+      summary: r.ok ? '检查通过' : (r.stderr || '检查失败'),
+      suggestion: r.ok ? null : suggestFix(norm, t.label, r.stderr),
     });
+  }
+  // 记录工具使用日志（hook_posttooluse 触发）
+  try {
+    const { logToolUse } = require('../src/tools/usage-logger');
+    logToolUse({
+      tool: 'harness_check',
+      trigger: 'hook_posttooluse',
+      files: [norm],
+      success: results.every(r => r.passed),
+      durationMs: Date.now() - t0,
+      meta: { triggered: triggered.join(',') || 'none' },
+    });
+  } catch (e) { /* 日志失败静默 */ }
+} else {
+  // 旧硬编码回退
+  const isFrontend = /^client\//.test(norm) && /\.(ts|tsx|js|jsx|css)$/.test(norm);
+  const isBackend = /^(src|scripts)\//.test(norm) && /\.js$/.test(norm);
+  if (isFrontend) {
+    const typeCheck = run('npm', ['run', 'type-check'], path.join(ROOT, 'client'));
+    results.push({ stage: 'type_check', passed: typeCheck.ok, summary: typeCheck.ok ? 'TypeScript 类型检查通过' : (typeCheck.stderr || '类型检查失败') });
+    const lint = run('npm', ['run', 'lint'], path.join(ROOT, 'client'));
+    results.push({ stage: 'lint', passed: lint.ok, summary: lint.ok ? 'ESLint 通过' : (lint.stderr || 'Lint 检查失败') });
+  } else if (isBackend) {
+    const syntax = run('node', ['--check', fp], ROOT);
+    results.push({ stage: 'syntax', passed: syntax.ok, summary: syntax.ok ? '语法检查通过' : (syntax.stderr || '语法检查失败'), file: fp, suggestion: syntax.ok ? null : suggestSyntaxFix(fp, syntax.stderr) });
+    if (syntax.ok) {
+      const test = run('npm', ['test'], ROOT);
+      results.push({ stage: 'test', passed: test.ok, summary: test.ok ? '测试全部通过' : (test.stderr || '测试失败') });
+    }
   }
 }
 
 if (JSON_MODE) {
   const allPassed = results.length > 0 && results.every(r => r.passed);
+  const _isFrontend = /^client\//.test(norm) && /\.(ts|tsx|js|jsx|css)$/.test(norm);
+  const _isBackend = /^(src|scripts)\//.test(norm) && /\.js$/.test(norm);
   console.log(JSON.stringify({
     checked: true,
     file: fp,
-    type: isFrontend ? 'frontend' : isBackend ? 'backend' : 'skipped',
+    type: _isFrontend ? 'frontend' : _isBackend ? 'backend' : 'skipped',
     passed: allPassed,
     stages: results,
     harness: 'posttooluse',
@@ -91,6 +123,17 @@ function suggestSyntaxFix(file, stderr) {
     return `修复 ${path.basename(file)} 中的语法错误: ${lineMatch[1]}`;
   }
   return `语法检查失败，请检查 ${file} 的代码完整性`;
+}
+
+/** 数据驱动模式的通用修复建议。 */
+function suggestFix(file, stage, stderr) {
+  const suggestions = {
+    type_check: '前端类型错误：检查报错处的 TS 类型定义与 props/state 是否匹配',
+    syntax: '语法错误：检查括号/引号/分号配对',
+    test: '测试失败：查看失败用例的断言差异，修复逻辑后重跑',
+    lint: 'ESLint 报错：按规则提示修复风格/语法问题',
+  };
+  return suggestions[stage] || (stderr ? String(stderr).split('\n')[0].slice(0, 200) : null);
 }
 
 process.exit(0);

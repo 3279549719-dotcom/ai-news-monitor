@@ -68,6 +68,7 @@ jobs:
             logs/pipeline-*.log
             logs/.last-run.json
             logs/.seen-ids.json
+          include-hidden-files: true
           retention-days: 7
 
       - name: Commit report and status files

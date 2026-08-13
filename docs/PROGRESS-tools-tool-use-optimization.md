@@ -6,6 +6,8 @@
 
 将项目的运维脚本、管线入口、验证命令等 18 个能力封装为结构化 function calling 注册表（`src/tools/registry.js`），让 AI 可以通过 name + JSON Schema parameters 精准调用，而不是靠裸 `bash("npm run xxx")`。
 
+**Phase 3 已落地（2026-08-13）**：hook 数据驱动（tool-graph.json）、工具使用日志（usage-logger.js）、工具链图（graph.js + suggest_next）。详见 [REQ-tools-hook-usage-graph.md](REQ-tools-hook-usage-graph.md) / [DECISION-tools-hook-usage-graph.md](DECISION-tools-hook-usage-graph.md) / [REFACTOR-tools-phase3-analysis.md](REFACTOR-tools-phase3-analysis.md)。
+
 ---
 
 ## 产出文件清单
@@ -17,15 +19,19 @@
 | `src/tools/registry.js` | 18 个工具的结构化 function calling 注册表（名称、描述、parameters JSON Schema、return_schema、示例、命名空间） |
 | `scripts/harness-diagnose.js` | harness 历史输出结构化诊断（读取 harness 日志，分析问题 + 给建议） |
 | `docs/tools-optimization-guide.html` | 完整优化路线图 HTML（Phase 1-4 全览，含流程图和状态标记） |
+| `src/tools/tool-graph.json` | 工具关系数据文件：triggers_on（文件→检查）+ suggest_next（返回值→下一步建议）（Phase 3） |
+| `src/tools/graph.js` | 工具链图查询：graphForFiles / graphSuggestNext / validateGraph + 单元测试 graph.test.js（15/15）（Phase 3） |
+| `src/tools/usage-logger.js` | 工具使用日志 JSONL 追加写（logs/.tool-usage.jsonl，静默降级）+ usageStats 汇总（Phase 3） |
+| `docs/REFACTOR-tools-phase3-analysis.md` | 项目重构化简分析：10 条分级建议（归档一次性脚本/公共 lib/legacy 删除等） |
 
 ### 修改
 
 | 文件 | 变更 |
 |------|------|
 | `CLAUDE.md` | 新增"可用工具（结构化注册表）"章节，列出 5 核心 + 13 按需工具、调用规则 |
-| `scripts/git-commit.js` | 新增 `--generate`（AI 分析 diff 生成 commit message）+ `--json`（结构化输出） |
-| `scripts/harness-check.js` | 新增 `--json` 结构化诊断输出（含 `suggestion` 字段） |
-| `scripts/run-pipeline.js` | 新增 `--json` 结构化状态输出 |
+| `scripts/git-commit.js` | 新增 `--generate`（AI 分析 diff 生成 commit message）+ `--json`（结构化输出）+ 使用日志（Phase 3） |
+| `scripts/harness-check.js` | 新增 `--json` 结构化诊断输出（含 `suggestion` 字段）+ 数据驱动 hook 读 tool-graph.json（Phase 3）+ 修复 --json 分支 ReferenceError |
+| `scripts/run-pipeline.js` | 新增 `--json` 结构化状态输出 + 管线使用日志（Phase 3） |
 | `src/ai.js` | 新增 `analyzeResultV2` + `selectArticleLinksV2`（原生 function calling 调用 AI），v1 保留为 fallback |
 
 ---
@@ -94,12 +100,16 @@
 
 ## 当前阶段
 
-**Phase 2 完成，Phase 3 待启动。**
+**Phase 3 已落地，Phase 4 待启动。**
 
 - Phase 1 ✅ — 梳理工具清单、定义命名空间
 - Phase 2 ✅ — 注册表实现、按需加载、harness 诊断、commit --generate、pipeline --json、ai.js v2
-- Phase 3 🔲 — 工具链图、response_format、调用链可视化
-- Phase 4 🔲 — 自愈闭环（Docker 自动拉起、失败重试、告警收敛）
+- Phase 3 ✅ — hook 数据驱动（tool-graph.json + graph.js）、工具使用日志（usage-logger.js）、工具链图（suggest_next）
+- Phase 4 🔲 — 自愈闭环（Docker 自动拉起、失败重试、告警收敛）+ 评测集 + 使用日志数据分析
+
+**使用日志分析入口**：`node src/tools/usage-logger.js`（直接运行输出各工具调用统计）
+
+**重构化简执行清单**：见 [REFACTOR-tools-phase3-analysis.md](REFACTOR-tools-phase3-analysis.md) §七，分三批执行（第一批零风险归档+公共lib，第二批含验证，第三批观察期后）。
 
 ---
 

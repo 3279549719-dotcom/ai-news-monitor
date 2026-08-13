@@ -1,5 +1,5 @@
 {
-  "lastDate": "2026-08-11",
+  "lastDate": "2026-08-13",
   "todayFixCount": 2,
   "history": [
     {
@@ -15,13 +15,27 @@
       "success": false,
       "detail": "错误: spawnSync node ETIMEDOUT",
       "date": "2026-08-11"
+    },
+    {
+      "ts": "2026-08-12T18:01:53.885Z",
+      "name": "docker-restart",
+      "success": false,
+      "detail": "exit 1 | stderr: error during connect: Post \"http://%2F%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/crawl4ai/restart\": open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.",
+      "date": "2026-08-13"
+    },
+    {
+      "ts": "2026-08-12T18:11:53.910Z",
+      "name": "restart-pipeline",
+      "success": false,
+      "detail": "错误: spawnSync node ETIMEDOUT",
+      "date": "2026-08-13"
     }
   ],
-  "lastFixAt": "2026-08-11T15:45:58.262Z",
+  "lastFixAt": "2026-08-12T18:11:53.910Z",
   "lastFixName": "restart-pipeline",
   "lastFixSuccess": false,
   "lastFixDetail": "错误: spawnSync node ETIMEDOUT",
-  "lastHealAttempt": "2026-08-11T15:45:58.266Z",
+  "lastHealAttempt": "2026-08-12T18:11:53.912Z",
   "lastHealResult": {
     "healed": false,
     "fixes": [
