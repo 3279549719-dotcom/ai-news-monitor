@@ -132,7 +132,7 @@ async function checkProjectHealth(token, ref) {
   // 分服务健康
   try {
     const r = await httpGetJson(
-      `https://api.supabase.com/v1/projects/${ref}/health?services=auth,db,pooler,realtime,rest,storage&timeout_ms=3000`,
+      `https://api.supabase.com/v1/projects/${ref}/health?services=auth,db,pooler,realtime,rest,storage`,
       headers
     );
     if (r.status === 200) {
