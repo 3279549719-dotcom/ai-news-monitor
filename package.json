@@ -17,7 +17,7 @@
     "prebuild": "npm run type-check",
     "build": "npm run build:client",
     "build:client": "npm --prefix client run build",
-    "test": "node --test \"src/*.test.js\" \"scripts/*.test.js\"",
+    "test": "node --test \"src/*.test.js\" \"src/tools/*.test.js\" \"scripts/*.test.js\"",
     "test:watch": "node --test --watch \"src/*.test.js\"",
     "lint": "npm run lint:backend && npm run lint:client",
     "lint:backend": "node scripts/check-syntax.js",
