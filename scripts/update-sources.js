@@ -1,8 +1,12 @@
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js');
+const { getDb } = require('./lib/common');
 // Writes keyword_sources, so it needs the service-role key once RLS restricts
-// anon to read-only (see db.js).
-const s = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY);
+// anon to read-only (see db.js). getDb() 复用 src/db.js 单例（含 key 选择逻辑）。
+//
+// ⚠️ DEPRECATED（2026-08-13 重构）：本脚本写入的信源配置使用 fetch_type: 'firecrawl'
+// 旧字段，已与现行架构脱节（crawl4ai 主通道 + keyword_sources.backends jsonb 数据驱动降级链）。
+// 新增/修改信源请优先用 Supabase 控制台手工配置 backends，或先按新架构重写本脚本再使用。
+const s = getDb();
 
 async function main() {
   // 1. Delete existing MU sources

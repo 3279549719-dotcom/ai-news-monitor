@@ -24,12 +24,9 @@ const path = require('path');
 const ROOT = path.join(__dirname, '..');
 const LOGS_DIR = path.join(ROOT, 'logs');
 
-/* ===== helpers ===== */
+/* ===== helpers（localDate 改用共享 ops-common） ===== */
 
-function localDate(d = new Date()) {
-  const p = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
+const { localDate } = require('./lib/ops-common');
 
 /**
  * 生成过去 N 天的日期字符串数组（从昨天往前推）。

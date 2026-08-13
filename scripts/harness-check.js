@@ -12,6 +12,7 @@ const fs = require('fs');
 const ROOT = path.resolve(__dirname, '..');
 const args = new Set(process.argv.slice(2));
 const JSON_MODE = args.has('--json');
+const { checkFile } = require('./lib/check-js');
 
 function run(cmd, argsList, cwd) {
   const r = spawnSync(cmd, argsList, {
@@ -50,7 +51,14 @@ if (graph) {
   const tasks = [];
   if (triggered.includes('check_type')) tasks.push({ label: 'type_check', fn: () => run('npm', ['run', 'type-check'], path.join(ROOT, 'client')) });
   if (triggered.includes('check_all') || triggered.includes('check_test') || triggered.includes('check_syntax')) {
-    tasks.push({ label: 'syntax', fn: () => run('node', ['--check', fp], ROOT) });
+    tasks.push({
+      label: 'syntax',
+      fn: () => {
+        // 共享核心：scripts/lib/check-js.js 的单文件检查（报告建议 7）
+        const r = checkFile(fp, { silent: true });
+        return { ok: r.ok, stdout: '', stderr: r.stderr };
+      },
+    });
     if (triggered.includes('check_all') || triggered.includes('check_test')) {
       tasks.push({ label: 'test', fn: () => run('npm', ['test'], ROOT) });
     }
@@ -91,13 +99,26 @@ if (graph) {
     const lint = run('npm', ['run', 'lint'], path.join(ROOT, 'client'));
     results.push({ stage: 'lint', passed: lint.ok, summary: lint.ok ? 'ESLint 通过' : (lint.stderr || 'Lint 检查失败') });
   } else if (isBackend) {
-    const syntax = run('node', ['--check', fp], ROOT);
-    results.push({ stage: 'syntax', passed: syntax.ok, summary: syntax.ok ? '语法检查通过' : (syntax.stderr || '语法检查失败'), file: fp, suggestion: syntax.ok ? null : suggestSyntaxFix(fp, syntax.stderr) });
-    if (syntax.ok) {
+    // 共享核心：单文件语法检查（报告建议 7）；保留原回退路径行为
+    const syntaxR = checkFile(fp, { silent: true });
+    results.push({ stage: 'syntax', passed: syntaxR.ok, summary: syntaxR.ok ? '语法检查通过' : (syntaxR.stderr || '语法检查失败'), file: fp, suggestion: syntaxR.ok ? null : suggestSyntaxFix(fp, syntaxR.stderr) });
+    if (syntaxR.ok) {
       const test = run('npm', ['test'], ROOT);
       results.push({ stage: 'test', passed: test.ok, summary: test.ok ? '测试全部通过' : (test.stderr || '测试失败') });
     }
   }
+  // 记录工具使用日志（hook_posttooluse 触发）
+  try {
+    const { logToolUse } = require('../src/tools/usage-logger');
+    logToolUse({
+      tool: 'harness_check',
+      trigger: 'hook_posttooluse',
+      files: [norm],
+      success: results.every(r => r.passed),
+      durationMs: Date.now() - t0,
+      meta: { triggered: triggered.join(',') || 'none' },
+    });
+  } catch (e) { /* 日志失败静默 */ }
 }
 
 if (JSON_MODE) {

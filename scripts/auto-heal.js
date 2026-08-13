@@ -29,15 +29,11 @@ const LAST_RUN_PATH = path.join(ROOT, 'logs', '.last-run.json');
 const AUTO_HEAL_PATH = path.join(ROOT, 'logs', '.auto-heal.json');
 const OPS_CHECK_SCRIPT = path.join(__dirname, 'ops-check.js');
 
-// ─── helpers ────────────────────────────────────────────────────────
-
-function localDate(d = new Date()) {
-  const p = (n) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
-}
+// ─── helpers（localDate/ts 改用共享 ops-common；带前缀的 log 保留本地） ───
+const { localDate, tsIso } = require('./lib/ops-common');
 
 function ts() {
-  return new Date().toISOString();
+  return tsIso(); // 行为不变：原实现就是 toISOString()
 }
 
 function log(msg) {
