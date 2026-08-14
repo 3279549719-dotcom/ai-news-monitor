@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "sources": {
+    "nba-mavs-news": [],
+    "tim-macmahon-(x)": [
+      "x.com/espn_macmahon/status/2068769971896017090",
+      "x.com/espn_macmahon/status/2068908729094017348",
+      "x.com/espn_macmahon/status/2068771055880245616"
+    ],
+    "marc-stein-(x)": [
+      "x.com/TheSteinLine/status/1170010875949920257",
+      "x.com/TheSteinLine/status/2088052179097559119",
+      "x.com/TheSteinLine/status/2088051221382766778",
+      "x.com/TheSteinLine/status/2088050086857032097",
+      "x.com/TheSteinLine/status/2087575450398691351"
+    ],
+    "yahoo-sports": [
+      "sports.yahoo.com/articles/lakers-proposed-land-5x-star-151307719.html",
+      "sports.yahoo.com/articles/weren-t-lying-dallas-mavericks-122400538.html",
+      "sports.yahoo.com/articles/former-michigan-head-coach-dusty-110000329.html",
+      "sports.yahoo.com/articles/dusty-may-left-michigan-tired-174026627.html",
+      "sports.yahoo.com/articles/dusty-may-explains-leaving-ncaa-180959845.html"
+    ],
+    "bleacher-report": [
+      "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
+      "bleacherreport.com/articles/25470652-2008-nba-re-draft-after-russell-westbrook-retires",
+      "bleacherreport.com/articles/25470539-harden-kyrie-flagg-lamelo-headline-new-nba-2k27-player-ratings-top-31-100-rankings",
+      "bleacherreport.com/articles/25461538-our-2027-nba-mock-draft-already-stacked-pro-ready-talent",
+      "bleacherreport.com/articles/25470152-1-1-cooper-flagg-debut-patch-autograph-card-found-photo-card-has-multiple-1m-bounties"
+    ],
+    "si-mavs": [
+      "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
+      "si.com/nba/mavericks/onsi/nothings-getting-fixed-dusty-may-details-reason-leave-michigan-wolverines-dallas-mavericks-",
+      "si.com/nba/mavericks/onsi/update-mark-cuban-court-filing-against-dallas-mavericks-new-ownership-"
+    ],
+    "the-smoking-cuban": [
+      "thesmokingcuban.com",
+      "thesmokingcuban.com/espn-gives-max-christie-challenge-that-mavericks-need-him-to-ace",
+      "thesmokingcuban.com/brandon-williams-finally-gets-some-deserved-interest-after-breakout-mavericks-season",
+      "thesmokingcuban.com/mavericks-nightmare-season-gets-no-break-with-brutal-start-to-2026-27-season",
+      "thesmokingcuban.com/nba-2k27-ratings-spark-intriguing-cooper-flagg-conversation-for-mavericks-fans"
+    ],
+    "hoopshype": [
+      "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
+      "hoopshype.com/story/sports/nba/2026/08/12/the-most-expensive-sales-of-nba-teams-ever/82597567007",
+      "hoopshype.com/story/sports/nba/2026/08/11/20-greatest-small-forwards-ever-the-hoopshype-list/85410136007",
+      "hoopshype.com/story/sports/nba/2026/08/10/nba-trade-machine-rankings-nikola-jokic-kevin-durant-curry-butler/91233953007"
+    ],
+    "simon-stone-(x)": [
+      "x.com/sistoney67/status/2087975113228427420",
+      "x.com/sistoney67/status/2087942118811517258",
+      "x.com/sistoney67/status/2087939574429348163",
+      "x.com/sistoney67/status/2087938664655458367",
+      "x.com/sistoney67/status/2087932422130163955"
+    ],
+    "david-ornstein-(x)": [
+      "x.com/David_Ornstein/status/2087946772114973065",
+      "x.com/David_Ornstein/status/2087811626414043415",
+      "x.com/David_Ornstein/status/2087637788485099659",
+      "x.com/David_Ornstein/status/2087528530389221803",
+      "x.com/David_Ornstein/status/2087486809743765809"
+    ],
+    "laurie-whitwell-(x)": [
+      "x.com/lauriewhitwell/status/2088008350612987937",
+      "x.com/lauriewhitwell/status/2087933300073443346",
+      "x.com/lauriewhitwell/status/2087623014879830172"
+    ],
+    "andy-mitten-(x)": [
+      "x.com/AndyMitten/status/2088012406064611563",
+      "x.com/AndyMitten/status/2087569475721650274",
+      "x.com/AndyMitten/status/2087430867618513191"
+    ],
+    "anthropic-news": [],
+    "anthropic-research": [],
+    "claude-blog": [
+      "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
+      "claude.com/blog/claude-tag-now-reads-even-more-of-the-room",
+      "claude.com/blog/how-jetbrains-evaluates-and-deploys-claude-fable-5"
+    ],
+    "wired": [
+      "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
+      "wired.com/story/ai-billionaires-are-pledging-their-wealth-good-or-bad",
+      "wired.com/story/moonshot-kimi-k3-ai-model-escape-sandbox",
+      "wired.com/story/openai-didnt-notice-its-ai-agents-using-a-message-board-to-plan-their-hacking-spree",
+      "wired.com/story/ai-agents-could-act-like-computer-viruses-and-worms"
+    ],
+    "techcrunch": [
+      "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
+      "techcrunch.com/2026/08/13/anthropic-set-ai-agents-loose-on-the-same-task-they-started-a-turf-war",
+      "techcrunch.com/2026/08/12/some-claude-users-are-mad-that-anthropics-new-watermarks-will-catch-them-cheating-at-their-jobs-classes"
+    ]
+  }
+}
