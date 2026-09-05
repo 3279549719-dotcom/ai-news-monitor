@@ -165,7 +165,11 @@
       "sports.yahoo.com/articles/mavericks-luka-don-trade-ranked-221814007.html",
       "sports.yahoo.com/articles/dallas-mavericks-legend-t-wait-112539590.html",
       "sports.yahoo.com/articles/mavericks-news-dirk-nowitzki-cant-051659842.html",
-      "sports.yahoo.com/articles/miami-heat-kyrie-irving-trade-001632817.html"
+      "sports.yahoo.com/articles/miami-heat-kyrie-irving-trade-001632817.html",
+      "sports.yahoo.com/articles/mavericks-dusty-may-makes-strong-121959574.html",
+      "sports.yahoo.com/articles/mavericks-news-kyrie-irving-leaves-011744622.html",
+      "sports.yahoo.com/articles/dirk-nowitzki-masai-ujiri-connected-223020604.html",
+      "sports.yahoo.com/articles/dirk-nowitzki-breaks-silence-luka-214618547.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -243,7 +247,8 @@
       "si.com/nba/mavericks/onsi/dirk-nowitzki-gives-insight-possible-role-dallas-mavericks-",
       "si.com/nba/mavericks/onsi/former-dallas-mavericks-veteran-could-los-angeles-lakers-next-free-agency-option-dwight-powell-",
       "si.com/nba/mavericks/onsi/one-player-health-dereck-lively-ii-biggest-key-dallas-mavericks-season-dirk-nowitzki-",
-      "si.com/nba/mavericks/onsi/dirk-nowitzki-really-liked-dallas-mavericks-first-round-pick-sergio-de-larrea-"
+      "si.com/nba/mavericks/onsi/dirk-nowitzki-really-liked-dallas-mavericks-first-round-pick-sergio-de-larrea-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-coach-dusty-may-disbelief-over-kyrie-irving-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -316,7 +321,10 @@
       "thesmokingcuban.com/dirk-nowitzki-validates-cooper-flagg-potential-with-bold-prediction-for-next-season",
       "thesmokingcuban.com/mavericks-shouldnt-rush-into-kyrie-irving-or-daniel-gafford-trade-decision",
       "thesmokingcuban.com/mavericks-need-cooper-flagg-to-rediscover-skill-that-made-him-a-monster-at-duke",
-      "thesmokingcuban.com/mavericks-dodged-kawhi-leonard-headache-after-nba-harsh-punishment"
+      "thesmokingcuban.com/mavericks-dodged-kawhi-leonard-headache-after-nba-harsh-punishment",
+      "thesmokingcuban.com/morez-johnson-jr-must-make-offensive-leap-to-fit-with-mavericks",
+      "thesmokingcuban.com/daniel-gafford-rollercoaster-year-sets-him-up-for-mavericks-bounce-back",
+      "thesmokingcuban.com/tobi-lawal-shooting-concerns-wont-stop-him-from-making-impact-for-mavericks"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -610,7 +618,8 @@
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
       "anthropic.com/research/enabling-independent-research",
-      "anthropic.com/research/automated-researchers-mitigate-alignment-failures"
+      "anthropic.com/research/automated-researchers-mitigate-alignment-failures",
+      "anthropic.com/research/formalizing-fermats-last-theorem"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -650,7 +659,9 @@
       "wired.com/story/ai-agents-hacking-systems-could-push-the-us-and-china-to-cooperate",
       "wired.com/story/anthropic-standard-ai-agents-coming-to-the-physical-world",
       "wired.com/story/trump-administration-sides-with-ai-giants-new-york-times-lawsuit",
-      "wired.com/story/russian-startup-mostik-ai-models-communication"
+      "wired.com/story/russian-startup-mostik-ai-models-communication",
+      "wired.com/story/who-cares-if-ai-is-conscious-its-basically-alive",
+      "wired.com/story/nobody-is-saying-why-openai-and-anthropic-had-outages-today"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
