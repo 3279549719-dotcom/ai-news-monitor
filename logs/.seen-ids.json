@@ -185,7 +185,12 @@
       "sports.yahoo.com/articles/blockbuster-trade-idea-heat-landing-151500980.html",
       "sports.yahoo.com/articles/paige-bueckers-taking-over-basketball-084521383.html",
       "sports.yahoo.com/articles/paige-bueckers-shines-fiba-world-112700438.html",
-      "sports.yahoo.com/articles/wings-news-paige-bueckers-leading-234151659.html"
+      "sports.yahoo.com/articles/wings-news-paige-bueckers-leading-234151659.html",
+      "sports.yahoo.com/articles/clippers-may-forced-trade-197m-084155715.html",
+      "sports.yahoo.com/articles/makes-them-sound-even-more-121454732.html",
+      "sports.yahoo.com/articles/nba-insider-offers-hope-clippers-130034230.html",
+      "sports.yahoo.com/articles/former-duke-star-cooper-flagg-145249830.html",
+      "sports.yahoo.com/articles/kyrie-irving-could-become-prime-025355784.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -219,7 +224,8 @@
       "bleacherreport.com/articles/25494100-jason-kidd-reveals-if-hed-return-nba-coaching-after-mavericks-exit",
       "bleacherreport.com/articles/25483879-ranking-5-worst-nba-trades-last-5-years",
       "bleacherreport.com/articles/25486973-best-nba-player-every-age-right-now",
-      "bleacherreport.com/articles/25495625-nba-punishes-kawhi-leonard-steve-ballmer-clippers-uncle-dennis-after-salary-cap-investigation"
+      "bleacherreport.com/articles/25495625-nba-punishes-kawhi-leonard-steve-ballmer-clippers-uncle-dennis-after-salary-cap-investigation",
+      "bleacherreport.com/articles/25497828-nba-nike-reveal-new-warmup-practice-travel-gear-all-30-teams-photos-2026-27-season"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -268,7 +274,8 @@
       "si.com/nba/mavericks/onsi/2-former-dallas-mavericks-mark-cuban-never-wanted-trade-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-new-additions-all-have-one-thing-common-dusty-may-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-face-interesting-dilemma-daniel-gafford-",
-      "si.com/nba/mavericks/onsi/kyrie-irving-cooper-flagg-actually-fit-together-dallas-mavericks-"
+      "si.com/nba/mavericks/onsi/kyrie-irving-cooper-flagg-actually-fit-together-dallas-mavericks-",
+      "si.com/nba/mavericks/onsi/dirk-nowitzki-reasons-pulling-back-dallas-mavericks-make-perfect-sense-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -350,7 +357,9 @@
       "thesmokingcuban.com/santi-aldama-shooting-will-immediately-be-put-to-test-on-mavericks",
       "thesmokingcuban.com/mavericks-stance-on-pj-washington-may-be-clearer-after-dusty-may-quote",
       "thesmokingcuban.com/mavericks-interesting-daniel-gafford-trade-dilemma-has-obvious-answer",
-      "thesmokingcuban.com/sergio-de-larrea-may-already-be-answer-to-mavericks-backcourt-hole"
+      "thesmokingcuban.com/sergio-de-larrea-may-already-be-answer-to-mavericks-backcourt-hole",
+      "thesmokingcuban.com/mavericks-finally-eye-dirk-nowitzki-reunion-fans-have-been-waiting-for",
+      "thesmokingcuban.com/pj-washington-starting-spot-with-mavericks-isnt-as-safe-as-it-once-was"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -370,7 +379,8 @@
       "hoopshype.com/story/sports/nba/2026/08/28/nba-ranking-the-top-27-shooting-guards-for-2026-27/91406009007",
       "hoopshype.com/story/sports/fiba/2026/08/30/global-rating-rankings-the-best-in-last-days-fiba-world-cup-qualifiers/91509075007",
       "hoopshype.com/story/sports/nba/2026/09/02/social-media-reacts-to-clippers-historic-punishment-10-first-round-picks-for-one-wcf-run/91584894007",
-      "hoopshype.com/story/sports/nba/2026/09/02/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007"
+      "hoopshype.com/story/sports/nba/2026/09/02/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
+      "hoopshype.com/story/sports/nba/2026/09/09/danilo-gallinari-qa-im-probably-the-biggest-what-if-guy-in-nba-history/91667177007"
     ],
     "simon-stone-(x)": [
       "x.com/sistoney67/status/2087975113228427420",
@@ -655,7 +665,9 @@
       "anthropic.com/research/Claude-accelerates-protein-design",
       "anthropic.com/research/enabling-independent-research",
       "anthropic.com/research/automated-researchers-mitigate-alignment-failures",
-      "anthropic.com/research/formalizing-fermats-last-theorem"
+      "anthropic.com/research/formalizing-fermats-last-theorem",
+      "anthropic.com/institute/econ-scenarios",
+      "anthropic.com/research/alignment-assessment-cybersecurity-incidents"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -699,7 +711,10 @@
       "wired.com/story/russian-startup-mostik-ai-models-communication",
       "wired.com/story/who-cares-if-ai-is-conscious-its-basically-alive",
       "wired.com/story/nobody-is-saying-why-openai-and-anthropic-had-outages-today",
-      "wired.com/story/openai-navier-stokes-math-discovery-academics"
+      "wired.com/story/openai-navier-stokes-math-discovery-academics",
+      "wired.com/story/anthropic-researcher-quits-jacob-coxon-ai-fears-humanity",
+      "wired.com/story/uk-lawmakers-are-scrambling-in-response-to-ai-summer-of-chaos",
+      "wired.com/story/i-used-ai-to-hack-my-home-network"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -722,7 +737,8 @@
       "techcrunch.com/2026/08/29/sony-music-warner-sue-anthropic-alleging-a-brazen-campaign-of-intellectual-property-theft",
       "techcrunch.com/2026/09/01/anthropics-new-fable-release-is-cheaper-less-restrictive",
       "techcrunch.com/2026/09/06/authors-push-back-as-publishers-and-agents-seek-share-of-anthropic-settlement",
-      "techcrunch.com/2026/09/08/hackers-are-stealing-claude-tokens-from-subscribers"
+      "techcrunch.com/2026/09/08/hackers-are-stealing-claude-tokens-from-subscribers",
+      "techcrunch.com/2026/09/09/gambling-with-our-lives-anthropic-researcher-quits-warns-against-self-improving-ai"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -737,7 +753,8 @@
       "theguardian.com/football/2026/sep/04/premier-league-news-manchester-united-everton-aston-villa-manchester-city-tottenham",
       "theguardian.com/football/2026/sep/04/premier-league-10-things-to-look-out-for-this-weekend",
       "theguardian.com/football/2026/sep/02/premier-league-transfer-window-club-analysis-summer-2026",
-      "theguardian.com/football/2026/sep/06/everton-manchester-united-premier-league-match-report"
+      "theguardian.com/football/2026/sep/06/everton-manchester-united-premier-league-match-report",
+      "theguardian.com/football/live/2026/sep/06/everton-v-manchester-united-premier-league-live"
     ],
     "sky-sports": [
       "skysports.com/football/live-blog/11667/13025492/man-utd-transfer-news-rumours-and-gossip-live-updates-and-latest-on-deals-signings-loans-and-contracts",
@@ -761,7 +778,19 @@
       "si.com/soccer/transfer-rumors-arsenal-alvarez-mourinho-84-million-swoop",
       "si.com/soccer/winners-losers-2026-27-champions-league-draw",
       "si.com/soccer/the-most-expensive-teenagers-in-premier-league-history",
-      "si.com/soccer/2026-27-champions-league-draw-league-phase-games-full"
+      "si.com/soccer/2026-27-champions-league-draw-league-phase-games-full",
+      "si.com/soccer/man-utd-vs-sabah-preview-predictions-lineups-9-10-26",
+      "si.com/soccer/transfer-rumors-real-madrid-mac-allister-swap-barcelona-haaland-talks",
+      "si.com/soccer/how-man-utd-missed-chance-to-sign-kylian-mbappe",
+      "si.com/soccer/man-utd-predicted-lineup-vs-sabah-9-10-26",
+      "si.com/soccer/man-utd-player-pep-guardiola-wanted-man-city"
+    ],
+    "mavs-moneyball": [
+      "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
+      "mavsmoneyball.com/mavericks-history/62001/mavs-moneyball-readers-have-been-dallas-mavericks-fans-for-a-long-time",
+      "mavsmoneyball.com/mavericks-analysis/61383/mmb-lounge-the-august-desert",
+      "mavsmoneyball.com/mavericks-features-profiles/61983/the-euro-mavs-part-iii-the-american-perspective-nba-coaches-on-european-player-development",
+      "mavsmoneyball.com/mavericks-news/61936/dereck-lively-youtube-dallas-mavericks"
     ]
   }
 }
