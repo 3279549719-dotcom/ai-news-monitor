@@ -209,7 +209,9 @@
       "sports.yahoo.com/articles/nba-trade-rumors-complicated-kevin-155954744.html",
       "sports.yahoo.com/articles/jayson-tatum-cooper-flagg-rank-160130954.html",
       "sports.yahoo.com/articles/san-antonio-spurs-trade-kyrie-140407347.html",
-      "sports.yahoo.com/articles/longtime-luka-doncic-teammate-predicts-015147142.html"
+      "sports.yahoo.com/articles/longtime-luka-doncic-teammate-predicts-015147142.html",
+      "sports.yahoo.com/articles/igor-kokoskov-jason-kidd-dont-232358132.html",
+      "sports.yahoo.com/articles/past-week-great-always-nice-184958532.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -302,7 +304,9 @@
       "si.com/nba/mavericks/onsi/dirk-nowitzki-reasons-pulling-back-dallas-mavericks-make-perfect-sense-",
       "si.com/nba/mavericks/onsi/donald-trump-jokes-about-reversing-dallas-mavericks-los-angeles-lakers-luka-doncic-trade-",
       "si.com/nba/mavericks/onsi/kyrie-irving-ranks-high-trade-target-list-despite-dallas-mavericks-repeatedly-denying-talks-",
-      "si.com/nba/mavericks/onsi/will-dallas-mavericks-regret-letting-guard-walk-free-agency-golden-state-warriors-brandon-williams-"
+      "si.com/nba/mavericks/onsi/will-dallas-mavericks-regret-letting-guard-walk-free-agency-golden-state-warriors-brandon-williams-",
+      "si.com/nba/mavericks/onsi/ex-dallas-mavericks-assistant-igor-kokoskov-calls-jason-kidd-worst-guy-in-nba-",
+      "si.com/nba/mavericks/onsi/could-dallas-mavericks-surprise-change-starting-center-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -393,7 +397,10 @@
       "thesmokingcuban.com/mavericks-are-quietly-showing-their-belief-in-sergio-de-larrea-by-their-lack-of-moves",
       "thesmokingcuban.com/mavericks-need-to-find-minutes-for-moussa-cisse-despite-their-center-logjam",
       "thesmokingcuban.com/aj-johnson-inclusion-in-mavericks-anthony-davis-trade-looks-worse-by-day",
-      "thesmokingcuban.com/mavericks-unusual-bench-could-force-naji-marshall-into-bigger-offensive-role"
+      "thesmokingcuban.com/mavericks-unusual-bench-could-force-naji-marshall-into-bigger-offensive-role",
+      "thesmokingcuban.com/mavericks-zaccharie-risacher-steal-making-it-easy-to-overlook-ryan-nembhard",
+      "thesmokingcuban.com/mavericks-lack-of-shot-creation-finally-gives-marcus-sasser-chance-to-shine",
+      "thesmokingcuban.com/mavericks-should-start-max-christie-to-prevent-shooting-struggles-from-returning"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -416,7 +423,8 @@
       "hoopshype.com/story/sports/nba/2026/09/02/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
       "hoopshype.com/story/sports/nba/2026/09/09/danilo-gallinari-qa-im-probably-the-biggest-what-if-guy-in-nba-history/91667177007",
       "hoopshype.com/story/sports/nba/2026/09/10/nba-ranking-the-top-27-small-forwards-for-2026-27/91611402007",
-      "hoopshype.com/story/sports/nba/2026/09/11/marcus-thompson-talks-his-new-book-game-changers-why-stephen-curry-isnt-going-anywhere-and-more/91661933007"
+      "hoopshype.com/story/sports/nba/2026/09/11/marcus-thompson-talks-his-new-book-game-changers-why-stephen-curry-isnt-going-anywhere-and-more/91661933007",
+      "hoopshype.com/story/sports/nba/2026/09/14/nba-ranking-the-top-27-power-forwards-for-2026-27/91697482007"
     ],
     "simon-stone-(x)": [
       "x.com/sistoney67/status/2087975113228427420",
@@ -734,7 +742,11 @@
       "claude.com/blog/claude-for-commerce-agents",
       "claude.com/blog/reducing-cost-and-improving-performance-with-claude-platform",
       "claude.com/blog/t-rowe-price-brings-more-of-claude-to-its-investment-process",
-      "claude.com/blog/what-1-000-small-business-owners-taught-us-about-ai"
+      "claude.com/blog/what-1-000-small-business-owners-taught-us-about-ai",
+      "claude.com/blog/agentic-coding-is-straining-ci-heres-how-we-scaled-test-impact-analysis-at-anthropic",
+      "claude.com/blog/claude-for-financial-advisors",
+      "claude.com/blog/how-healthcare-organizations-use-claude-tag",
+      "claude.com/blog/deploying-ai-from-pilot-to-production"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -758,7 +770,8 @@
       "wired.com/story/openai-wants-to-know-if-an-ai-industry-slowdown-would-even-be-legal",
       "wired.com/story/one-of-ais-fiercest-critics-says-all-the-doom-talk-is-meant-to-distract-us",
       "wired.com/story/why-so-many-ai-researchers-think-the-machines-could-kill-everyone",
-      "wired.com/story/uncanny-valley-podcast-is-ai-actually-going-to-kill-us-all"
+      "wired.com/story/uncanny-valley-podcast-is-ai-actually-going-to-kill-us-all",
+      "wired.com/story/ai-leaders-are-calling-for-a-slowdown-trumps-team-says-its-on-them"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -786,7 +799,8 @@
       "techcrunch.com/2026/09/10/anthropic-details-distillation-campaigns-from-alibaba-moonshot-ai-and-deepseek",
       "techcrunch.com/2026/09/10/anthropic-reveals-rogue-ai-agents-hate-captchas-just-like-you",
       "techcrunch.com/2026/09/12/anthropic-ceo-outlines-plan-to-pace-the-frontier",
-      "techcrunch.com/2026/09/13/whats-behind-the-ai-industrys-latest-warnings-of-doom"
+      "techcrunch.com/2026/09/13/whats-behind-the-ai-industrys-latest-warnings-of-doom",
+      "techcrunch.com/2026/09/14/microsofts-new-ai-code-of-conduct-tells-models-not-to-hack-systems-or-trick-humans"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -814,7 +828,9 @@
       "theguardian.com/football/2026/sep/11/maresca-backs-elliot-anderson-kings-of-manchester-derby",
       "theguardian.com/football/2026/sep/11/premier-league-10-things-to-look-out-for-this-weekend",
       "theguardian.com/football/live/2026/sep/13/manchester-united-v-manchester-city-premier-league-live",
-      "theguardian.com/football/2026/sep/13/manchester-united-manchester-city-premier-league-match-report"
+      "theguardian.com/football/2026/sep/13/manchester-united-manchester-city-premier-league-match-report",
+      "theguardian.com/football/2026/sep/14/haalands-cutting-edge-separates-the-manchester-clubs",
+      "theguardian.com/football/2026/sep/14/premier-league-10-talking-points-from-the-weekends-action"
     ],
     "sky-sports": [
       "skysports.com/football/live-blog/11667/13025492/man-utd-transfer-news-rumours-and-gossip-live-updates-and-latest-on-deals-signings-loans-and-contracts",
