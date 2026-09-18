@@ -224,7 +224,10 @@
       "sports.yahoo.com/articles/kyrie-irving-offers-pay-11k-173540887.html",
       "sports.yahoo.com/articles/kyrie-irving-takes-action-nfl-195158070.html",
       "sports.yahoo.com/articles/dallas-mavericks-good-cooper-flagg-180404766.html",
-      "sports.yahoo.com/articles/dallas-mavericks-slip-once-again-144148891.html"
+      "sports.yahoo.com/articles/dallas-mavericks-slip-once-again-144148891.html",
+      "sports.yahoo.com/articles/insider-reveals-exciting-dynamics-between-224252772.html",
+      "sports.yahoo.com/articles/nba-underrating-mavericks-future-cooper-223231951.html",
+      "sports.yahoo.com/articles/5-dallas-mavericks-storylines-upcoming-110000288.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -266,7 +269,9 @@
       "bleacherreport.com/articles/25498696-nba-updates-2027-28-salary-cap-projections-full-details-revealed-new-rumors",
       "bleacherreport.com/articles/25498387-cheap-nba-free-agents-who-can-still-help-every-team",
       "bleacherreport.com/articles/25499771-everything-adam-silver-said-about-nbas-kawhi-leonard-probe-clippers-punishment-expansion-more",
-      "bleacherreport.com/articles/25485891-mock-nba-expansion-draft-new-las-vegas-and-seattle-teams"
+      "bleacherreport.com/articles/25485891-mock-nba-expansion-draft-new-las-vegas-and-seattle-teams",
+      "bleacherreport.com/articles/25497681-2017-nba-re-draft-gives-76ers-lakers-ultimate-do-overs",
+      "bleacherreport.com/articles/25498264-every-nba-teams-top-breakout-candidate-2026-27"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -324,7 +329,9 @@
       "si.com/nba/mavericks/onsi/could-dallas-mavericks-surprise-change-starting-center-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-quietest-offseason-decision-may-be-their-most-important-",
       "si.com/nba/mavericks/onsi/jon-scheyer-explains-return-duke-over-taking-dallas-mavericks-job-",
-      "si.com/nba/mavericks/onsi/recapping-dallas-mavericks-2026-offseason-ahead-training-camp-"
+      "si.com/nba/mavericks/onsi/recapping-dallas-mavericks-2026-offseason-ahead-training-camp-",
+      "si.com/nba/mavericks/onsi/is-nba-underrating-dallas-mavericks-future-cooper-flagg-",
+      "si.com/nba/mavericks/onsi/cooper-flagg-trainer-slows-down-comparing-dallas-mavericks-star-lebron-james-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -424,7 +431,11 @@
       "thesmokingcuban.com/kyrie-irving-return-will-ease-mavericks-fit-concerns-on-wing",
       "thesmokingcuban.com/dereck-lively-ii-potential-with-mavericks-hinges-on-something-he-cant-control",
       "thesmokingcuban.com/caleb-martin-must-be-playable-to-prevent-mavericks-contract-disaster",
-      "thesmokingcuban.com/igor-kokoskov-jason-kidd-comments-vindicate-mavericks-decision-to-move-on"
+      "thesmokingcuban.com/igor-kokoskov-jason-kidd-comments-vindicate-mavericks-decision-to-move-on",
+      "thesmokingcuban.com/mavericks-3-point-shooting-additions-get-another-boost-with-rob-fodor-hire",
+      "thesmokingcuban.com/igor-kokoskov-jason-kidd-comments-add-another-layer-to-mavericks-luka-doncic-saga",
+      "thesmokingcuban.com/mavericks-need-pj-washington-enforcer-mentality-to-protect-their-new-era",
+      "thesmokingcuban.com/mavericks-best-starting-lineup-for-next-season-isnt-their-smartest-one"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -730,7 +741,9 @@
       "anthropic.com/news/improving-alignment-security-efforts",
       "anthropic.com/claude-fable-and-mythos-5-1",
       "anthropic.com/news/enterprise-frontier-safeguards",
-      "anthropic.com/threat-intelligence-report-september-2026"
+      "anthropic.com/threat-intelligence-report-september-2026",
+      "anthropic.com/institute/measuring-pace-of-ai-development",
+      "anthropic.com/news/life-sciences-verification-program"
     ],
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
@@ -739,7 +752,8 @@
       "anthropic.com/research/formalizing-fermats-last-theorem",
       "anthropic.com/institute/econ-scenarios",
       "anthropic.com/research/alignment-assessment-cybersecurity-incidents",
-      "anthropic.com/research/intelligence-targeting-conventional-weapons-capabilities"
+      "anthropic.com/research/intelligence-targeting-conventional-weapons-capabilities",
+      "anthropic.com/research/claude-uplifts-biomolecular-modeling"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -776,7 +790,9 @@
       "claude.com/blog/salesforce-in-claude",
       "claude.com/blog/building-an-ai-native-revenue-organization",
       "claude.com/blog/claude-for-small-business-launches-new-workflows-integrations-and-training-programs",
-      "claude.com/blog/cowork-is-now-claude"
+      "claude.com/blog/cowork-is-now-claude",
+      "claude.com/blog/working-at-the-frontier-how-balyasny-asset-management-evaluates-and-governs-claude-fable-5",
+      "claude.com/blog/projects-redesigned"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -803,7 +819,9 @@
       "wired.com/story/uncanny-valley-podcast-is-ai-actually-going-to-kill-us-all",
       "wired.com/story/ai-leaders-are-calling-for-a-slowdown-trumps-team-says-its-on-them",
       "wired.com/story/openai-releases-new-policy-for-reporting-incidents-of-model-misalignment",
-      "wired.com/story/china-isnt-buying-silicon-valley-call-for-ai-slowdown"
+      "wired.com/story/china-isnt-buying-silicon-valley-call-for-ai-slowdown",
+      "wired.com/story/the-ai-slowdown-is-an-antitrust-mess",
+      "wired.com/story/are-rogue-ai-agents-really-just-a-cybersecurity-problem"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -835,7 +853,9 @@
       "techcrunch.com/2026/09/14/microsofts-new-ai-code-of-conduct-tells-models-not-to-hack-systems-or-trick-humans",
       "techcrunch.com/2026/09/15/openai-anthropic-google-have-been-in-talks-on-ai-safety-for-weeks",
       "techcrunch.com/2026/09/16/anthropic-and-openai-want-to-embed-safety-evaluators-will-they-really-be-independent",
-      "techcrunch.com/2026/09/16/anthropic-merges-claude-chat-and-cowork-in-one-interface"
+      "techcrunch.com/2026/09/16/anthropic-merges-claude-chat-and-cowork-in-one-interface",
+      "techcrunch.com/2026/09/17/is-the-ai-safety-debate-about-safety-or-control",
+      "techcrunch.com/2026/09/17/google-nvidia-and-anthropic-want-emerald-ai-to-find-space-on-the-grid-for-more-data-centers"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -892,7 +912,11 @@
       "skysports.com/football/man-utd-vs-man-city/report/559481",
       "skysports.com/football/news/11095/13585509/phil-foden-sent-off-in-manchester-derby-bruno-fernandes-role-criticised-by-roy-keane-and-micah-richards",
       "skysports.com/football/news/11667/13583655/man-utd-vs-man-city-how-to-watch-premier-league-contest-tv-channel-live-stream-now-tv-and-score-prediction",
-      "skysports.com/football/news/11667/13584470/man-utd-vs-man-city-kings-of-manchester-hotly-debated-ahead-of-old-trafford-derby-showdown"
+      "skysports.com/football/news/11667/13584470/man-utd-vs-man-city-kings-of-manchester-hotly-debated-ahead-of-old-trafford-derby-showdown",
+      "skysports.com/football/news/11661/13588821/premier-league-predictions-and-jones-knows-best-bets-brentford-to-expose-soft-chelsea-underbelly",
+      "skysports.com/football/news/11095/13588989/jj-gabriel-transfer-news-man-utd-wonderkid-attracting-interest-from-real-madrid-barcelona-psg-bayern-munich-and-premier-league-clubs",
+      "skysports.com/football/news/11095/13588890/manchester-united-whats-to-blame-for-increasing-scrutiny-on-michael-carrick-after-carabao-cup-exit",
+      "skysports.com/football/news/11667/13588791/man-utd-2-3-brighton-michael-carricks-old-trafford-tenure-is-only-heading-in-one-direction-as-red-devils-face-familiar-story"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -917,7 +941,11 @@
       "mavsmoneyball.com/mavericks-news/61758/mavericks-buy-out-klay-thompson",
       "mavsmoneyball.com/mavericks-news/61659/buyer-beware-these-10-game-partial-season-ticket-plans-from-the-dallas-mavericks-come-with-a-catch",
       "mavsmoneyball.com/mavericks-features-profiles/62043/i-let-nba2k27-predict-cooper-flaggs-sophomore-season-it-got-weird",
-      "mavsmoneyball.com/mavericks-features-profiles/62062/what-brings-the-international-mavs-together-they-know-what-it-takes-to-win-coach-dusty-may-says"
+      "mavsmoneyball.com/mavericks-features-profiles/62062/what-brings-the-international-mavs-together-they-know-what-it-takes-to-win-coach-dusty-may-says",
+      "mavsmoneyball.com/mavericks-injury-report/62107/mavericks-center-dereck-lively-ii-looks-yoked-in-offseason-duke-workout",
+      "mavsmoneyball.com/mavericks-analysis/62094/5-dallas-mavericks-storylines-to-follow-this-upcoming-season",
+      "mavsmoneyball.com/dallas-wings/62099/wings-vs-sparks-preview-dallas-looks-to-improve-playoff-position-against-los-angeles",
+      "mavsmoneyball.com/mavericks-news/62088/dallas-mavericks-slip-once-again-in-espns-future-power-rankings-cooper-flagg-kyrie-irving-trade"
     ]
   }
 }
