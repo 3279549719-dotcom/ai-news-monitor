@@ -255,7 +255,11 @@
       "sports.yahoo.com/articles/cooper-flagg-leads-talented-group-201506788.html",
       "sports.yahoo.com/articles/mavericks-news-dereck-lively-ii-022513670.html",
       "sports.yahoo.com/articles/mavericks-dereck-lively-named-breakout-150125820.html",
-      "sports.yahoo.com/articles/dereck-lively-still-not-cleared-010950026.html"
+      "sports.yahoo.com/articles/dereck-lively-still-not-cleared-010950026.html",
+      "sports.yahoo.com/articles/dereck-lively-ii-not-cleared-140509545.html",
+      "sports.yahoo.com/articles/dallas-mavericks-bad-dereck-lively-183808577.html",
+      "sports.yahoo.com/articles/mavericks-receive-good-news-cooper-073820610.html",
+      "sports.yahoo.com/articles/gotta-someone-cover-bron-retire-120808547.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -305,7 +309,9 @@
       "bleacherreport.com/articles/25501715-new-kyrie-irving-trade-rumors-update-buzz-mavs-star-ahead-2026-27-nba-season",
       "bleacherreport.com/articles/25497290-predicting-nbas-top-5-mvp-candidates-5-years",
       "bleacherreport.com/articles/25502461-dereck-lively-ii-injury-update-reveals-status-mavs-camp-amid-foot-issue-ahead-nba-season",
-      "bleacherreport.com/articles/25502264-nba-run-drops-2000s-legends-gameplay-trailer-featuring-allen-iverson-kevin-garnett-more"
+      "bleacherreport.com/articles/25502264-nba-run-drops-2000s-legends-gameplay-trailer-featuring-allen-iverson-kevin-garnett-more",
+      "bleacherreport.com/articles/25499367-final-offseason-grades-every-nba-team-ahead-training-camp",
+      "bleacherreport.com/articles/25501970-ranking-nbas-best-young-cores-right-now"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -378,7 +384,10 @@
       "si.com/nba/mavericks/onsi/realistic-best-worst-case-scenarios-dallas-mavericks-this-season-",
       "si.com/nba/mavericks/onsi/espn-top-100-ranking-dallas-mavericks-cooper-flagg-low-high-just-right-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-dereck-lively-named-breakout-candidate-issue-",
-      "si.com/nba/mavericks/onsi/former-dallas-mavericks-guard-traded-again-planned-waived-ryan-nembhard-"
+      "si.com/nba/mavericks/onsi/former-dallas-mavericks-guard-traded-again-planned-waived-ryan-nembhard-",
+      "si.com/nba/mavericks/onsi/what-nba-teams-monitoring-potential-kyrie-irving-trade-dallas-mavericks-",
+      "si.com/nba/mavericks/onsi/what-make-dallas-mavericks-logjam-power-forward-pj-washington-",
+      "si.com/nba/mavericks/onsi/espn-brian-windhorst-predicts-lebron-james-like-leap-dallas-mavericks-cooper-flagg-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -503,7 +512,11 @@
       "thesmokingcuban.com/hornets-waiving-ryan-nembhard-opens-door-to-unexpected-mavericks-reunion",
       "thesmokingcuban.com/exclusive-monta-ellis-reveals-why-his-time-with-mavericks-was-so-special",
       "thesmokingcuban.com/mavericks-moussa-cisse-dwight-powell-battle-shouldnt-even-happen",
-      "thesmokingcuban.com/ryan-nembhard-is-exactly-what-mavericks-need-but-they-have-no-room-for-him"
+      "thesmokingcuban.com/ryan-nembhard-is-exactly-what-mavericks-need-but-they-have-no-room-for-him",
+      "thesmokingcuban.com/dereck-lively-ii-injury-update-puts-mavericks-starting-center-spot-in-limbo",
+      "thesmokingcuban.com/henri-veesaar-acl-tear-could-reignite-mavericks-hawks-trade-talks-for-daniel-gafford",
+      "thesmokingcuban.com/espn-nba-rankings-give-mavericks-reason-to-think-twice-before-trading-kyrie-irving",
+      "thesmokingcuban.com/kyrie-irving-will-prove-why-mavericks-made-right-decision-to-shut-him-down"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -827,7 +840,8 @@
       "anthropic.com/institute/econ-scenarios",
       "anthropic.com/research/alignment-assessment-cybersecurity-incidents",
       "anthropic.com/research/intelligence-targeting-conventional-weapons-capabilities",
-      "anthropic.com/research/claude-uplifts-biomolecular-modeling"
+      "anthropic.com/research/claude-uplifts-biomolecular-modeling",
+      "anthropic.com/research/project-swap"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -870,7 +884,9 @@
       "claude.com/blog/what-a-task-costs-on-opus-5-5",
       "claude.com/blog/how-coderabbit-power-digital-and-thoughtspot-scale-with-snowflake-and-vercel-on-claude-marketplace",
       "claude.com/blog/how-to-prepare-for-ai-driven-code-modernization-projects",
-      "claude.com/blog/claude-marketplace"
+      "claude.com/blog/claude-marketplace",
+      "claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels",
+      "claude.com/blog/claude-opus-5-5-built-for-coding-sessions-that-use-more-context"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1027,7 +1043,8 @@
       "skysports.com/football/news/13590390/premier-league-2026-27-sky-sports-writers-assess-early-talking-points-including-man-utd-arsenal-liverpool-and-man-city",
       "skysports.com/football/news/13590457/premier-league-fixtures-on-sky-sports-liverpool-vs-man-utd-and-arsenal-vs-man-city-in-november",
       "skysports.com/transfer/news/13591219/man-utd-antonio-conte-lined-up-for-sensational-premier-league-return-as-replacement-for-michael-carrick-paper-talk",
-      "skysports.com/football/news/13590954/man-utd-red-devils-announced-record-revenues-in-2026-despite-not-playing-european-football"
+      "skysports.com/football/news/13590954/man-utd-red-devils-announced-record-revenues-in-2026-despite-not-playing-european-football",
+      "skysports.com/football/transfer-paper-talk/13591497/man-utd-transfer-news-barcelona-not-interested-in-wonderkid-jj-gabriel-says-sporting-director-deco-paper-talk"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
