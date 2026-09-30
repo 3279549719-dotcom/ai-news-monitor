@@ -280,7 +280,10 @@
       "sports.yahoo.com/articles/cooper-flagg-getting-taller-could-193618918.html",
       "sports.yahoo.com/articles/advantage-smaller-guards-draymond-green-093900827.html",
       "sports.yahoo.com/articles/mavs-coach-dusty-may-wants-163007536.html",
-      "sports.yahoo.com/articles/kyrie-irving-love-admission-asked-093000498.html"
+      "sports.yahoo.com/articles/kyrie-irving-love-admission-asked-093000498.html",
+      "sports.yahoo.com/articles/cooper-flagg-9-other-first-212331558.html",
+      "sports.yahoo.com/articles/building-perfect-mavericks-starting-five-185310370.html",
+      "sports.yahoo.com/articles/mavericks-coach-dusty-may-challenging-165828442.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -429,7 +432,9 @@
       "si.com/nba/mavericks/onsi/dallas-mavericks-first-round-pick-sergio-de-larrea-receives-high-praise-kyrie-irving-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-lottery-pick-morez-johnson-limited-training-camp-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-cooper-flagg-receives-advice-growth-spurt-golden-state-warriors-draymond-green-",
-      "si.com/nba/mavericks/onsi/dallas-mavericks-coach-dusty-may-challenging-veteran-daniel-gafford-expand-offensive-game-"
+      "si.com/nba/mavericks/onsi/dallas-mavericks-coach-dusty-may-challenging-veteran-daniel-gafford-expand-offensive-game-",
+      "si.com/nba/mavericks/onsi/dusty-may-envisions-9th-overall-pick-morez-johnson-fitting-dallas-mavericks-",
+      "si.com/nba/mavericks/onsi/cooper-flagg-leaves-no-doubt-about-future-dallas-mavericks-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -567,7 +572,11 @@
       "thesmokingcuban.com/mavericks-center-depth-goes-from-strength-to-question-mark-after-morez-johnson-update",
       "thesmokingcuban.com/mavericks-need-to-rethink-daniel-gafford-trade-rumors-if-he-starts-making-3-pointers",
       "thesmokingcuban.com/mavericks-are-perfect-team-for-kyrie-irving-regardless-of-trade-rumors",
-      "thesmokingcuban.com/sergio-de-larrea-path-to-mavericks-role-was-paved-before-he-even-plays"
+      "thesmokingcuban.com/sergio-de-larrea-path-to-mavericks-role-was-paved-before-he-even-plays",
+      "thesmokingcuban.com/mavericks-patience-with-dereck-lively-ii-will-pay-off-no-matter-how-annoying-it-is",
+      "thesmokingcuban.com/pj-washington-caught-between-two-timelines-as-mavericks-begin-dusty-may-era",
+      "thesmokingcuban.com/tarik-biberovic-cant-just-rely-on-his-shooting-to-crack-mavericks-rotation",
+      "thesmokingcuban.com/mavericks-cant-afford-to-make-caleb-martin-contract-even-more-costly"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -896,7 +905,9 @@
       "anthropic.com/research/intelligence-targeting-conventional-weapons-capabilities",
       "anthropic.com/research/claude-uplifts-biomolecular-modeling",
       "anthropic.com/research/project-swap",
-      "anthropic.com/research/yes-claude-can-do-nine-loops"
+      "anthropic.com/research/yes-claude-can-do-nine-loops",
+      "anthropic.com/research/your-thoughts-on-ai",
+      "anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -943,7 +954,8 @@
       "claude.com/blog/claude-tag-now-supports-personal-connectors-in-channels",
       "claude.com/blog/claude-opus-5-5-built-for-coding-sessions-that-use-more-context",
       "claude.com/blog/build-plugins-for-claude",
-      "claude.com/blog/giving-companies-more-control-over-their-ai-agents-with-nvidia"
+      "claude.com/blog/giving-companies-more-control-over-their-ai-agents-with-nvidia",
+      "claude.com/blog/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -981,7 +993,8 @@
       "wired.com/story/ai-agent-collusion-card-counting-secrets",
       "wired.com/story/popes-ai-advisor-warns-of-cartel-behavior-big-labs",
       "wired.com/story/appeals-court-lets-the-pentagon-designate-anthropic-a-supply-chain-risk",
-      "wired.com/story/openai-pauses-training-most-powerful-models-after-rogue-agents-target-government"
+      "wired.com/story/openai-pauses-training-most-powerful-models-after-rogue-agents-target-government",
+      "wired.com/story/anthropic-says-it-discovered-a-crispr-like-system-now-what"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1029,7 +1042,8 @@
       "techcrunch.com/2026/09/27/anthropics-ceo-is-about-to-have-dinner-with-president-trump",
       "techcrunch.com/2026/09/27/anthropics-dario-amodei-gets-the-snl-treatment",
       "techcrunch.com/2026/09/28/anthropic-releases-sonnet-5-5-which-it-calls-a-significantly-cheaper-faster-work-partner",
-      "techcrunch.com/2026/09/28/anthropic-gamma-and-clay-share-what-happens-when-enterprises-actually-deploy-ai-at-techcrunch-disrupt-2026"
+      "techcrunch.com/2026/09/28/anthropic-gamma-and-clay-share-what-happens-when-enterprises-actually-deploy-ai-at-techcrunch-disrupt-2026",
+      "techcrunch.com/2026/09/28/anthropics-prospectus-details-losses-growth-and-yes-a-warning-that-its-ai-could-end-humanity"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1064,7 +1078,10 @@
       "theguardian.com/football/2026/sep/20/manchester-uniteds-engine-room-runs-out-of-puff-as-fans-begin-to-voice-frustration",
       "theguardian.com/football/live/2026/sep/20/fulham-v-manchester-united-premier-league-live",
       "theguardian.com/football/2026/sep/20/fulham-manchester-united-premier-league-match-report",
-      "theguardian.com/business/2026/sep/19/jim-ratcliffe-uk-immigration-tax-manchester-united-ineos"
+      "theguardian.com/business/2026/sep/19/jim-ratcliffe-uk-immigration-tax-manchester-united-ineos",
+      "theguardian.com/football/2026/sep/23/premier-league-season-ticket-holders-pecking-order-new-fans-football-tourists",
+      "theguardian.com/news/2026/sep/22/keeping-billionaires-and-the-taxman-happy",
+      "theguardian.com/football/2026/sep/21/premier-league-10-talking-points-from-the-weekends-action"
     ],
     "sky-sports": [
       "skysports.com/football/live-blog/11667/13025492/man-utd-transfer-news-rumours-and-gossip-live-updates-and-latest-on-deals-signings-loans-and-contracts",
@@ -1155,7 +1172,10 @@
       "mavsmoneyball.com/mavericks-news/62328/dereck-lively-ii-gives-update-on-his-offseason-and-foot-injury-recovery",
       "mavsmoneyball.com/mavericks-news/62324/one-of-one-cooper-flagg-topps-chrome-rookie-card-sold-for-8-million-auction-dallas-mavericks-breaks",
       "mavsmoneyball.com/mavericks-news/62323/dallas-mavs-kyrie-irving-enjoyed-last-years-player-coach-role-but-is-excited-to-kick-some-butt-this-season",
-      "mavsmoneyball.com/mavericks-news/62272/dallas-mavericks-personnel-michael-finley-patrick-dumont-kyrie-irving-dereck-lively"
+      "mavsmoneyball.com/mavericks-news/62272/dallas-mavericks-personnel-michael-finley-patrick-dumont-kyrie-irving-dereck-lively",
+      "mavsmoneyball.com/dallas-mavericks-player-previews/62166/dallas-mavericks-2026-27-player-previews-derek-lively",
+      "mavsmoneyball.com/dallas-mavericks-player-previews/62163/dallas-mavericks-2026-27-player-previews-naji-marshall",
+      "mavsmoneyball.com/dallas-wings/62407/wings-vs-valkyries-preview-dallas-golden-state-win-or-go-home-game-2-bueckers-williams"
     ]
   }
 }
