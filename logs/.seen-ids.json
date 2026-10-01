@@ -283,7 +283,11 @@
       "sports.yahoo.com/articles/kyrie-irving-love-admission-asked-093000498.html",
       "sports.yahoo.com/articles/cooper-flagg-9-other-first-212331558.html",
       "sports.yahoo.com/articles/building-perfect-mavericks-starting-five-185310370.html",
-      "sports.yahoo.com/articles/mavericks-coach-dusty-may-challenging-165828442.html"
+      "sports.yahoo.com/articles/mavericks-coach-dusty-may-challenging-165828442.html",
+      "sports.yahoo.com/articles/mavericks-news-cooper-flagg-provides-224158647.html",
+      "sports.yahoo.com/articles/cooper-flagg-leaves-no-doubt-215217161.html",
+      "sports.yahoo.com/articles/miami-heat-revealed-potential-trade-020338503.html",
+      "sports.yahoo.com/articles/miami-heat-promising-kyrie-irving-153605688.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -341,7 +345,8 @@
       "bleacherreport.com/articles/25502970-mavs-cooper-flagg-shares-updated-height-ahead-2026-27-nba-season",
       "bleacherreport.com/articles/25502711-cooper-flaggs-nba-rookie-debut-patch-card-sells-8m-historic-auction",
       "bleacherreport.com/articles/25503093-stephen-curry-will-make-nba-history-career-earnings-after-new-warriors-contract",
-      "bleacherreport.com/articles/25502655-1-big-question-every-nba-team-training-camp"
+      "bleacherreport.com/articles/25502655-1-big-question-every-nba-team-training-camp",
+      "bleacherreport.com/articles/25504981-dangelo-russell-lands-contract-chinese-basketball-association-after-grizzlies-release"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -434,7 +439,10 @@
       "si.com/nba/mavericks/onsi/dallas-mavericks-cooper-flagg-receives-advice-growth-spurt-golden-state-warriors-draymond-green-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-coach-dusty-may-challenging-veteran-daniel-gafford-expand-offensive-game-",
       "si.com/nba/mavericks/onsi/dusty-may-envisions-9th-overall-pick-morez-johnson-fitting-dallas-mavericks-",
-      "si.com/nba/mavericks/onsi/cooper-flagg-leaves-no-doubt-about-future-dallas-mavericks-"
+      "si.com/nba/mavericks/onsi/cooper-flagg-leaves-no-doubt-about-future-dallas-mavericks-",
+      "si.com/nba/mavericks/onsi/despite-lack-assets-miami-heat-circling-dallas-mavericks-kyrie-irving-trade-target-",
+      "si.com/nba/mavericks/onsi/d-angelo-russell-minutes-dallas-mavericks-last-nba-shanghai-sharks-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-morez-johnson-pitched-dusty-may-over-facetime-before-going-9th-overall-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -576,7 +584,9 @@
       "thesmokingcuban.com/mavericks-patience-with-dereck-lively-ii-will-pay-off-no-matter-how-annoying-it-is",
       "thesmokingcuban.com/pj-washington-caught-between-two-timelines-as-mavericks-begin-dusty-may-era",
       "thesmokingcuban.com/tarik-biberovic-cant-just-rely-on-his-shooting-to-crack-mavericks-rotation",
-      "thesmokingcuban.com/mavericks-cant-afford-to-make-caleb-martin-contract-even-more-costly"
+      "thesmokingcuban.com/mavericks-cant-afford-to-make-caleb-martin-contract-even-more-costly",
+      "thesmokingcuban.com/zaccharie-risacher-and-cooper-flagg-give-mavericks-dangerous-transition-duo",
+      "thesmokingcuban.com/mavericks-should-keep-dwight-powell-around-regardless-of-whether-he-makes-team"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -907,7 +917,8 @@
       "anthropic.com/research/project-swap",
       "anthropic.com/research/yes-claude-can-do-nine-loops",
       "anthropic.com/research/your-thoughts-on-ai",
-      "anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities"
+      "anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities",
+      "anthropic.com/research/what-work-can-robots-do"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -955,7 +966,9 @@
       "claude.com/blog/claude-opus-5-5-built-for-coding-sessions-that-use-more-context",
       "claude.com/blog/build-plugins-for-claude",
       "claude.com/blog/giving-companies-more-control-over-their-ai-agents-with-nvidia",
-      "claude.com/blog/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude"
+      "claude.com/blog/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude",
+      "claude.com/blog/claude-for-government-is-now-generally-available",
+      "claude.com/blog/how-anthropics-sales-team-rebuilt-inbound-with-claude-managed-agents"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -994,7 +1007,8 @@
       "wired.com/story/popes-ai-advisor-warns-of-cartel-behavior-big-labs",
       "wired.com/story/appeals-court-lets-the-pentagon-designate-anthropic-a-supply-chain-risk",
       "wired.com/story/openai-pauses-training-most-powerful-models-after-rogue-agents-target-government",
-      "wired.com/story/anthropic-says-it-discovered-a-crispr-like-system-now-what"
+      "wired.com/story/anthropic-says-it-discovered-a-crispr-like-system-now-what",
+      "wired.com/story/trumps-ai-safety-accord-is-a-fancy-pinky-swear"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1145,7 +1159,12 @@
       "si.com/soccer/man-utd-spiral-crisis-brutal-injury-blow-problem-position",
       "si.com/soccer/ex-man-utd-chelsea-star-drops-response-man-city-charges",
       "si.com/soccer/man-utd-bruno-fernandes-injury-scare-manager-shocking-revelation",
-      "si.com/soccer/transfer-rumors-arsenal-haaland-raid-palmer-man-utd-decision"
+      "si.com/soccer/transfer-rumors-arsenal-haaland-raid-palmer-man-utd-decision",
+      "si.com/soccer/transfer-rumors-barcelona-haaland-bid-olise-real-madrid-hope",
+      "si.com/soccer/most-creative-punishments-man-city-could-face-premier-league-verdict",
+      "si.com/soccer/man-utd-legend-clashes-former-teammates-man-city-guilty-verdict",
+      "si.com/soccer/every-man-utd-injury-fall-2026-international-break",
+      "si.com/soccer/transfer-rumors-real-madrid-van-dijk-haaland-man-city-exodus"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
