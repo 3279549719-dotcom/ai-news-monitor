@@ -287,7 +287,11 @@
       "sports.yahoo.com/articles/mavericks-news-cooper-flagg-provides-224158647.html",
       "sports.yahoo.com/articles/cooper-flagg-leaves-no-doubt-215217161.html",
       "sports.yahoo.com/articles/miami-heat-revealed-potential-trade-020338503.html",
-      "sports.yahoo.com/articles/miami-heat-promising-kyrie-irving-153605688.html"
+      "sports.yahoo.com/articles/miami-heat-promising-kyrie-irving-153605688.html",
+      "sports.yahoo.com/articles/dukes-cooper-flagg-great-words-000011748.html",
+      "sports.yahoo.com/articles/cooper-flagg-reveals-biggest-difference-151500280.html",
+      "sports.yahoo.com/articles/could-mavs-rookie-force-way-121211368.html",
+      "sports.yahoo.com/articles/despite-lack-assets-heat-circling-181805269.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -346,7 +350,8 @@
       "bleacherreport.com/articles/25502711-cooper-flaggs-nba-rookie-debut-patch-card-sells-8m-historic-auction",
       "bleacherreport.com/articles/25503093-stephen-curry-will-make-nba-history-career-earnings-after-new-warriors-contract",
       "bleacherreport.com/articles/25502655-1-big-question-every-nba-team-training-camp",
-      "bleacherreport.com/articles/25504981-dangelo-russell-lands-contract-chinese-basketball-association-after-grizzlies-release"
+      "bleacherreport.com/articles/25504981-dangelo-russell-lands-contract-chinese-basketball-association-after-grizzlies-release",
+      "bleacherreport.com/articles/25504515-ranking-every-nba-teams-starting-lineup-ahead-preseason"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -442,7 +447,9 @@
       "si.com/nba/mavericks/onsi/cooper-flagg-leaves-no-doubt-about-future-dallas-mavericks-",
       "si.com/nba/mavericks/onsi/despite-lack-assets-miami-heat-circling-dallas-mavericks-kyrie-irving-trade-target-",
       "si.com/nba/mavericks/onsi/d-angelo-russell-minutes-dallas-mavericks-last-nba-shanghai-sharks-",
-      "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-morez-johnson-pitched-dusty-may-over-facetime-before-going-9th-overall-"
+      "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-morez-johnson-pitched-dusty-may-over-facetime-before-going-9th-overall-",
+      "si.com/nba/mavericks/onsi/pj-washington-accepting-whatever-role-dallas-mavericks-give-him-starting-not-",
+      "si.com/nba/mavericks/onsi/what-dusty-may-said-about-morez-johnson-jr-should-ease-dallas-mavericks-fans-minds-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -586,7 +593,11 @@
       "thesmokingcuban.com/tarik-biberovic-cant-just-rely-on-his-shooting-to-crack-mavericks-rotation",
       "thesmokingcuban.com/mavericks-cant-afford-to-make-caleb-martin-contract-even-more-costly",
       "thesmokingcuban.com/zaccharie-risacher-and-cooper-flagg-give-mavericks-dangerous-transition-duo",
-      "thesmokingcuban.com/mavericks-should-keep-dwight-powell-around-regardless-of-whether-he-makes-team"
+      "thesmokingcuban.com/mavericks-should-keep-dwight-powell-around-regardless-of-whether-he-makes-team",
+      "thesmokingcuban.com/predicting-mavericks-new-era-starting-five-with-3-weeks-until-opening-night",
+      "thesmokingcuban.com/mavericks-new-offense-should-give-zaccharie-risacher-edge-to-start",
+      "thesmokingcuban.com/nuggets-ryan-nembhard-signing-shows-mavericks-rushed-his-standard-contract",
+      "thesmokingcuban.com/mavericks-cant-afford-to-mess-up-cooper-flagg-long-term-dallas-vision"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -903,7 +914,8 @@
       "anthropic.com/claude-opus-5-5",
       "anthropic.com/features/ebola-response",
       "anthropic.com/news/claude-discovers-novel-enzyme-system",
-      "anthropic.com/claude-sonnet-5-5"
+      "anthropic.com/claude-sonnet-5-5",
+      "anthropic.com/news/barclays-scales-claude"
     ],
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
@@ -918,7 +930,8 @@
       "anthropic.com/research/yes-claude-can-do-nine-loops",
       "anthropic.com/research/your-thoughts-on-ai",
       "anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities",
-      "anthropic.com/research/what-work-can-robots-do"
+      "anthropic.com/research/what-work-can-robots-do",
+      "anthropic.com/research/claude-shaped-science"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -968,7 +981,8 @@
       "claude.com/blog/giving-companies-more-control-over-their-ai-agents-with-nvidia",
       "claude.com/blog/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude",
       "claude.com/blog/claude-for-government-is-now-generally-available",
-      "claude.com/blog/how-anthropics-sales-team-rebuilt-inbound-with-claude-managed-agents"
+      "claude.com/blog/how-anthropics-sales-team-rebuilt-inbound-with-claude-managed-agents",
+      "claude.com/blog/claude-code-mods"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1057,7 +1071,8 @@
       "techcrunch.com/2026/09/27/anthropics-dario-amodei-gets-the-snl-treatment",
       "techcrunch.com/2026/09/28/anthropic-releases-sonnet-5-5-which-it-calls-a-significantly-cheaper-faster-work-partner",
       "techcrunch.com/2026/09/28/anthropic-gamma-and-clay-share-what-happens-when-enterprises-actually-deploy-ai-at-techcrunch-disrupt-2026",
-      "techcrunch.com/2026/09/28/anthropics-prospectus-details-losses-growth-and-yes-a-warning-that-its-ai-could-end-humanity"
+      "techcrunch.com/2026/09/28/anthropics-prospectus-details-losses-growth-and-yes-a-warning-that-its-ai-could-end-humanity",
+      "techcrunch.com/2026/10/01/opus-5-5-loves-to-tell-you-this-matters-and-other-ai-writing-tells"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1164,7 +1179,11 @@
       "si.com/soccer/most-creative-punishments-man-city-could-face-premier-league-verdict",
       "si.com/soccer/man-utd-legend-clashes-former-teammates-man-city-guilty-verdict",
       "si.com/soccer/every-man-utd-injury-fall-2026-international-break",
-      "si.com/soccer/transfer-rumors-real-madrid-van-dijk-haaland-man-city-exodus"
+      "si.com/soccer/transfer-rumors-real-madrid-van-dijk-haaland-man-city-exodus",
+      "si.com/soccer/transfer-rumors-man-utd-fernandes-price-premier-league-rivals-wirtz",
+      "si.com/soccer/mbappe-fernandes-biggest-stars-injured-fall-international-break",
+      "si.com/soccer/punishments-premier-league-clubs-want-man-city-rule-breaches",
+      "si.com/soccer/best-premier-league-right-backs-all-time"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
