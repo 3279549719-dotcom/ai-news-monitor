@@ -30,7 +30,9 @@
       "nba.com/mavs/news/dallas-mavericks-nba-china-games-2026",
       "nba.com/mavs/news/mavericks-set-to-spread-good-will-with-preseason-journey-to-china",
       "nba.com/mavs/news/in-golf-as-in-basketball-christie-hoping-to-master-all-aspects-of-the-game",
-      "nba.com/mavs/news/mavericks-embracing-culture-chemistry-as-china-workouts-begin"
+      "nba.com/mavs/news/mavericks-embracing-culture-chemistry-as-china-workouts-begin",
+      "nba.com/mavs/news/mavericks-using-china-experience-to-stick-together-explore-together",
+      "nba.com/mavs/news/ujiri-wants-to-bring-joy-back-to-basketball-in-dallas-and-get-mavs-back-to-being-a-winner"
     ],
     "tim-macmahon-(x)": [
       "x.com/espn_macmahon/status/2068769971896017090",
@@ -104,10 +106,6 @@
       "x.com/TheSteinLine/status/2100267886983995828"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/kyrie-irving-looks-ready-mavericks-025533825.html",
-      "sports.yahoo.com/articles/heat-major-klay-thompson-amid-171850774.html",
-      "sports.yahoo.com/articles/klay-thompson-trade-rumors-mavericks-120000466.html",
-      "sports.yahoo.com/articles/miami-heats-desperate-pursuit-klay-203333484.html",
       "sports.yahoo.com/articles/mavericks-encouraging-news-kyrie-irving-193143013.html",
       "sports.yahoo.com/articles/cooper-flagg-working-legend-120200392.html",
       "sports.yahoo.com/articles/lakers-trade-package-revealed-land-200308543.html",
@@ -303,7 +301,11 @@
       "sports.yahoo.com/articles/jason-kidd-talks-join-espns-204151295.html",
       "sports.yahoo.com/articles/nba-teams-still-monitoring-mavericks-194920144.html",
       "sports.yahoo.com/articles/rockets-predicted-trade-fred-vanvleet-133243333.html",
-      "sports.yahoo.com/articles/p-j-washington-reveals-2-221109645.html"
+      "sports.yahoo.com/articles/p-j-washington-reveals-2-221109645.html",
+      "sports.yahoo.com/articles/kyrie-irving-handed-major-mavericks-221102350.html",
+      "sports.yahoo.com/articles/kyrie-irvings-injury-status-mavericks-235949541.html",
+      "sports.yahoo.com/articles/dusty-mays-mavs-seek-fact-204216780.html",
+      "sports.yahoo.com/articles/rockets-plenty-gain-two-preseason-190004664.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -473,7 +475,8 @@
       "si.com/nba/mavericks/onsi/jason-kidd-possibly-finds-next-opportunity-after-dallas-mavericks-firing-espn-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-pj-washington-provides-clarity-offseason-trade-rumors-",
       "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-dallas-mavericks-preseason-games-against-houston-rockets-",
-      "si.com/nba/mavericks/onsi/nba-teams-still-monitoring-dallas-mavericks-starter-trade-rumors-pj-washington-"
+      "si.com/nba/mavericks/onsi/nba-teams-still-monitoring-dallas-mavericks-starter-trade-rumors-pj-washington-",
+      "si.com/nba/mavericks/onsi/dusty-may-goals-dallas-mavericks-preseason-games-against-houston-rockets-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -633,7 +636,11 @@
       "thesmokingcuban.com/naji-marshall-shooting-isnt-only-thing-mavericks-need-him-to-improve",
       "thesmokingcuban.com/tarik-biberovic-already-knows-his-mavericks-fate-rests-on-more-than-shooting",
       "thesmokingcuban.com/pj-washington-biggest-wish-is-exactly-what-mavericks-need-from-him",
-      "thesmokingcuban.com/max-christie-defense-will-be-key-to-keeping-his-starting-job-for-mavericks"
+      "thesmokingcuban.com/max-christie-defense-will-be-key-to-keeping-his-starting-job-for-mavericks",
+      "thesmokingcuban.com/cooper-flagg-3-point-shot-isnt-his-biggest-key-to-superstardom",
+      "thesmokingcuban.com/mavericks-low-expectations-will-be-massive-advantage-this-season",
+      "thesmokingcuban.com/mavericks-draft-pick-shortage-isnt-nearly-as-concerning-as-it-looks",
+      "thesmokingcuban.com/mavericks-dereck-lively-ii-approach-looks-smart-as-other-extension-rumors-heat-up"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -953,7 +960,8 @@
       "anthropic.com/claude-sonnet-5-5",
       "anthropic.com/news/barclays-scales-claude",
       "anthropic.com/news/claude-frontier-academy",
-      "anthropic.com/news/cyber-verification-program"
+      "anthropic.com/news/cyber-verification-program",
+      "anthropic.com/claude-haiku-5-5"
     ],
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
@@ -1074,7 +1082,9 @@
       "wired.com/story/absolute-best-amazon-prime-day-deals-10-06-2026",
       "wired.com/story/artificial-roasts-ais-creators-and-sends-a-dark-warning-about-its-dangers",
       "wired.com/story/openai-is-pissing-off-a-bunch-of-mathematicians-again",
-      "wired.com/story/mistral-new-model-le-chonk-open-source-china-us-frontier"
+      "wired.com/story/mistral-new-model-le-chonk-open-source-china-us-frontier",
+      "wired.com/story/ai-is-driving-cars-now-oh-boy",
+      "wired.com/story/the-pentagon-hopes-to-speed-up-kill-chain-ai-buys-with-5-minute-videos"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1239,7 +1249,12 @@
       "si.com/soccer/transfer-rumors-man-utd-fernandes-price-premier-league-rivals-wirtz",
       "si.com/soccer/mbappe-fernandes-biggest-stars-injured-fall-international-break",
       "si.com/soccer/punishments-premier-league-clubs-want-man-city-rule-breaches",
-      "si.com/soccer/best-premier-league-right-backs-all-time"
+      "si.com/soccer/best-premier-league-right-backs-all-time",
+      "si.com/soccer/why-cristiano-ronaldo-lionel-messi-ending-international-careers-so-differently",
+      "si.com/soccer/transfer-rumors-mbappe-premier-league-move-ballon-dor-winner-real-madrid",
+      "si.com/soccer/should-michael-carrick-fearing-man-utd-job",
+      "si.com/soccer/four-premier-league-clubs-gilberto-mora-could-join-ranked",
+      "si.com/soccer/transfer-rumors-man-utd-gavi-bidding-war-cherki"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
