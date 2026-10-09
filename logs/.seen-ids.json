@@ -106,10 +106,6 @@
       "x.com/TheSteinLine/status/2100267886983995828"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/mavericks-encouraging-news-kyrie-irving-193143013.html",
-      "sports.yahoo.com/articles/cooper-flagg-working-legend-120200392.html",
-      "sports.yahoo.com/articles/lakers-trade-package-revealed-land-200308543.html",
-      "sports.yahoo.com/articles/lakers-klay-thompson-los-angeles-050438190.html",
       "sports.yahoo.com/nba/article/lakers-are-seemingly-doing-all-the-right-things--to-test-luka-doncics-patience-184616647.html",
       "sports.yahoo.com/articles/jeanie-buss-controversy-puts-lakers-172811249.html",
       "sports.yahoo.com/articles/mavericks-kyrie-irving-issues-never-164803914.html",
@@ -305,7 +301,11 @@
       "sports.yahoo.com/articles/kyrie-irving-handed-major-mavericks-221102350.html",
       "sports.yahoo.com/articles/kyrie-irvings-injury-status-mavericks-235949541.html",
       "sports.yahoo.com/articles/dusty-mays-mavs-seek-fact-204216780.html",
-      "sports.yahoo.com/articles/rockets-plenty-gain-two-preseason-190004664.html"
+      "sports.yahoo.com/articles/rockets-plenty-gain-two-preseason-190004664.html",
+      "sports.yahoo.com/articles/kyrie-irving-injury-calf-strain-094958207.html",
+      "sports.yahoo.com/articles/kyrie-irving-reveals-calf-strain-061942586.html",
+      "sports.yahoo.com/articles/rehabilitated-reputation-dallas-espn-insider-101800172.html",
+      "sports.yahoo.com/articles/mavericks-owner-criticism-luka-doncic-191749100.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -369,7 +369,8 @@
       "bleacherreport.com/articles/25504380-nba-power-rankings-entering-2026-preseason",
       "bleacherreport.com/articles/25507023-jason-kidd-eyed-espn-tv-role-after-mavs-exit-new-nba-rumors-reveal-details",
       "bleacherreport.com/articles/25504407-5-trades-shouldve-happened-during-2026-nba-offseason",
-      "bleacherreport.com/articles/25500289-over-under-predictions-every-nba-teams-final-2026-27-record"
+      "bleacherreport.com/articles/25500289-over-under-predictions-every-nba-teams-final-2026-27-record",
+      "bleacherreport.com/articles/25508133-cooper-flagg-unveils-signature-logo-new-balance-new-photo-ahead-2026-27-nba-season"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -476,7 +477,9 @@
       "si.com/nba/mavericks/onsi/dallas-mavericks-pj-washington-provides-clarity-offseason-trade-rumors-",
       "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-dallas-mavericks-preseason-games-against-houston-rockets-",
       "si.com/nba/mavericks/onsi/nba-teams-still-monitoring-dallas-mavericks-starter-trade-rumors-pj-washington-",
-      "si.com/nba/mavericks/onsi/dusty-may-goals-dallas-mavericks-preseason-games-against-houston-rockets-"
+      "si.com/nba/mavericks/onsi/dusty-may-goals-dallas-mavericks-preseason-games-against-houston-rockets-",
+      "si.com/nba/mavericks/onsi/former-first-overall-pick-playoff-expectations-dallas-mavericks-zaccharie-risacher-",
+      "si.com/nba/mavericks/onsi/dusty-may-clarifies-kyrie-irving-availability-dallas-mavericks-houston-rockets-preseason-games-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -640,7 +643,11 @@
       "thesmokingcuban.com/cooper-flagg-3-point-shot-isnt-his-biggest-key-to-superstardom",
       "thesmokingcuban.com/mavericks-low-expectations-will-be-massive-advantage-this-season",
       "thesmokingcuban.com/mavericks-draft-pick-shortage-isnt-nearly-as-concerning-as-it-looks",
-      "thesmokingcuban.com/mavericks-dereck-lively-ii-approach-looks-smart-as-other-extension-rumors-heat-up"
+      "thesmokingcuban.com/mavericks-dereck-lively-ii-approach-looks-smart-as-other-extension-rumors-heat-up",
+      "thesmokingcuban.com/pj-washington-has-clear-opportunity-to-seize-mavericks-starting-four-spot",
+      "thesmokingcuban.com/mavericks-should-fully-embrace-zaccharie-risacher-playoff-confidence",
+      "thesmokingcuban.com/jason-kidd-potential-espn-role-makes-little-sense-after-mavericks-exit",
+      "thesmokingcuban.com/mavericks-will-give-marcus-sasser-fresh-start-he-needed"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -961,7 +968,10 @@
       "anthropic.com/news/barclays-scales-claude",
       "anthropic.com/news/claude-frontier-academy",
       "anthropic.com/news/cyber-verification-program",
-      "anthropic.com/claude-haiku-5-5"
+      "anthropic.com/claude-haiku-5-5",
+      "anthropic.com/news/2026-usage-policy-update",
+      "anthropic.com/news/genesis-mission-commitment",
+      "anthropic.com/news/anthropic-cyber-mission"
     ],
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
@@ -977,7 +987,9 @@
       "anthropic.com/research/your-thoughts-on-ai",
       "anthropic.com/research/glm-5-3-and-the-spread-of-advanced-cyber-capabilities",
       "anthropic.com/research/what-work-can-robots-do",
-      "anthropic.com/research/claude-shaped-science"
+      "anthropic.com/research/claude-shaped-science",
+      "anthropic.com/research/the-missing-map-of-the-sky",
+      "anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1037,7 +1049,9 @@
       "claude.com/resources/articles/how-comcast-booz-allen-use-claude-mythos-to-secure-their-codebases",
       "claude.com/resources/articles/how-anthropics-sales-team-rebuilt-inbound-with-claude-managed-agents",
       "claude.com/resources/articles/claude-for-government-is-now-generally-available",
-      "claude.com/resources/articles/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude"
+      "claude.com/resources/articles/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude",
+      "claude.com/resources/articles/dashboards-and-motion",
+      "claude.com/resources/articles/how-block-orchestrates-claude-fable-across-thousands-of-pull-requests"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1136,7 +1150,9 @@
       "techcrunch.com/2026/09/28/anthropics-prospectus-details-losses-growth-and-yes-a-warning-that-its-ai-could-end-humanity",
       "techcrunch.com/2026/10/01/opus-5-5-loves-to-tell-you-this-matters-and-other-ai-writing-tells",
       "techcrunch.com/2026/10/02/medical-records-giant-epic-pauses-product-development-to-fix-security-bugs-that-risk-patients-data",
-      "techcrunch.com/2026/10/06/anthropic-gives-startups-a-free-year-of-enterprise-service-and-1000-in-token-credits"
+      "techcrunch.com/2026/10/06/anthropic-gives-startups-a-free-year-of-enterprise-service-and-1000-in-token-credits",
+      "techcrunch.com/2026/10/08/openais-revenue-is-reportedly-20-billion-less-than-previously-projected",
+      "techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
