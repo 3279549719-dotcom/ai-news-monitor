@@ -111,10 +111,6 @@
       "x.com/TheSteinLine/status/2100267886983995828"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/mavs-santi-aldama-makes-decision-113024085.html",
-      "sports.yahoo.com/articles/dallas-mavericks-klay-thompson-buyout-225936755.html",
-      "sports.yahoo.com/articles/mavericks-buy-klay-thompson-194557536.html",
-      "sports.yahoo.com/articles/report-klay-thompson-plans-join-140834476.html",
       "sports.yahoo.com/articles/klay-thompson-forfeits-nearly-10-155102839.html",
       "sports.yahoo.com/articles/heat-4-time-nba-champion-152629807.html",
       "sports.yahoo.com/articles/klay-thompson-clears-nba-waivers-000800327.html",
@@ -310,7 +306,11 @@
       "sports.yahoo.com/articles/mavericks-kyrie-irving-speaks-preseason-212911901.html",
       "sports.yahoo.com/articles/mavericks-kyrie-irving-first-game-153700416.html",
       "sports.yahoo.com/articles/kyrie-irving-back-spread-word-191015795.html",
-      "sports.yahoo.com/articles/mavericks-kyrie-irving-immediately-ready-170455280.html"
+      "sports.yahoo.com/articles/mavericks-kyrie-irving-immediately-ready-170455280.html",
+      "sports.yahoo.com/articles/mavericks-kyrie-irving-played-vs-142734005.html",
+      "sports.yahoo.com/articles/kyrie-irving-boldly-compares-cooper-212400812.html",
+      "sports.yahoo.com/articles/nba-rumors-mavericks-rivals-keep-162836033.html",
+      "sports.yahoo.com/articles/dallas-mavericks-clear-verdict-kyrie-205928207.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -381,7 +381,9 @@
       "bleacherreport.com/articles/25508555-warriors-knicks-lakers-top-sporticos-2026-list-nbas-most-valuable-teams",
       "bleacherreport.com/articles/25508471-new-kyrie-irving-trade-rumors-pistons-interest-pairing-alongside-cade-cunningham",
       "bleacherreport.com/articles/25508725-kyrie-irving-shouts-out-valkyries-advancing-wnba-finals-got-lifelong-supporter-now",
-      "bleacherreport.com/articles/25509069-kyrie-irving-reacts-return-mavs-1st-time-586-days-major-injury"
+      "bleacherreport.com/articles/25509069-kyrie-irving-reacts-return-mavs-1st-time-586-days-major-injury",
+      "bleacherreport.com/articles/25509446-cooper-flagg-says-mavs-teammates-definitely-try-treat-him-rookie-still-kyrie-hypes-star",
+      "bleacherreport.com/articles/25509700-mavs-believe-kyrie-irving-masai-ujiri-says-amid-latest-nba-trade-rumors"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -670,7 +672,11 @@
       "thesmokingcuban.com/mavericks-fixed-one-3-point-problem-but-exposed-another-in-preseason-opener",
       "thesmokingcuban.com/mavericks-preseason-opener-hinted-at-big-men-reviving-lost-art-in-dallas",
       "thesmokingcuban.com/tobi-lawal-debut-suggests-mavericks-may-have-found-their-next-dirty-work-wing",
-      "thesmokingcuban.com/3-improvements-cooper-flagg-needs-to-make-to-become-all-nba-player"
+      "thesmokingcuban.com/3-improvements-cooper-flagg-needs-to-make-to-become-all-nba-player",
+      "thesmokingcuban.com/dwight-powell-latest-move-makes-mavericks-case-to-keep-him-even-stronger",
+      "thesmokingcuban.com/pistons-rumored-kyrie-irving-intrigue-is-something-mavericks-should-monitor",
+      "thesmokingcuban.com/biggest-question-about-sergio-de-larrea-has-already-been-answered-for-mavericks",
+      "thesmokingcuban.com/mavericks-seem-to-be-eyeing-costly-dwight-powell-reunion-for-new-era"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1013,7 +1019,9 @@
       "anthropic.com/research/claude-shaped-science",
       "anthropic.com/research/the-missing-map-of-the-sky",
       "anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source",
-      "anthropic.com/research/investigating-unintended-model-actions"
+      "anthropic.com/research/investigating-unintended-model-actions",
+      "anthropic.com/research/self-replicating-ai",
+      "anthropic.com/research/distillation-defenses"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1178,7 +1186,8 @@
       "techcrunch.com/2026/10/06/anthropic-gives-startups-a-free-year-of-enterprise-service-and-1000-in-token-credits",
       "techcrunch.com/2026/10/08/openais-revenue-is-reportedly-20-billion-less-than-previously-projected",
       "techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference",
-      "techcrunch.com/2026/10/09/an-anthropic-ai-model-sent-a-false-homicide-tip-to-philadelphia-police"
+      "techcrunch.com/2026/10/09/an-anthropic-ai-model-sent-a-false-homicide-tip-to-philadelphia-police",
+      "techcrunch.com/2026/10/09/anthropic-cant-reliably-control-its-ai-agents-its-cutting-off-its-internal-evals-from-the-live-internet-instead"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1271,7 +1280,9 @@
       "skysports.com/football/news/13597374/man-utd-1-1-spurs-michael-carrick-entering-a-defining-period-and-must-correct-underperformance-quickly",
       "skysports.com/football/news/13597587/gary-neville-warns-man-utd-players-to-get-a-grip-or-face-a-worrying-few-weeks-after-draw-with-10-man-spurs",
       "skysports.com/football/man-utd-vs-spurs/report/559502",
-      "skysports.com/football/news/13597523/man-city-charges-manchester-united-fans-take-aim-at-rivals-with-return-of-famous-ticker-banner"
+      "skysports.com/football/news/13597523/man-city-charges-manchester-united-fans-take-aim-at-rivals-with-return-of-famous-ticker-banner",
+      "skysports.com/football/news/13598163/michael-carrick-manchester-united-head-coach-is-in-trouble-ahead-of-crucial-week-against-atletico-madrid-and-leeds",
+      "skysports.com/football/news/13598084/manchester-united-viral-clip-shows-spurs-beat-the-press-at-old-trafford-and-exposes-other-issues"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
