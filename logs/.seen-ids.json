@@ -111,10 +111,6 @@
       "x.com/TheSteinLine/status/2100267886983995828"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/klay-thompson-forfeits-nearly-10-155102839.html",
-      "sports.yahoo.com/articles/heat-4-time-nba-champion-152629807.html",
-      "sports.yahoo.com/articles/klay-thompson-clears-nba-waivers-000800327.html",
-      "sports.yahoo.com/articles/pairing-sharpshooter-klay-thompson-giannis-120700263.html",
       "sports.yahoo.com/articles/klay-thompson-gave-almost-10-093000685.html",
       "sports.yahoo.com/articles/social-media-reacts-klay-thompson-050323258.html",
       "sports.yahoo.com/articles/celtics-proposed-reunite-kyrie-irving-150737498.html",
@@ -310,7 +306,11 @@
       "sports.yahoo.com/articles/mavericks-kyrie-irving-played-vs-142734005.html",
       "sports.yahoo.com/articles/kyrie-irving-boldly-compares-cooper-212400812.html",
       "sports.yahoo.com/articles/nba-rumors-mavericks-rivals-keep-162836033.html",
-      "sports.yahoo.com/articles/dallas-mavericks-clear-verdict-kyrie-205928207.html"
+      "sports.yahoo.com/articles/dallas-mavericks-clear-verdict-kyrie-205928207.html",
+      "sports.yahoo.com/articles/mavericks-smart-kyrie-irving-trade-053827430.html",
+      "sports.yahoo.com/articles/mavs-keep-kyrie-irving-flagg-205216814.html",
+      "sports.yahoo.com/articles/kyrie-irving-hasn-t-missed-160000622.html",
+      "sports.yahoo.com/articles/mavs-dusty-may-scouts-artist-191312839.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -497,7 +497,9 @@
       "si.com/nba/mavericks/onsi/biggest-winners-losers-dallas-mavericks-first-preseason-game-against-houston-rockets-daniel-gafford-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-kyrie-irving-speaks-after-preseason-return-injury-",
       "si.com/nba/mavericks/onsi/dusty-may-tipped-his-hand-dallas-mavericks-starting-lineup-",
-      "si.com/nba/mavericks/onsi/2-thoughts-from-dallas-mavericks-preseason-win-houston-rockets-kyrie-irving-return-"
+      "si.com/nba/mavericks/onsi/2-thoughts-from-dallas-mavericks-preseason-win-houston-rockets-kyrie-irving-return-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-may-ready-contribute-sooner-people-anticipated-sergio-de-larrea-",
+      "si.com/nba/mavericks/onsi/debating-contract-extension-dallas-mavericks-dereck-lively-ii-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -676,7 +678,11 @@
       "thesmokingcuban.com/dwight-powell-latest-move-makes-mavericks-case-to-keep-him-even-stronger",
       "thesmokingcuban.com/pistons-rumored-kyrie-irving-intrigue-is-something-mavericks-should-monitor",
       "thesmokingcuban.com/biggest-question-about-sergio-de-larrea-has-already-been-answered-for-mavericks",
-      "thesmokingcuban.com/mavericks-seem-to-be-eyeing-costly-dwight-powell-reunion-for-new-era"
+      "thesmokingcuban.com/mavericks-seem-to-be-eyeing-costly-dwight-powell-reunion-for-new-era",
+      "thesmokingcuban.com/mavericks-jorge-diaz-graham-signing-gives-their-frontcourt-another-3-point-weapon",
+      "thesmokingcuban.com/sergio-de-larrea-is-already-putting-mavericks-backup-point-guard-debate-to-bed",
+      "thesmokingcuban.com/masai-ujiri-vision-for-mavericks-is-exactly-what-zaccharie-risacher-needs",
+      "thesmokingcuban.com/mavericks-matt-cross-signing-just-made-their-wing-competition-even-more-interesting"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1083,7 +1089,8 @@
       "claude.com/resources/articles/claude-for-government-is-now-generally-available",
       "claude.com/resources/articles/agents-you-can-coach-how-asana-builds-human-agent-teams-with-claude",
       "claude.com/resources/articles/dashboards-and-motion",
-      "claude.com/resources/articles/how-block-orchestrates-claude-fable-across-thousands-of-pull-requests"
+      "claude.com/resources/articles/how-block-orchestrates-claude-fable-across-thousands-of-pull-requests",
+      "claude.com/resources/articles/uber-s-ciso-on-building-an-insider-threat-program-for-ai"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1131,7 +1138,8 @@
       "wired.com/story/mistral-new-model-le-chonk-open-source-china-us-frontier",
       "wired.com/story/ai-is-driving-cars-now-oh-boy",
       "wired.com/story/the-pentagon-hopes-to-speed-up-kill-chain-ai-buys-with-5-minute-videos",
-      "wired.com/story/uncanny-valley-podcast-inside-elon-musks-midterm-spending-spree"
+      "wired.com/story/uncanny-valley-podcast-inside-elon-musks-midterm-spending-spree",
+      "wired.com/story/openai-and-anthropic-tell-british-lawmakers-regulate-us"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1282,7 +1290,9 @@
       "skysports.com/football/man-utd-vs-spurs/report/559502",
       "skysports.com/football/news/13597523/man-city-charges-manchester-united-fans-take-aim-at-rivals-with-return-of-famous-ticker-banner",
       "skysports.com/football/news/13598163/michael-carrick-manchester-united-head-coach-is-in-trouble-ahead-of-crucial-week-against-atletico-madrid-and-leeds",
-      "skysports.com/football/news/13598084/manchester-united-viral-clip-shows-spurs-beat-the-press-at-old-trafford-and-exposes-other-issues"
+      "skysports.com/football/news/13598084/manchester-united-viral-clip-shows-spurs-beat-the-press-at-old-trafford-and-exposes-other-issues",
+      "skysports.com/football/a-madrid-vs-man-utd/report/577616",
+      "skysports.com/football/news/13598950/man-utd-defender-lisandro-martinez-extraordinarily-calls-out-clubs-hierarchy-after-atletico-madrid-loss-in-champions-league"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -1326,7 +1336,12 @@
       "si.com/soccer/man-utd-vs-tottenham-high-pressure-fixture-shape-season",
       "si.com/soccer/transfer-rumors-haaland-yamal-barcelona-usmnt-sullivan",
       "si.com/soccer/supercomputer-premier-league-table-man-city-send-arsenal-title-statement",
-      "si.com/soccer/erling-haaland-what-thinks-man-utd-brutal-three-word-admission"
+      "si.com/soccer/erling-haaland-what-thinks-man-utd-brutal-three-word-admission",
+      "si.com/soccer/transfer-rumors-chelsea-bellingham-arsenal-olise-race",
+      "si.com/soccer/man-utd-player-ratings-vs-atletico-madrid-10-13-26",
+      "si.com/soccer/michael-carrick-stuck-impossible-cycle-man-utd-biggest-concern",
+      "si.com/soccer/how-man-city-immediately-suspended-appeal-verdict",
+      "si.com/soccer/michael-carrick-man-utd-40-year-low"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
