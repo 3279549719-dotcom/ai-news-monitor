@@ -41,7 +41,8 @@
       "nba.com/mavs/news/irving-sees-greatness-in-flagg-is-eager-to-help-him-reach-it",
       "nba.com/mavs/news/mavericks-hawks-preview-marcus-sasser-ready-to-play-for-mavs-for-the-first-time",
       "nba.com/mavs/news/irving-flagg-to-play-as-mavs-have-dress-rehearsal-game-against-hawks",
-      "nba.com/mavs/news/rookie-de-larrea-builds-his-strong-case-for-court-time-in-preseason-loss"
+      "nba.com/mavs/news/rookie-de-larrea-builds-his-strong-case-for-court-time-in-preseason-loss",
+      "nba.com/mavs/news/mavericks-step-up-hospitality-with-new-savory-culinary-delights-and-more-fan-enhancements"
     ],
     "tim-macmahon-(x)": [
       "x.com/espn_macmahon/status/2068769971896017090",
@@ -115,9 +116,6 @@
       "x.com/TheSteinLine/status/2100267886983995828"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/michael-porter-jr-shares-crazy-185636166.html",
-      "sports.yahoo.com/articles/klay-thompson-reveals-real-reason-041759453.html",
-      "sports.yahoo.com/articles/klay-thompson-miami-dream-revealed-165450117.html",
       "sports.yahoo.com/articles/kyrie-irving-sends-shockwaves-insane-091034552.html",
       "sports.yahoo.com/articles/michael-porter-jr-reacts-kyrie-200920678.html",
       "sports.yahoo.com/articles/willing-haircut-brian-windhorst-explained-190912138.html",
@@ -314,7 +312,10 @@
       "sports.yahoo.com/articles/4-things-mavericks-comeback-falls-031800336.html",
       "sports.yahoo.com/articles/dusty-may-highlights-zaccharie-risacher-041644631.html",
       "sports.yahoo.com/articles/3-thoughts-mavericks-preseason-loss-032319042.html",
-      "sports.yahoo.com/articles/mavericks-more-questions-answers-pelicans-032709244.html"
+      "sports.yahoo.com/articles/mavericks-more-questions-answers-pelicans-032709244.html",
+      "sports.yahoo.com/articles/nba-gms-sleeping-dallas-mavericks-200225884.html",
+      "sports.yahoo.com/articles/kyrie-irving-fantastic-cooper-flagg-141055332.html",
+      "sports.yahoo.com/articles/exclusive-baron-davis-explains-kyrie-221803660.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -392,7 +393,8 @@
       "bleacherreport.com/articles/25505973-ranking-top-30-nba-shooters-ahead-2026-27",
       "bleacherreport.com/articles/25507099-ranking-top-30-nba-scorers-ahead-2026-27",
       "bleacherreport.com/articles/25510516-nba-gms-pick-mvp-champion-roy-top-offseason-moves-more-annual-survey",
-      "bleacherreport.com/articles/25510173-10-most-expensive-sports-card-and-memorabilia-sales-2026"
+      "bleacherreport.com/articles/25510173-10-most-expensive-sports-card-and-memorabilia-sales-2026",
+      "bleacherreport.com/articles/25505972-ranking-top-30-nba-creators-ahead-2026-27"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -511,7 +513,9 @@
       "si.com/nba/mavericks/onsi/debating-contract-extension-dallas-mavericks-dereck-lively-ii-",
       "si.com/nba/mavericks/onsi/injury-updates-two-dallas-mavericks-forwards-ahead-preseason-finale-morez-jonson-",
       "si.com/nba/mavericks/onsi/nba-gms-sleeping-dallas-mavericks-cooper-flagg-second-season-",
-      "si.com/nba/mavericks/onsi/3-thoughts-from-dallas-mavericks-preseason-loss-new-orleans-pelicans-naji-marshall-"
+      "si.com/nba/mavericks/onsi/3-thoughts-from-dallas-mavericks-preseason-loss-new-orleans-pelicans-naji-marshall-",
+      "si.com/nba/mavericks/onsi/3-takeaways-from-dallas-mavericks-ugly-preseason-finale-loss-atlanta-hawks-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-finally-get-first-look-offseason-trade-acquisition-preseason-finale-marcus-sasser-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -702,7 +706,10 @@
       "thesmokingcuban.com/cooper-flagg-hype-is-reaching-levels-reserved-only-for-nba-elite",
       "thesmokingcuban.com/zaccharie-risacher-rollercoaster-preseason-isnt-reason-for-mavericks-to-panic-yet",
       "thesmokingcuban.com/mavericks-offense-exposed-why-trading-kyrie-irving-would-be-disaster",
-      "thesmokingcuban.com/john-poulakidas-just-proved-exactly-why-he-shouldnt-be-on-mavericks-hot-seat"
+      "thesmokingcuban.com/john-poulakidas-just-proved-exactly-why-he-shouldnt-be-on-mavericks-hot-seat",
+      "thesmokingcuban.com/mavericks-new-role-for-naji-marshall-raises-legitimate-concern",
+      "thesmokingcuban.com/dusty-may-isnt-closing-door-on-mavericks-making-once-unlikely-dwight-powell-move",
+      "thesmokingcuban.com/mavericks-need-third-option-to-take-pressure-off-cooper-flagg-and-kyrie-irving"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1050,7 +1057,12 @@
       "anthropic.com/research/launching-opt-in-vuln-finding-service-for-open-source",
       "anthropic.com/research/investigating-unintended-model-actions",
       "anthropic.com/research/self-replicating-ai",
-      "anthropic.com/research/distillation-defenses"
+      "anthropic.com/research/distillation-defenses",
+      "anthropic.com/research/designing-efficient-quantum-circuits",
+      "anthropic.com/research/ecdsa-curve-origins",
+      "anthropic.com/research/ai-expectations-gap",
+      "anthropic.com/research/employment-at-anthropic",
+      "anthropic.com/research/expectations-for-the-future"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1115,7 +1127,8 @@
       "claude.com/resources/articles/how-block-orchestrates-claude-fable-across-thousands-of-pull-requests",
       "claude.com/resources/articles/uber-s-ciso-on-building-an-insider-threat-program-for-ai",
       "claude.com/resources/articles/agent-observability-on-the-claude-platform",
-      "claude.com/resources/articles/code-review-is-now-generally-available"
+      "claude.com/resources/articles/code-review-is-now-generally-available",
+      "claude.com/resources/articles/how-an-anthropic-japan-business-development-representative-runs-his-day"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1222,7 +1235,8 @@
       "techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference",
       "techcrunch.com/2026/10/09/an-anthropic-ai-model-sent-a-false-homicide-tip-to-philadelphia-police",
       "techcrunch.com/2026/10/09/anthropic-cant-reliably-control-its-ai-agents-its-cutting-off-its-internal-evals-from-the-live-internet-instead",
-      "techcrunch.com/2026/10/15/anthropic-is-letting-metr-researchers-look-under-the-hood-with-employee-level-access"
+      "techcrunch.com/2026/10/15/anthropic-is-letting-metr-researchers-look-under-the-hood-with-employee-level-access",
+      "techcrunch.com/2026/10/16/replit-is-no-longer-working-with-anthropic-ceo-says"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1324,7 +1338,12 @@
       "skysports.com/football/news/13599282/lisandro-martinez-manchester-united-outburst-q-and-a-jason-wilcox-transfer-strategy-and-what-next",
       "skysports.com/football/news/13599170/bruno-fernandes-what-has-happened-to-the-form-of-man-utds-best-player-and-should-michael-carrick-drop-him",
       "skysports.com/football/news/13599196/lisandro-martinez-future-of-defender-at-man-utd-in-doubt-following-public-outburst-directed-at-clubs-hierarchy",
-      "skysports.com/football/news/13599115/lisandro-martinez-jamie-carragher-says-man-utd-defenders-comments-criticising-hierarchy-are-awful-as-wayne-rooney-brands-them-disrespectful"
+      "skysports.com/football/news/13599115/lisandro-martinez-jamie-carragher-says-man-utd-defenders-comments-criticising-hierarchy-are-awful-as-wayne-rooney-brands-them-disrespectful",
+      "skysports.com/football/news/13599948/lisandro-martinez-man-utd-defender-in-squad-for-leeds-trip-and-situation-resolved-after-criticism-of-hierarchy-insists-michael-carrick",
+      "skysports.com/football/news/13599521/jason-wilcox-finds-himself-under-exact-same-pressure-as-last-time-manchester-united-visited-elland-road-to-face-leeds",
+      "skysports.com/football/news/13599725/lisandro-martinez-man-utd-defender-apologises-for-outburst-and-holds-talks-with-jason-wilcox-and-michael-carrick",
+      "skysports.com/football/news/13599539/alex-scott-transfer-news-bournemouth-will-consider-offers-in-excess-of-lb80m-for-england-international-amid-refusal-to-sign-new-contract",
+      "skysports.com/football/transfer-paper-talk/13599465/manchester-united-latest-senior-players-backing-lisandro-martinez-over-hierarchy-outburst-paper-talk"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -1378,7 +1397,12 @@
       "si.com/soccer/lisandro-martinez-apologizes-for-explosive-rant-man-utd",
       "si.com/soccer/best-premier-league-left-backs-all-time-ranked",
       "si.com/soccer/lisandro-martinez-names-only-way-man-utd-move-forward",
-      "si.com/soccer/supercomputer-final-champions-league-table-record-breaking-matchday-2"
+      "si.com/soccer/supercomputer-final-champions-league-table-record-breaking-matchday-2",
+      "si.com/soccer/premier-league-predictions-everton-chelsea-man-utd-leeds-gameweek-7",
+      "si.com/soccer/transfer-rumors-psg-saliba-bellingham-premier-league",
+      "si.com/soccer/man-utd-predicted-lineup-vs-leeds-carrick-martinez-outburst",
+      "si.com/soccer/how-man-utd-squad-reacted-lisandro-martinez-incident",
+      "si.com/soccer/lisandro-martinez-formally-punished-man-utd-outburst"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
