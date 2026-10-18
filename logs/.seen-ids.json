@@ -42,7 +42,11 @@
       "nba.com/mavs/news/mavericks-hawks-preview-marcus-sasser-ready-to-play-for-mavs-for-the-first-time",
       "nba.com/mavs/news/irving-flagg-to-play-as-mavs-have-dress-rehearsal-game-against-hawks",
       "nba.com/mavs/news/rookie-de-larrea-builds-his-strong-case-for-court-time-in-preseason-loss",
-      "nba.com/mavs/news/mavericks-step-up-hospitality-with-new-savory-culinary-delights-and-more-fan-enhancements"
+      "nba.com/mavs/news/mavericks-step-up-hospitality-with-new-savory-culinary-delights-and-more-fan-enhancements",
+      "nba.com/mavs/news/the-personable-dusty-may-bringing-his-championship-pedigree-to-mavericks",
+      "nba.com/mavs/news/mavericks-waive-seth-lundy-and-john-poulakidas",
+      "nba.com/mavs/news/mavericks-exercise-team-option-on-cooper-flagg",
+      "nba.com/mavs/news/flagg-irving-combine-for-44-points-but-mavs-dropped-135-111-decision-to-hawks"
     ],
     "tim-macmahon-(x)": [
       "x.com/espn_macmahon/status/2068769971896017090",
@@ -116,10 +120,6 @@
       "x.com/TheSteinLine/status/2100267886983995828"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/kyrie-irving-sends-shockwaves-insane-091034552.html",
-      "sports.yahoo.com/articles/michael-porter-jr-reacts-kyrie-200920678.html",
-      "sports.yahoo.com/articles/willing-haircut-brian-windhorst-explained-190912138.html",
-      "sports.yahoo.com/articles/espn-analyst-claims-luka-doncic-184059908.html",
       "sports.yahoo.com/articles/houston-rockets-trade-kyrie-irving-183925906.html",
       "sports.yahoo.com/articles/klay-thompson-dad-reveals-why-172333150.html",
       "sports.yahoo.com/articles/klay-thompson-dad-why-son-164106094.html",
@@ -315,7 +315,11 @@
       "sports.yahoo.com/articles/mavericks-more-questions-answers-pelicans-032709244.html",
       "sports.yahoo.com/articles/nba-gms-sleeping-dallas-mavericks-200225884.html",
       "sports.yahoo.com/articles/kyrie-irving-fantastic-cooper-flagg-141055332.html",
-      "sports.yahoo.com/articles/exclusive-baron-davis-explains-kyrie-221803660.html"
+      "sports.yahoo.com/articles/exclusive-baron-davis-explains-kyrie-221803660.html",
+      "sports.yahoo.com/articles/mavericks-overwhelmed-hawks-defensive-problems-024642112.html",
+      "sports.yahoo.com/articles/hawks-bench-shines-mavericks-struggle-133524466.html",
+      "sports.yahoo.com/articles/three-things-learned-atlantas-preseason-150004858.html",
+      "sports.yahoo.com/articles/dallas-mavericks-2026-27-player-101200086.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -515,7 +519,8 @@
       "si.com/nba/mavericks/onsi/nba-gms-sleeping-dallas-mavericks-cooper-flagg-second-season-",
       "si.com/nba/mavericks/onsi/3-thoughts-from-dallas-mavericks-preseason-loss-new-orleans-pelicans-naji-marshall-",
       "si.com/nba/mavericks/onsi/3-takeaways-from-dallas-mavericks-ugly-preseason-finale-loss-atlanta-hawks-",
-      "si.com/nba/mavericks/onsi/dallas-mavericks-finally-get-first-look-offseason-trade-acquisition-preseason-finale-marcus-sasser-"
+      "si.com/nba/mavericks/onsi/dallas-mavericks-finally-get-first-look-offseason-trade-acquisition-preseason-finale-marcus-sasser-",
+      "si.com/nba/mavericks/onsi/3-things-we-learned-about-dallas-mavericks-2026-preseason-cooper-flagg-"
     ],
     "the-smoking-cuban": [
       "thesmokingcuban.com",
@@ -709,7 +714,9 @@
       "thesmokingcuban.com/john-poulakidas-just-proved-exactly-why-he-shouldnt-be-on-mavericks-hot-seat",
       "thesmokingcuban.com/mavericks-new-role-for-naji-marshall-raises-legitimate-concern",
       "thesmokingcuban.com/dusty-may-isnt-closing-door-on-mavericks-making-once-unlikely-dwight-powell-move",
-      "thesmokingcuban.com/mavericks-need-third-option-to-take-pressure-off-cooper-flagg-and-kyrie-irving"
+      "thesmokingcuban.com/mavericks-need-third-option-to-take-pressure-off-cooper-flagg-and-kyrie-irving",
+      "thesmokingcuban.com/klay-thompson-rough-heat-start-vindicates-mavericks-decision-to-move-on",
+      "thesmokingcuban.com/morez-johnson-jr-is-giving-mavericks-reason-to-believe-hes-their-center-of-the-future"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1236,7 +1243,9 @@
       "techcrunch.com/2026/10/09/an-anthropic-ai-model-sent-a-false-homicide-tip-to-philadelphia-police",
       "techcrunch.com/2026/10/09/anthropic-cant-reliably-control-its-ai-agents-its-cutting-off-its-internal-evals-from-the-live-internet-instead",
       "techcrunch.com/2026/10/15/anthropic-is-letting-metr-researchers-look-under-the-hood-with-employee-level-access",
-      "techcrunch.com/2026/10/16/replit-is-no-longer-working-with-anthropic-ceo-says"
+      "techcrunch.com/2026/10/16/replit-is-no-longer-working-with-anthropic-ceo-says",
+      "techcrunch.com/2026/10/17/anthropic-says-its-workforce-has-become-less-junior-and-is-spending-more-time-in-meetings",
+      "techcrunch.com/2026/10/17/replit-is-no-longer-working-with-anthropic-ceo-says"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1343,7 +1352,8 @@
       "skysports.com/football/news/13599521/jason-wilcox-finds-himself-under-exact-same-pressure-as-last-time-manchester-united-visited-elland-road-to-face-leeds",
       "skysports.com/football/news/13599725/lisandro-martinez-man-utd-defender-apologises-for-outburst-and-holds-talks-with-jason-wilcox-and-michael-carrick",
       "skysports.com/football/news/13599539/alex-scott-transfer-news-bournemouth-will-consider-offers-in-excess-of-lb80m-for-england-international-amid-refusal-to-sign-new-contract",
-      "skysports.com/football/transfer-paper-talk/13599465/manchester-united-latest-senior-players-backing-lisandro-martinez-over-hierarchy-outburst-paper-talk"
+      "skysports.com/football/transfer-paper-talk/13599465/manchester-united-latest-senior-players-backing-lisandro-martinez-over-hierarchy-outburst-paper-talk",
+      "skysports.com/football/news/13599969/man-utd-transfer-news-michael-carrick-opens-door-to-january-signings-ahead-of-planned-defensive-rebuild"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
