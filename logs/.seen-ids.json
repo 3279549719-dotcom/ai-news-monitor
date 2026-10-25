@@ -139,8 +139,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/miami-heat-good-news-top-023705333.html",
-      "sports.yahoo.com/articles/mavericks-luka-don-trade-ranked-221814007.html",
       "sports.yahoo.com/articles/dallas-mavericks-legend-t-wait-112539590.html",
       "sports.yahoo.com/articles/mavericks-news-dirk-nowitzki-cant-051659842.html",
       "sports.yahoo.com/articles/miami-heat-kyrie-irving-trade-001632817.html",
@@ -338,7 +336,9 @@
       "sports.yahoo.com/articles/cooper-flagg-injured-flagrant-foul-023432340.html",
       "sports.yahoo.com/articles/cooper-flagg-suffers-shoulder-injury-020259919.html",
       "sports.yahoo.com/articles/mavs-hold-cooper-flagg-injury-015248435.html",
-      "sports.yahoo.com/articles/smear-campaign-behind-scenes-insider-173021508.html"
+      "sports.yahoo.com/articles/smear-campaign-behind-scenes-insider-173021508.html",
+      "sports.yahoo.com/articles/aaron-nesmith-face-suspension-reckless-184300143.html",
+      "sports.yahoo.com/articles/3-things-know-dallas-mavericks-053017992.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -567,13 +567,12 @@
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-control-indiana-pacers-cooper-flagg-leaves-with-injury-",
       "si.com/nba/mavericks/onsi/cooper-flagg-exits-early-after-hard-foul-leads-scuffle-dallas-mavericks-indiana-pacers-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-legend-dirk-nowitzki-reveals-hilarious-first-impression-jalen-brunson-",
-      "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-first-night-back-dallas-mavericks-indiana-pacers-"
+      "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-first-night-back-dallas-mavericks-indiana-pacers-",
+      "si.com/nba/mavericks/onsi/3-things-learned-about-short-handed-dallas-mavericks-against-san-antonio-spurs-",
+      "si.com/nba/mavericks/onsi/injury-status-cooper-flagg-kyrie-irving-ahead-dallas-mavericks-san-antonio-spurs-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-star-kyrie-irving-moves-nba-history-second-straight-game-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/cooper-flagg-targets-crucial-fix-to-become-unstoppable-scorer",
-      "thesmokingcuban.com/naji-marshall-backs-daniel-gafford-as-longtime-mavericks-trade-rumors-persist",
-      "thesmokingcuban.com/mavericks-sudden-santi-aldama-injury-scare-is-now-nothing-to-worry-about",
-      "thesmokingcuban.com/mavericks-should-be-comfortable-trading-daniel-gafford-thanks-to-hidden-gem-rise",
       "thesmokingcuban.com/mavericks-lead-duo-already-taking-steps-to-turn-heads-next-season",
       "thesmokingcuban.com/mavericks-daniel-gafford-trade-rumors-get-much-riskier-after-santi-aldama-update",
       "thesmokingcuban.com/mavericks-shot-creation-problem-has-slept-on-answer-that-fans-will-love",
@@ -769,7 +768,11 @@
       "thesmokingcuban.com/mavericks-may-have-dodged-disaster-with-cooper-flagg-injury-designation",
       "thesmokingcuban.com/santi-aldama-is-missing-key-ingredient-to-mavericks-struggling-offense",
       "thesmokingcuban.com/marcus-sasser-cant-be-mavericks-only-reliable-option-behind-kyrie-irving",
-      "thesmokingcuban.com/mavericks-offseason-tier-list-whos-safe-who-should-be-traded-whos-good-as-gone"
+      "thesmokingcuban.com/mavericks-offseason-tier-list-whos-safe-who-should-be-traded-whos-good-as-gone",
+      "thesmokingcuban.com/mavericks-deliver-promising-cooper-flagg-injury-news-after-dangerous-fall",
+      "thesmokingcuban.com/dusty-may-cracked-code-to-unlock-zaccharie-risacher-for-mavericks",
+      "thesmokingcuban.com/mavericks-better-hope-cooper-flagg-scary-shoulder-injury-isnt-serious",
+      "thesmokingcuban.com/naji-marshall-is-fully-embracing-enforcer-role-mavericks-need-from-him"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1473,7 +1476,8 @@
       "skysports.com/football/news/13602098/manchester-united-where-is-it-going-wrong-for-michael-carricks-side-after-nightmare-start-to-season",
       "skysports.com/football/news/13602131/manchester-united-jamie-carragher-calls-out-bruno-fernandes-for-questioning-michael-carricks-tactics-in-4-1-como-defeat",
       "skysports.com/football/news/13602589/man-utd-boss-michael-carrick-insists-there-is-no-divide-despite-bruno-fernandes-criticism",
-      "skysports.com/football/news/13602761/eddie-howe-is-jason-wilcoxs-choice-if-manchester-united-replace-michael-carrick-paper-talk"
+      "skysports.com/football/news/13602761/eddie-howe-is-jason-wilcoxs-choice-if-manchester-united-replace-michael-carrick-paper-talk",
+      "skysports.com/football/news/13602864/senne-lammens-manchester-united-players-are-united-and-behind-under-pressure-boss-michael-carrick"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
