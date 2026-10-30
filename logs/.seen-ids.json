@@ -149,10 +149,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/blockbuster-trade-idea-heat-landing-151500980.html",
-      "sports.yahoo.com/articles/paige-bueckers-taking-over-basketball-084521383.html",
-      "sports.yahoo.com/articles/paige-bueckers-shines-fiba-world-112700438.html",
-      "sports.yahoo.com/articles/wings-news-paige-bueckers-leading-234151659.html",
       "sports.yahoo.com/articles/clippers-may-forced-trade-197m-084155715.html",
       "sports.yahoo.com/articles/makes-them-sound-even-more-121454732.html",
       "sports.yahoo.com/articles/nba-insider-offers-hope-clippers-130034230.html",
@@ -348,7 +344,11 @@
       "sports.yahoo.com/articles/giannis-antetokounmpo-led-heat-off-061013149.html",
       "sports.yahoo.com/articles/giannis-antetokounmpo-reflects-heat-0-051629866.html",
       "sports.yahoo.com/articles/cooper-flagg-built-playoff-basketball-130100666.html",
-      "sports.yahoo.com/articles/youtube-gold-cooper-flagg-had-100200071.html"
+      "sports.yahoo.com/articles/youtube-gold-cooper-flagg-had-100200071.html",
+      "sports.yahoo.com/articles/cooper-flagg-mvp-don-t-164527216.html",
+      "sports.yahoo.com/articles/why-cooper-flagg-giving-kendrick-233334253.html",
+      "sports.yahoo.com/articles/miami-heat-earn-first-win-032836067.html",
+      "sports.yahoo.com/articles/giannis-antetokounmpo-24-points-18-014502416.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -444,7 +444,8 @@
       "bleacherreport.com/articles/25509925-1-prediction-every-nba-fanbase-going-hate",
       "bleacherreport.com/articles/25507199-6-terrible-contracts-nba-teams-wish-would-disappear",
       "bleacherreport.com/articles/25524774-new-kyrie-irving-trade-rumors-heat-links-interest-mavs-star-amid-2026-27-nba-season",
-      "bleacherreport.com/articles/25520630-1-word-describe-every-nba-teams-first-week"
+      "bleacherreport.com/articles/25520630-1-word-describe-every-nba-teams-first-week",
+      "bleacherreport.com/articles/25521464-grading-every-nba-team-after-wild-first-week"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -594,13 +595,11 @@
       "si.com/nba/mavericks/onsi/former-dallas-mavericks-nba-champion-head-coach-rick-carlisle-compliments-dusty-may-",
       "si.com/nba/mavericks/onsi/hall-of-fame-dallas-mavericks-executive-set-retire-again-rick-welts-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-nearing-major-boost-key-player-closes-return-santi-aldama-",
-      "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-dallas-mavericks-get-set-battered-okc-thunder-"
+      "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-dallas-mavericks-get-set-battered-okc-thunder-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-zaccharie-risacher-all-defense-path-clamping-okc-thunder-shai-gilgeous-alexander-",
+      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-hand-okc-thunder-first-loss-season-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/fresh-klay-thompson-report-makes-his-mavericks-tenure-look-even-worse",
-      "thesmokingcuban.com/mavericks-klay-thompson-move-exposes-problem-they-still-havent-fully-solved",
-      "thesmokingcuban.com/heat-can-grant-klay-thompson-biggest-wish-that-mavericks-couldnt",
-      "thesmokingcuban.com/new-report-gives-mavericks-hope-for-dream-luka-doncic-reunion",
       "thesmokingcuban.com/mavericks-ill-fated-klay-thompson-buyout-has-hidden-blessing",
       "thesmokingcuban.com/klay-thompson-buyout-may-have-saved-another-mavericks-veteran-from-trade",
       "thesmokingcuban.com/mavericks-fans-biggest-kyrie-irving-concern-wiped-away-by-michael-porter-jr",
@@ -796,7 +795,11 @@
       "thesmokingcuban.com/walter-clayton-jr-is-final-piece-of-mavericks-backcourt-puzzle",
       "thesmokingcuban.com/santi-aldama-injury-update-brings-mavericks-closer-to-much-needed-boost",
       "thesmokingcuban.com/jeremy-sochan-easiest-path-to-mavericks-already-gone",
-      "thesmokingcuban.com/mavericks-cant-keep-zaccharie-risacher-off-floor-despite-his-ugly-offense"
+      "thesmokingcuban.com/mavericks-cant-keep-zaccharie-risacher-off-floor-despite-his-ugly-offense",
+      "thesmokingcuban.com/dusty-may-playing-to-mavericks-strengths-in-ways-jason-kidd-struggled",
+      "thesmokingcuban.com/pj-washington-silencing-cooper-flagg-fit-concerns",
+      "thesmokingcuban.com/cooper-flagg-improved-playmaking-raises-mavericks-offensive-ceiling",
+      "thesmokingcuban.com/mavericks-no-brainer-zaccharie-risacher-move-proves-they-believe-in-his-future"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1539,7 +1542,9 @@
       "skysports.com/football/news/13604361/michael-carrick-why-man-utd-head-coach-will-stay-on-and-could-bruno-fernandes-play-vs-chelsea-plus-other-key-questions",
       "skysports.com/football/news/13604347/man-utd-boss-michael-carrick-to-remain-in-charge-vs-chelsea-and-given-chance-to-turn-situation-around",
       "skysports.com/football/news/13604738/bruno-fernandes-man-utd-head-coach-michael-carrick-and-club-captain-hold-clear-the-air-talks-ahead-of-chelsea-fixture",
-      "skysports.com/football/news/13604280/michael-carrick-is-latest-man-utd-manager-under-pressure-but-has-poor-recruitment-made-them-a-mid-table-team-between-the-lines"
+      "skysports.com/football/news/13604280/michael-carrick-is-latest-man-utd-manager-under-pressure-but-has-poor-recruitment-made-them-a-mid-table-team-between-the-lines",
+      "skysports.com/football/news/13605331/manchester-united-michael-carrick-ready-to-move-forward-with-bruno-fernandes-as-captain-and-doesnt-require-assurances-on-his-future",
+      "skysports.com/football/news/13604412/premier-league-predictions-and-jones-knows-best-bets-liverpool-vs-arsenal-crystal-palace-vs-tottenham-and-much-more"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
