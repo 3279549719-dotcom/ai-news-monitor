@@ -154,11 +154,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/denver-nuggets-reunite-kyrie-irving-185607554.html",
-      "sports.yahoo.com/articles/let-nba2k27-predict-cooper-flagg-123200611.html",
-      "sports.yahoo.com/articles/luka-doncic-ex-coach-sends-124535774.html",
-      "sports.yahoo.com/articles/wild-luka-don-fans-knew-091045939.html",
-      "sports.yahoo.com/articles/luka-doncic-coach-recalls-easy-054920189.html",
       "sports.yahoo.com/articles/kyrie-irving-backs-azeez-al-201236263.html",
       "sports.yahoo.com/articles/kyrie-irving-offers-pay-11k-173540887.html",
       "sports.yahoo.com/articles/kyrie-irving-takes-action-nfl-195158070.html",
@@ -353,7 +348,12 @@
       "sports.yahoo.com/articles/dumont-family-becomes-controlling-owners-230539890.html",
       "sports.yahoo.com/articles/patrick-dumont-family-became-controlling-203659166.html",
       "sports.yahoo.com/articles/does-another-ownership-swap-change-220045500.html",
-      "sports.yahoo.com/articles/dallas-mavericks-insider-makes-bold-191142555.html"
+      "sports.yahoo.com/articles/dallas-mavericks-insider-makes-bold-191142555.html",
+      "sports.yahoo.com/articles/mavs-trade-kyrie-irving-talk-132509083.html",
+      "sports.yahoo.com/articles/dallas-mavericks-grow-143100866.html",
+      "sports.yahoo.com/articles/dumont-family-takes-full-control-192218451.html",
+      "sports.yahoo.com/articles/billions-quietly-exchanged-major-mavericks-175516212.html",
+      "sports.yahoo.com/articles/patrick-dumont-purchases-miriam-adelson-112400833.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -456,7 +456,9 @@
       "bleacherreport.com/articles/25524231-1-trade-still-haunting-every-nba-franchise-2026",
       "bleacherreport.com/articles/25528353-kyrie-irving-trade-no-1-question-nba-execs-talking-mavs-insider-amid-latest-rumors",
       "bleacherreport.com/articles/25528694-new-kyrie-irving-trade-rumors-reveal-mavs-stance-pg-amid-heat-buzz-calls-nba-teams",
-      "bleacherreport.com/articles/25517880-3-team-kyrie-irving-trade-idea-would-put-eastern-conference-notice"
+      "bleacherreport.com/articles/25517880-3-team-kyrie-irving-trade-idea-would-put-eastern-conference-notice",
+      "bleacherreport.com/articles/25527153-ranking-every-nba-teams-top-trade-assets",
+      "bleacherreport.com/articles/25528522-every-nba-teams-biggest-problem-right-now"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -621,12 +623,10 @@
       "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-dallas-mavericks-prepare-winless-sacramento-kings-",
       "si.com/nba/mavericks/onsi/are-dallas-mavericks-already-regretting-contract-extension-naji-marshall-",
       "si.com/nba/mavericks/onsi/does-another-ownership-swap-change-anything-dallas-mavericks-",
-      "si.com/nba/mavericks/onsi/cooper-flagg-apologized-dallas-mavericks-after-horrific-loss-sacramento-kings-"
+      "si.com/nba/mavericks/onsi/cooper-flagg-apologized-dallas-mavericks-after-horrific-loss-sacramento-kings-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-forward-santi-aldama-could-make-season-debut-against-san-antonio-spurs-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/mavericks-must-be-patient-with-tobi-lawal-to-unlock-his-potential",
-      "thesmokingcuban.com/mavericks-front-office-overhaul-leaves-important-holdover-from-nico-harrison-era",
-      "thesmokingcuban.com/tarik-biberovic-faces-glaring-question-entering-his-mavericks-rookie-year",
       "thesmokingcuban.com/mavericks-fans-must-look-deeper-to-fully-understand-morez-johnson-jr-impact",
       "thesmokingcuban.com/mavericks-death-lineup-from-last-year-may-never-even-see-floor-next-season",
       "thesmokingcuban.com/bleacher-report-harsh-mavericks-future-ranking-is-far-from-truth",
@@ -823,7 +823,10 @@
       "thesmokingcuban.com/mavericks-shooting-struggles-make-santi-aldama-return-even-more-crucial",
       "thesmokingcuban.com/mavericks-gamble-on-morez-johnson-jr-starting-to-pay-off",
       "thesmokingcuban.com/max-christie-brutal-start-makes-it-harder-for-mavericks-to-justify-his-starting-spot",
-      "thesmokingcuban.com/mavericks-trade-stance-on-kyrie-irving-is-exactly-what-cooper-flagg-needs"
+      "thesmokingcuban.com/mavericks-trade-stance-on-kyrie-irving-is-exactly-what-cooper-flagg-needs",
+      "thesmokingcuban.com/daniel-gafford-giving-mavericks-reason-to-abandon-trade-plans",
+      "thesmokingcuban.com/walter-clayton-jr-signing-is-mavericks-biggest-steal-of-season",
+      "thesmokingcuban.com/mavericks-have-plenty-of-time-to-solve-their-walter-clayton-jr-dilemma"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1225,7 +1228,8 @@
       "anthropic.com/research/formal-verification",
       "anthropic.com/research/alignment-assessment-ukaisi",
       "anthropic.com/research/agents-judgment-calls",
-      "anthropic.com/research/provable-inference"
+      "anthropic.com/research/provable-inference",
+      "anthropic.com/research/investigating-vault-particles-with-claude"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1305,7 +1309,8 @@
       "claude.com/resources/articles/smart-reports-surveys-pooled-budgets",
       "claude.com/resources/articles/idc-brings-quanta-into-claude-and-adopts-claude-across-the-company",
       "claude.com/resources/articles/introducing-artifacts-for-legal-work",
-      "claude.com/resources/articles/message-threads"
+      "claude.com/resources/articles/message-threads",
+      "claude.com/resources/articles/new-agents-and-products-claude-marketplace"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1602,7 +1607,8 @@
       "skysports.com/football/news/13607031/man-utd-will-be-in-premier-league-relegation-zone-in-december-says-paul-merson-as-michael-carricks-side-hit-by-poor-recruitment",
       "skysports.com/football/news/13607180/donyell-malen-at-roma-man-utd-face-the-top-scorer-in-europe-s-major-leagues-in-2026-with-the-dutchman-transformed",
       "skysports.com/football/man-utd-vs-roma/report/577657",
-      "skysports.com/football/news/13607700/manchester-united-3-2-roma-bruno-fernandes-claims-players-dont-need-to-save-michael-carricks-job-after-first-win-in-10-games"
+      "skysports.com/football/news/13607700/manchester-united-3-2-roma-bruno-fernandes-claims-players-dont-need-to-save-michael-carricks-job-after-first-win-in-10-games",
+      "skysports.com/transfer/news/13607845/jj-gabriel-real-madrid-reach-verbal-agreement-with-man-utd-teenager-who-requested-to-leave-old-trafford"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -1695,7 +1701,12 @@
       "si.com/soccer/man-utd-player-ratings-vs-roma-cunha-dramatic-comeback-stop-rot",
       "si.com/soccer/why-bruno-fernandes-retake-penalty-vs-roma",
       "si.com/soccer/man-utd-comeback-marred-fresh-carlos-baleba-injury",
-      "si.com/soccer/cristiano-ronaldo-unsurprising-response-erik-ten-hag-latest-criticism"
+      "si.com/soccer/cristiano-ronaldo-unsurprising-response-erik-ten-hag-latest-criticism",
+      "si.com/soccer/supercomputer-predicts-champions-league-table-halfway-league-phase-11-4-26",
+      "si.com/soccer/transfer-rumors-sesko-derails-man-utd-striker-hunt-barcelona-raided-by-rivals",
+      "si.com/soccer/carlos-baleba-injury-progress-potential-return-date-man-utd-midfielder",
+      "si.com/soccer/man-utd-champions-league-hero-wont-be-suspended-aston-villa-red-card",
+      "si.com/soccer/man-utd-match-real-madrid-legendary-champions-league-feat"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
@@ -1755,7 +1766,10 @@
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63572/the-dallas-mavericks-need-to-grow-up",
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63599/mavericks-vs-kings-quoteboard-we-played-their-record-they-played-like-pros",
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63563/mavericks-vs-kings-115-100-cooper-flagg-darius-acuff-kings-get-first-win",
-      "mavsmoneyball.com/mavericks-news/63536/this-nba-insider-says-cooper-flagg-is-already-a-top-10-player-right-now-dallas-mavericks"
+      "mavsmoneyball.com/mavericks-news/63536/this-nba-insider-says-cooper-flagg-is-already-a-top-10-player-right-now-dallas-mavericks",
+      "mavsmoneyball.com/dallas-mavericks-game-coverage/63608/mavericks-vs-spurs-preview-dallas-looks-to-bounce-back-at-rival-san-antonio-cooper-flagg-kyrie-irving",
+      "mavsmoneyball.com/mavericks-analysis/63618/roundtable-what-would-it-take-for-you-to-trade-kyrie-irving",
+      "mavsmoneyball.com/mavericks-news/63610/patrick-dumont-ownership-dallas-mavericks-miriam-adelson-shares-majority"
     ]
   }
 }
