@@ -160,8 +160,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/insider-reveals-exciting-dynamics-between-224252772.html",
-      "sports.yahoo.com/articles/nba-underrating-mavericks-future-cooper-223231951.html",
       "sports.yahoo.com/articles/5-dallas-mavericks-storylines-upcoming-110000288.html",
       "sports.yahoo.com/articles/mavericks-news-cooper-flagg-kyrie-000152453.html",
       "sports.yahoo.com/articles/dallas-mavs-kyrie-irving-offers-205123952.html",
@@ -359,7 +357,9 @@
       "sports.yahoo.com/articles/whys-cooper-flagg-struggling-score-130219238.html",
       "sports.yahoo.com/articles/flagg-rough-night-shows-kings-171930095.html",
       "sports.yahoo.com/articles/victor-wembanyama-pulls-off-something-155459765.html",
-      "sports.yahoo.com/articles/wembanyama-overcomes-illness-injury-historic-073426406.html"
+      "sports.yahoo.com/articles/wembanyama-overcomes-illness-injury-historic-073426406.html",
+      "sports.yahoo.com/articles/mavericks-cooper-flagg-more-assertive-110100745.html",
+      "sports.yahoo.com/articles/cooper-flagg-kyrie-irving-rebound-033538074.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -465,7 +465,8 @@
       "bleacherreport.com/articles/25517880-3-team-kyrie-irving-trade-idea-would-put-eastern-conference-notice",
       "bleacherreport.com/articles/25527153-ranking-every-nba-teams-top-trade-assets",
       "bleacherreport.com/articles/25528522-every-nba-teams-biggest-problem-right-now",
-      "bleacherreport.com/articles/25529190-grading-every-nba-teams-starting-lineup-so-far"
+      "bleacherreport.com/articles/25529190-grading-every-nba-teams-starting-lineup-so-far",
+      "bleacherreport.com/articles/25529484-nba-power-rankings-lebron-james-76ers-victor-wembanyamas-spurs-rising"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -633,13 +634,12 @@
       "si.com/nba/mavericks/onsi/cooper-flagg-apologized-dallas-mavericks-after-horrific-loss-sacramento-kings-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-forward-santi-aldama-could-make-season-debut-against-san-antonio-spurs-",
       "si.com/nba/mavericks/onsi/kyrie-irving-dusty-may-explain-dallas-mavericks-missed-game-winner-against-san-antonio-spurs-",
-      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-fall-short-san-antonio-spurs-historic-game-victor-wembanyama-"
+      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-fall-short-san-antonio-spurs-historic-game-victor-wembanyama-",
+      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-move-2-0-nba-cup-play-win-over-utah-jazz-pj-washington-",
+      "si.com/nba/mavericks/onsi/ex-dallas-mavericks-coach-jason-kidd-reacts-kyrie-irving-missed-game-winner-against-san-atnonio-spurs",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-starter-upgraded-injury-report-nba-cup-game-against-utah-jazz-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/sergio-de-larrea-just-proved-why-his-biggest-summer-league-concern-was-overblown",
-      "thesmokingcuban.com/kyrie-irving-slept-on-specialty-will-make-cooper-flagg-life-so-much-easier",
-      "thesmokingcuban.com/tarik-biberovic-has-major-challenge-to-overcome-as-mavericks-rookie",
-      "thesmokingcuban.com/bleacher-report-throws-salt-in-mavericks-fans-wounds-with-luka-doncic-trade-ranking",
       "thesmokingcuban.com/jason-kidd-viral-mavericks-admission-to-lebron-james-is-not-as-it-seems",
       "thesmokingcuban.com/bleacher-report-senseless-mock-trade-discredits-mavericks-offseason-moves",
       "thesmokingcuban.com/clippers-hefty-kawhi-leonard-punishment-is-fantastic-news-for-mavericks",
@@ -835,7 +835,11 @@
       "thesmokingcuban.com/cooper-flagg-rough-stretch-exposes-why-mavericks-cant-trade-kyrie-irving",
       "thesmokingcuban.com/naji-marshall-becoming-versatile-offensive-weapon-mavericks-need",
       "thesmokingcuban.com/victor-wembanyama-monster-night-exposed-exactly-who-mavericks-are-missing",
-      "thesmokingcuban.com/dereck-lively-ii-extended-absence-putting-his-mavericks-future-in-jeopardy"
+      "thesmokingcuban.com/dereck-lively-ii-extended-absence-putting-his-mavericks-future-in-jeopardy",
+      "thesmokingcuban.com/daniel-gafford-dominance-makes-mavericks-trade-decision-much-harder",
+      "thesmokingcuban.com/mavericks-making-convincing-playoff-case-with-key-reinforcements-still-missing",
+      "thesmokingcuban.com/santi-aldama-return-brings-back-dirk-nowitzki-trait-mavericks-needed",
+      "thesmokingcuban.com/pj-washington-shooting-holding-him-back-from-becoming-lethal-for-mavericks"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1239,7 +1243,9 @@
       "anthropic.com/research/agents-judgment-calls",
       "anthropic.com/research/provable-inference",
       "anthropic.com/research/investigating-vault-particles-with-claude",
-      "anthropic.com/research/how-researchers-use-claude"
+      "anthropic.com/research/how-researchers-use-claude",
+      "anthropic.com/research/teaching-ai-to-build-scientific-models",
+      "anthropic.com/research/components-of-agent-memory"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1384,7 +1390,8 @@
       "wired.com/story/a-defense-contractor-gave-their-personal-ai-agent-access-to-a-secure-pentagon-system",
       "wired.com/story/mistral-says-le-chonk-surpasses-chinese-models-cybersecurity",
       "wired.com/story/ai-made-decades-of-computer-science-research-irrelevant",
-      "wired.com/story/wired-world-fair-2026-alexis-ohanian"
+      "wired.com/story/wired-world-fair-2026-alexis-ohanian",
+      "wired.com/story/free-chinese-ai-models-are-getting-scary-good-at-hacking"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1460,7 +1467,9 @@
       "techcrunch.com/2026/10/28/anthropic-just-launched-tools-to-show-companies-what-their-ai-spending-is-buying",
       "techcrunch.com/2026/11/02/anthropic-warns-that-its-very-close-to-rsi-capability-aka-self-building-ai",
       "techcrunch.com/2026/11/03/anthropic-is-working-on-a-system-to-prove-ai-models-identity",
-      "techcrunch.com/2026/11/03/anthropic-is-still-grappling-with-the-economics-of-compute"
+      "techcrunch.com/2026/11/03/anthropic-is-still-grappling-with-the-economics-of-compute",
+      "techcrunch.com/2026/11/06/openai-reportedly-raises-an-additional-11-billion-at-a-1-25-trillion-valuation",
+      "techcrunch.com/2026/11/06/ramp-data-shows-ai-spending-stalling-just-as-anthropic-nears-its-ipo"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1726,7 +1735,12 @@
       "si.com/soccer/five-potential-destinations-for-alejandro-balde-ranked",
       "si.com/soccer/uefa-rule-further-champions-league-punishment-matheus-cunha",
       "si.com/soccer/soccer-world-reacts-cristiano-ronaldo-emotional-portugal-retirement",
-      "si.com/soccer/unai-emery-man-utd-appointment-aston-villa-update"
+      "si.com/soccer/unai-emery-man-utd-appointment-aston-villa-update",
+      "si.com/soccer/transfer-rumors-man-utd-endrick-barcelona-martinez",
+      "si.com/soccer/build-michael-carrick-man-utd-return-alex-ferguson-glory-days",
+      "si.com/soccer/where-man-utd-wonderkid-jj-gabriel-fit-real-madrid",
+      "si.com/soccer/how-man-utd-fans-saved-michael-carrick-job",
+      "si.com/soccer/man-utd-coowner-comparison-dallas-cowboys-new-york-yankees-fans-hate"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
