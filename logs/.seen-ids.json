@@ -170,9 +170,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/mavs-kyrie-irving-3-way-222213464.html",
-      "sports.yahoo.com/articles/people-around-league-monitoring-nba-210650862.html",
-      "sports.yahoo.com/articles/nba-scout-envisions-kyrie-irving-192911160.html",
       "sports.yahoo.com/articles/miami-heat-major-kyrie-irving-021457842.html",
       "sports.yahoo.com/articles/miami-heat-clear-path-kyrie-234526247.html",
       "sports.yahoo.com/articles/cooper-flagg-receives-powerful-support-003916859.html",
@@ -369,7 +366,10 @@
       "sports.yahoo.com/articles/cooper-flagg-joins-elite-company-045656882.html",
       "sports.yahoo.com/articles/cooper-flagg-kyrie-irving-combine-035753578.html",
       "sports.yahoo.com/articles/flagg-43-points-10-rebounds-040735304.html",
-      "sports.yahoo.com/articles/cooper-flagg-matches-lebron-james-065902213.html"
+      "sports.yahoo.com/articles/cooper-flagg-matches-lebron-james-065902213.html",
+      "sports.yahoo.com/articles/former-duke-star-cooper-flagg-211833041.html",
+      "sports.yahoo.com/articles/cooper-flagg-kyrie-irving-combine-035619370.html",
+      "sports.yahoo.com/articles/mavericks-kyrie-irving-having-lot-205252374.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -476,7 +476,9 @@
       "bleacherreport.com/articles/25527153-ranking-every-nba-teams-top-trade-assets",
       "bleacherreport.com/articles/25528522-every-nba-teams-biggest-problem-right-now",
       "bleacherreport.com/articles/25529190-grading-every-nba-teams-starting-lineup-so-far",
-      "bleacherreport.com/articles/25529484-nba-power-rankings-lebron-james-76ers-victor-wembanyamas-spurs-rising"
+      "bleacherreport.com/articles/25529484-nba-power-rankings-lebron-james-76ers-victor-wembanyamas-spurs-rising",
+      "bleacherreport.com/articles/25531592-cooper-flagg-joins-kevin-durant-makes-nba-history-rare-stat-mavs-win-vs-pacers",
+      "bleacherreport.com/articles/25531121-5-rising-stars-who-could-make-their-first-all-nba-team"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -654,13 +656,11 @@
       "si.com/nba/mavericks/onsi/news/dasllas-mavericks-cleanest-injury-report-season-brooklyn-nets-",
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-cooper-flagg-drops-43-points-clutch-win-indiana-pacers-",
       "si.com/nba/mavericks/onsi/kyrie-irving-injury-status-second-night-back-against-indiana-pacers-dallas-mavericks-",
-      "si.com/nba/mavericks/onsi/how-one-minor-injury-shaken-up-dallas-mavericks-starting-lineup-"
+      "si.com/nba/mavericks/onsi/how-one-minor-injury-shaken-up-dallas-mavericks-starting-lineup-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-kyrie-irving-having-lot-of-fun-playing-cooper-flagg-",
+      "si.com/nba/mavericks/onsi/kyrie-irving-directly-addressed-trade-rumors-dallas-mavericks-locker-room-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/mavericks-shouldnt-rush-into-kyrie-irving-or-daniel-gafford-trade-decision",
-      "thesmokingcuban.com/mavericks-need-cooper-flagg-to-rediscover-skill-that-made-him-a-monster-at-duke",
-      "thesmokingcuban.com/mavericks-dodged-kawhi-leonard-headache-after-nba-harsh-punishment",
-      "thesmokingcuban.com/morez-johnson-jr-must-make-offensive-leap-to-fit-with-mavericks",
       "thesmokingcuban.com/daniel-gafford-rollercoaster-year-sets-him-up-for-mavericks-bounce-back",
       "thesmokingcuban.com/tobi-lawal-shooting-concerns-wont-stop-him-from-making-impact-for-mavericks",
       "thesmokingcuban.com/exclusive-monta-ellis-returns-home-with-clear-vision-for-alcorn-state-basketball",
@@ -856,7 +856,11 @@
       "thesmokingcuban.com/cooper-flagg-save-mavs-fans-sting-nba-potw-awards",
       "thesmokingcuban.com/santi-aldama-helps-solve-problems-plaguing-mavericks-offense",
       "thesmokingcuban.com/cooper-flagg-pbj-habit-reveals-what-mavericks-should-love-about-him",
-      "thesmokingcuban.com/morez-johnson-jr-gives-mavericks-physical-edge-no-one-else-does"
+      "thesmokingcuban.com/morez-johnson-jr-gives-mavericks-physical-edge-no-one-else-does",
+      "thesmokingcuban.com/dusty-may-reveals-why-kyrie-irving-and-cooper-flagg-are-such-seamless-fit",
+      "thesmokingcuban.com/mavericks-have-little-reason-to-keep-zaccharie-risacher-out-of-starting-five",
+      "thesmokingcuban.com/dusty-may-quietly-become-mavericks-secret-weapon",
+      "thesmokingcuban.com/kyrie-irving-trade-rumor-stance-shows-why-mavericks-should-keep-him"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1226,7 +1230,8 @@
       "anthropic.com/research/early-progress-drug-development",
       "anthropic.com/news/expanding-partnership-gsa",
       "anthropic.com/news/ai-for-science-expands-foundations-research-institutions",
-      "anthropic.com/claude-fable-and-mythos-5-2"
+      "anthropic.com/claude-fable-and-mythos-5-2",
+      "anthropic.com/news/roadshow-launch"
     ],
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
@@ -1347,7 +1352,11 @@
       "claude.com/resources/articles/message-threads",
       "claude.com/resources/articles/new-agents-and-products-claude-marketplace",
       "claude.com/resources/articles/claude-enterprise-security-updates",
-      "claude.com/resources/articles/jpmorganchase-expands-claude-code"
+      "claude.com/resources/articles/jpmorganchase-expands-claude-code",
+      "claude.com/resources/articles/sheets-whiteboards-data",
+      "claude.com/resources/articles/how-curative-is-building-a-national-provider-network-with-agents-on-claude",
+      "claude.com/resources/articles/interactive-connectors-full-tool",
+      "claude.com/resources/articles/more-ways-to-work-with-claude-sheets-whiteboards-and-interactive-connectors"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1411,7 +1420,8 @@
       "wired.com/story/mistral-says-le-chonk-surpasses-chinese-models-cybersecurity",
       "wired.com/story/ai-made-decades-of-computer-science-research-irrelevant",
       "wired.com/story/wired-world-fair-2026-alexis-ohanian",
-      "wired.com/story/free-chinese-ai-models-are-getting-scary-good-at-hacking"
+      "wired.com/story/free-chinese-ai-models-are-getting-scary-good-at-hacking",
+      "wired.com/story/security-flaws-across-uk-government-sites-exposed-god-tier-information"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1492,7 +1502,11 @@
       "techcrunch.com/2026/11/06/ramp-data-shows-ai-spending-stalling-just-as-anthropic-nears-its-ipo",
       "techcrunch.com/2026/11/09/anthropic-reportedly-plans-to-move-forward-with-ipo-plans",
       "techcrunch.com/2026/11/09/anthropic-releases-new-mythos-and-fable-models-amid-rsi-concerns",
-      "techcrunch.com/2026/11/09/anthropic-joins-ais-natural-gas-frenzy-buys-3-4b-worth-of-turbines"
+      "techcrunch.com/2026/11/09/anthropic-joins-ais-natural-gas-frenzy-buys-3-4b-worth-of-turbines",
+      "techcrunch.com/2026/11/10/openai-anthropic-face-new-oversight-as-new-yorks-ai-safety-law-takes-effect",
+      "techcrunch.com/2026/11/10/all-7-anthropic-founders-will-each-cash-out-about-250m-in-ipo",
+      "techcrunch.com/2026/11/10/anthropic-launches-claude-meetings-to-turn-workplace-discussions-into-plans-and-tasks",
+      "techcrunch.com/2026/11/10/anthropic-sets-ipo-price-range-of-70-to-78-per-share-to-reach-an-implied-valuation-of-1-404-trillion"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1663,7 +1677,11 @@
       "skysports.com/football/man-utd-vs-aston-villa/report/559541",
       "skysports.com/football/news/13608976/man-utd-vs-aston-villa-how-to-watch-tv-channel-live-stream-now-tv-team-news-and-score-prediction",
       "skysports.com/football/news/13610412/michael-carrick-future-man-utd-head-coach-position-increasingly-in-doubt-but-no-final-decision-made",
-      "skysports.com/football/news/13610409/mauricio-pochettino-would-consider-manchester-united-job-if-michael-carrick-is-sacked-paper-talk"
+      "skysports.com/football/news/13610409/mauricio-pochettino-would-consider-manchester-united-job-if-michael-carrick-is-sacked-paper-talk",
+      "skysports.com/football/news/13610675/man-utd-q-and-a-michael-carrick-mauricio-pochettino-ineos-and-more-kaveh-solhekol-answers-your-questions",
+      "skysports.com/football/news/13610645/man-utds-transfer-policy-to-blame-for-clubs-worst-premier-league-start-and-not-michael-carrick-says-paul-merson",
+      "skysports.com/football/news/13610742/omar-berrada-and-jason-wilcox-set-to-remain-at-man-utd-with-michael-carricks-future-in-doubt-paper-talk",
+      "skysports.com/football/news/13610412/michael-carrick-future-man-utd-head-coach-position-increasingly-in-doubt-with-mauricio-pochettino-open-to-talks"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
