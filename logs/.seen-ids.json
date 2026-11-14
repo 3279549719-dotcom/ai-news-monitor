@@ -174,9 +174,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/dereck-lively-still-not-cleared-010950026.html",
-      "sports.yahoo.com/articles/dereck-lively-ii-not-cleared-140509545.html",
-      "sports.yahoo.com/articles/dallas-mavericks-bad-dereck-lively-183808577.html",
       "sports.yahoo.com/articles/mavericks-receive-good-news-cooper-073820610.html",
       "sports.yahoo.com/articles/gotta-someone-cover-bron-retire-120808547.html",
       "sports.yahoo.com/nba/article/is-kyrie-irving-the-perfect-partner-for-cooper-flagg-142010156.html",
@@ -373,7 +370,10 @@
       "sports.yahoo.com/articles/flagg-hot-hand-makes-mavericks-162135849.html",
       "sports.yahoo.com/articles/youtube-gold-cooper-flagg-well-053300206.html",
       "sports.yahoo.com/articles/mavs-notebook-4-takeaways-cooper-125036016.html",
-      "sports.yahoo.com/articles/cooper-flagg-already-breaks-standard-012701592.html"
+      "sports.yahoo.com/articles/cooper-flagg-already-breaks-standard-012701592.html",
+      "sports.yahoo.com/articles/grading-mavericks-cooper-flagg-awesome-190511123.html",
+      "sports.yahoo.com/articles/mavs-1-major-problem-last-125109504.html",
+      "sports.yahoo.com/articles/mavericks-rumors-nba-insider-makes-154951360.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -484,7 +484,9 @@
       "bleacherreport.com/articles/25531592-cooper-flagg-joins-kevin-durant-makes-nba-history-rare-stat-mavs-win-vs-pacers",
       "bleacherreport.com/articles/25531121-5-rising-stars-who-could-make-their-first-all-nba-team",
       "bleacherreport.com/articles/25531272-ranking-top-10-nba-trade-targets-right-now-plus-landing-spots",
-      "bleacherreport.com/articles/25531779-1-overreaction-every-nba-teams-start"
+      "bleacherreport.com/articles/25531779-1-overreaction-every-nba-teams-start",
+      "bleacherreport.com/articles/25532890-doug-mcdermott-retires-after-12-nba-seasons-bulls-knicks-thunder-spurs-more",
+      "bleacherreport.com/articles/25532851-kyrie-irving-trade-rumors-updated-nba-insider-latest-intel-rival-teams"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -667,13 +669,10 @@
       "si.com/nba/mavericks/onsi/kyrie-irving-directly-addressed-trade-rumors-dallas-mavericks-locker-room-",
       "si.com/nba/mavericks/onsi/cooper-flagg-already-breaks-standard-dallas-mavericks-teammates-set-",
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-blown-out-anthony-edwards-less-minnesota-timberwolves-",
-      "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-morez-johnson-upgraded-injury-report-ahead-important-minnesota-timberwolves-matchup-"
+      "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-morez-johnson-upgraded-injury-report-ahead-important-minnesota-timberwolves-matchup-",
+      "si.com/nba/mavericks/onsi/2-dallas-mavericks-weaknesses-minnesota-timberwolves-exploited-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/mavericks-finally-eye-dirk-nowitzki-reunion-fans-have-been-waiting-for",
-      "thesmokingcuban.com/pj-washington-starting-spot-with-mavericks-isnt-as-safe-as-it-once-was",
-      "thesmokingcuban.com/mavericks-santi-aldama-trade-looks-even-better-after-aj-johnson-gets-moved-again",
-      "thesmokingcuban.com/mavericks-next-great-duo-hasnt-even-played-together-yet",
       "thesmokingcuban.com/kyrie-irving-return-will-help-cooper-flagg-defense-flourish-even-more",
       "thesmokingcuban.com/mavericks-are-quietly-showing-their-belief-in-sergio-de-larrea-by-their-lack-of-moves",
       "thesmokingcuban.com/mavericks-need-to-find-minutes-for-moussa-cisse-despite-their-center-logjam",
@@ -869,7 +868,11 @@
       "thesmokingcuban.com/kyrie-irving-transformed-glaring-mavericks-weakness-into-major-strength",
       "thesmokingcuban.com/bleacher-report-kyrie-irving-trade-argument-misses-mavericks-bigger-picture",
       "thesmokingcuban.com/pj-washington-proving-he-doesnt-need-luka-doncic-to-be-reliable-3-point-shooter",
-      "thesmokingcuban.com/caleb-martin-superpower-transforming-mavericks-starting-five"
+      "thesmokingcuban.com/caleb-martin-superpower-transforming-mavericks-starting-five",
+      "thesmokingcuban.com/zaccharie-risacher-best-mavericks-games-look-like-fool-gold",
+      "thesmokingcuban.com/dejounte-murray-would-be-wrong-trade-answer-to-mavericks-biggest-problem",
+      "thesmokingcuban.com/mavericks-biggest-trade-need-becoming-impossible-to-ignore",
+      "thesmokingcuban.com/mavericks-face-harsh-reality-about-cooper-flagg-and-kyrie-irving-supporting-cast"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1278,7 +1281,8 @@
       "anthropic.com/research/how-researchers-use-claude",
       "anthropic.com/research/teaching-ai-to-build-scientific-models",
       "anthropic.com/research/components-of-agent-memory",
-      "anthropic.com/research/claude-electronics-design"
+      "anthropic.com/research/claude-electronics-design",
+      "anthropic.com/research/building-strong-safety-evaluations"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1369,7 +1373,8 @@
       "claude.com/resources/articles/self-hosted-claude-managed-agents",
       "claude.com/resources/articles/claude-for-manufacturing",
       "claude.com/resources/articles/using-claude-opus-5-5-as-your-daily-driver-for-knowledge-work",
-      "claude.com/resources/articles/claude-tag-guide-for-startups"
+      "claude.com/resources/articles/claude-tag-guide-for-startups",
+      "claude.com/resources/articles/building-always-on-agents"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1705,7 +1710,12 @@
       "skysports.com/transfer/news/13611749/bruno-fernandes-rejects-second-manchester-united-contract-offer",
       "skysports.com/football/transfer-paper-talk/13611732/bruno-fernandes-rejects-second-manchester-united-contract-offer-paper-talk",
       "skysports.com/football/news/13611631/mauricio-pochettino-to-manchester-united-how-uniteds-pursuit-of-former-tottenham-and-chelsea-manager-unfolded",
-      "skysports.com/football/news/13611501/gary-neville-man-utds-treatment-of-michael-carrick-disgusting-as-mauricio-pochettino-prepares-to-take-over-at-old-trafford"
+      "skysports.com/football/news/13611501/gary-neville-man-utds-treatment-of-michael-carrick-disgusting-as-mauricio-pochettino-prepares-to-take-over-at-old-trafford",
+      "skysports.com/football/news/13611965/man-utd-transfer-news-como-star-nico-paz-emerges-as-target-ahead-of-summer-transfer-window-paper-talk",
+      "skysports.com/football/news/13611887/mauricio-pochettino-new-man-utd-head-coach-in-tears-as-he-labels-leaving-usmnt-toughest-decision-of-career",
+      "skysports.com/football/news/13610882/mauricio-pochettino-appointed-as-manchester-united-head-coach-after-michael-carricks-sacking-at-old-trafford",
+      "skysports.com/football/news/13611886/gary-neville-mauricio-pochettino-needs-control-of-manchester-united-recruitment",
+      "skysports.com/football/news/13611443/mauricio-pochettino-to-man-utd-what-does-a-pochettino-team-look-like-and-how-will-he-set-up-struggling-red-devils"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -1833,7 +1843,12 @@
       "si.com/soccer/transfer-rumors-mbappe-sells-real-madrid-olise-pochettino-man-utd-exodus",
       "si.com/soccer/bruno-fernandes-man-utd-future-uncertainty-worst-time",
       "si.com/soccer/four-usmnt-stars-follow-mauricio-pochettino-man-utd",
-      "si.com/soccer/four-reasons-jason-wilcox-blame-for-man-utd-mess"
+      "si.com/soccer/four-reasons-jason-wilcox-blame-for-man-utd-mess",
+      "si.com/soccer/transfer-rumors-pochettino-usmnt-raid-barcelona-major-araujo-decision",
+      "si.com/soccer/youri-tielemans-revelation-speaks-chaos-man-utd",
+      "si.com/soccer/potential-replacements-usmnt-boss-mauricio-pochettino-man-utd-exit",
+      "si.com/soccer/biggest-challenges-facing-mauricio-pochettino-man-utd",
+      "si.com/soccer/full-intention-jesse-marsch-slams-mauricio-pochettino-shock-man-utd-move"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
