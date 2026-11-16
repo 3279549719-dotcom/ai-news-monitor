@@ -179,10 +179,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/kyrie-irving-believes-cooper-flagg-141959932.html",
-      "sports.yahoo.com/articles/dereck-lively-ii-cleared-no-163500704.html",
-      "sports.yahoo.com/articles/dereck-lively-ii-gives-offseason-194000120.html",
-      "sports.yahoo.com/articles/dusty-may-amazed-cooper-flagg-044814809.html",
       "sports.yahoo.com/articles/cooper-flagg-not-play-second-145500191.html",
       "sports.yahoo.com/articles/why-mavericks-dereck-lively-ii-202743403.html",
       "sports.yahoo.com/articles/suggestion-dereck-lively-ii-log-201328328.html",
@@ -378,7 +374,11 @@
       "sports.yahoo.com/nba/breaking-news/article/cavaliers-backups-beat-mavericks-as-all-5-cleveland-starters-sit-out-saturday-nights-win-030626448.html",
       "sports.yahoo.com/articles/cavaliers-play-mavericks-without-entire-003155340.html",
       "sports.yahoo.com/articles/cavs-rule-donovan-mitchell-james-233113285.html",
-      "sports.yahoo.com/articles/tyrese-proctors-triple-double-leads-033959154.html"
+      "sports.yahoo.com/articles/tyrese-proctors-triple-double-leads-033959154.html",
+      "sports.yahoo.com/articles/celtics-throttle-mavericks-131-94-011216047.html",
+      "sports.yahoo.com/articles/celtics-led-dallas-mavericks-42-011258758.html",
+      "sports.yahoo.com/articles/boston-celtics-spoil-cooper-flagg-010913796.html",
+      "sports.yahoo.com/articles/diving-deeper-cavs-127-117-064445979.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -494,7 +494,9 @@
       "bleacherreport.com/articles/25532851-kyrie-irving-trade-rumors-updated-nba-insider-latest-intel-rival-teams",
       "bleacherreport.com/articles/25529672-1-word-describe-every-nba-team-after-3-weeks",
       "bleacherreport.com/articles/25533340-donovan-mitchell-james-harden-cavs-starters-out-vs-mavs-after-travel-issues-amid-faa-ground-stop",
-      "bleacherreport.com/articles/25533115-pistons-must-convince-mavs-make-kyrie-irving-trade-landscape-altering-move-amid-nba-rumors"
+      "bleacherreport.com/articles/25533115-pistons-must-convince-mavs-make-kyrie-irving-trade-landscape-altering-move-amid-nba-rumors",
+      "bleacherreport.com/articles/25531744-early-report-card-grades-every-nba-teams-rookie-class",
+      "bleacherreport.com/articles/25533498-cooper-flagg-passes-kobe-bryant-nba-history-rare-stat-mavs-loss-vs-cavs"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -679,10 +681,12 @@
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-blown-out-anthony-edwards-less-minnesota-timberwolves-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-rookie-morez-johnson-upgraded-injury-report-ahead-important-minnesota-timberwolves-matchup-",
       "si.com/nba/mavericks/onsi/2-dallas-mavericks-weaknesses-minnesota-timberwolves-exploited-",
-      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-suffer-embarrassing-loss-short-handed-cleveland-cavaliers-"
+      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-suffer-embarrassing-loss-short-handed-cleveland-cavaliers-",
+      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-put-up-historically-lifeless-performance-against-boston-celtics-",
+      "si.com/nba/mavericks/onsi/kyrie-irving-daniel-gafford-among-8-dallas-mavericks-injury-report-against-boston-celtics-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-starter-exits-cleveland-cavaliers-game-shoulder-injury-daniel-gafford-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/mavericks-are-quietly-showing-their-belief-in-sergio-de-larrea-by-their-lack-of-moves",
       "thesmokingcuban.com/mavericks-need-to-find-minutes-for-moussa-cisse-despite-their-center-logjam",
       "thesmokingcuban.com/aj-johnson-inclusion-in-mavericks-anthony-davis-trade-looks-worse-by-day",
       "thesmokingcuban.com/mavericks-unusual-bench-could-force-naji-marshall-into-bigger-offensive-role",
@@ -881,7 +885,8 @@
       "thesmokingcuban.com/dejounte-murray-would-be-wrong-trade-answer-to-mavericks-biggest-problem",
       "thesmokingcuban.com/mavericks-biggest-trade-need-becoming-impossible-to-ignore",
       "thesmokingcuban.com/mavericks-face-harsh-reality-about-cooper-flagg-and-kyrie-irving-supporting-cast",
-      "thesmokingcuban.com/mavericks-paint-defense-become-glaring-weakness"
+      "thesmokingcuban.com/mavericks-paint-defense-become-glaring-weakness",
+      "thesmokingcuban.com/dereck-lively-ii-cant-solve-both-of-mavericks-defensive-problems-alone"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1724,7 +1729,8 @@
       "skysports.com/football/news/13611887/mauricio-pochettino-new-man-utd-head-coach-in-tears-as-he-labels-leaving-usmnt-toughest-decision-of-career",
       "skysports.com/football/news/13610882/mauricio-pochettino-appointed-as-manchester-united-head-coach-after-michael-carricks-sacking-at-old-trafford",
       "skysports.com/football/news/13611886/gary-neville-mauricio-pochettino-needs-control-of-manchester-united-recruitment",
-      "skysports.com/football/news/13611443/mauricio-pochettino-to-man-utd-what-does-a-pochettino-team-look-like-and-how-will-he-set-up-struggling-red-devils"
+      "skysports.com/football/news/13611443/mauricio-pochettino-to-man-utd-what-does-a-pochettino-team-look-like-and-how-will-he-set-up-struggling-red-devils",
+      "skysports.com/football/transfer-paper-talk/13612415/x-paper-talk"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -1862,7 +1868,12 @@
       "si.com/soccer/transfer-rumors-man-utd-paz-real-madrid-ridiculous-guler",
       "si.com/soccer/grading-every-man-utd-player-2026-27-so-far-mauricio-pochettino-takes-over",
       "si.com/soccer/mauricio-pochettino-usmnt-contract-revelation-add-growing-backlash",
-      "si.com/soccer/four-strikers-man-utd-should-target-mauricio-pochettino-ranked"
+      "si.com/soccer/four-strikers-man-utd-should-target-mauricio-pochettino-ranked",
+      "si.com/soccer/cristiano-ronaldo-former-manager-rejects-erik-ten-hag-criticism",
+      "si.com/soccer/transfer-rumors-arsenal-vinicius-jr-twist-real-madrid-haaland-bid",
+      "si.com/soccer/five-center-backs-man-utd-should-target-january-ranked",
+      "si.com/soccer/four-changes-mauricio-pochettino-man-utd-debut",
+      "si.com/soccer/christian-pulisic-reacts-mauricio-pochettino-man-utd"
     ],
     "mavs-moneyball": [
       "mavsmoneyball.com/question-answers/62011/moneyball-mailbag-dallas-mavericks-kyrie-irving-cooper-flagg",
