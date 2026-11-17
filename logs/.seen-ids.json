@@ -179,9 +179,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/cooper-flagg-not-play-second-145500191.html",
-      "sports.yahoo.com/articles/why-mavericks-dereck-lively-ii-202743403.html",
-      "sports.yahoo.com/articles/suggestion-dereck-lively-ii-log-201328328.html",
       "sports.yahoo.com/articles/why-kyrie-irving-cooper-flagg-174453834.html",
       "sports.yahoo.com/articles/cooper-flagg-getting-taller-could-193618918.html",
       "sports.yahoo.com/articles/advantage-smaller-guards-draymond-green-093900827.html",
@@ -378,7 +375,10 @@
       "sports.yahoo.com/articles/celtics-throttle-mavericks-131-94-011216047.html",
       "sports.yahoo.com/articles/celtics-led-dallas-mavericks-42-011258758.html",
       "sports.yahoo.com/articles/boston-celtics-spoil-cooper-flagg-010913796.html",
-      "sports.yahoo.com/articles/diving-deeper-cavs-127-117-064445979.html"
+      "sports.yahoo.com/articles/diving-deeper-cavs-127-117-064445979.html",
+      "sports.yahoo.com/articles/celtics-historic-start-against-mavericks-100000434.html",
+      "sports.yahoo.com/articles/lakers-star-luka-doncic-off-065332829.html",
+      "sports.yahoo.com/articles/nba-latest-shows-just-far-023153624.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -496,7 +496,9 @@
       "bleacherreport.com/articles/25533340-donovan-mitchell-james-harden-cavs-starters-out-vs-mavs-after-travel-issues-amid-faa-ground-stop",
       "bleacherreport.com/articles/25533115-pistons-must-convince-mavs-make-kyrie-irving-trade-landscape-altering-move-amid-nba-rumors",
       "bleacherreport.com/articles/25531744-early-report-card-grades-every-nba-teams-rookie-class",
-      "bleacherreport.com/articles/25533498-cooper-flagg-passes-kobe-bryant-nba-history-rare-stat-mavs-loss-vs-cavs"
+      "bleacherreport.com/articles/25533498-cooper-flagg-passes-kobe-bryant-nba-history-rare-stat-mavs-loss-vs-cavs",
+      "bleacherreport.com/articles/25533296-power-ranking-every-nba-teams-starting-lineup-so-far",
+      "bleacherreport.com/articles/25534246-kyrie-irving-talks-criticism-playing-lebron-james-cavs-2016-championship-vs-warriors"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -684,13 +686,10 @@
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-suffer-embarrassing-loss-short-handed-cleveland-cavaliers-",
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-put-up-historically-lifeless-performance-against-boston-celtics-",
       "si.com/nba/mavericks/onsi/kyrie-irving-daniel-gafford-among-8-dallas-mavericks-injury-report-against-boston-celtics-",
-      "si.com/nba/mavericks/onsi/dallas-mavericks-starter-exits-cleveland-cavaliers-game-shoulder-injury-daniel-gafford-"
+      "si.com/nba/mavericks/onsi/dallas-mavericks-starter-exits-cleveland-cavaliers-game-shoulder-injury-daniel-gafford-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-went-from-fun-frustrating-record-time-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/mavericks-need-to-find-minutes-for-moussa-cisse-despite-their-center-logjam",
-      "thesmokingcuban.com/aj-johnson-inclusion-in-mavericks-anthony-davis-trade-looks-worse-by-day",
-      "thesmokingcuban.com/mavericks-unusual-bench-could-force-naji-marshall-into-bigger-offensive-role",
-      "thesmokingcuban.com/mavericks-zaccharie-risacher-steal-making-it-easy-to-overlook-ryan-nembhard",
       "thesmokingcuban.com/mavericks-lack-of-shot-creation-finally-gives-marcus-sasser-chance-to-shine",
       "thesmokingcuban.com/mavericks-should-start-max-christie-to-prevent-shooting-struggles-from-returning",
       "thesmokingcuban.com/pj-washington-could-make-or-break-mavericks-ideal-starting-five",
@@ -886,7 +885,11 @@
       "thesmokingcuban.com/mavericks-biggest-trade-need-becoming-impossible-to-ignore",
       "thesmokingcuban.com/mavericks-face-harsh-reality-about-cooper-flagg-and-kyrie-irving-supporting-cast",
       "thesmokingcuban.com/mavericks-paint-defense-become-glaring-weakness",
-      "thesmokingcuban.com/dereck-lively-ii-cant-solve-both-of-mavericks-defensive-problems-alone"
+      "thesmokingcuban.com/dereck-lively-ii-cant-solve-both-of-mavericks-defensive-problems-alone",
+      "thesmokingcuban.com/mavericks-need-sergio-de-larrea-back-more-than-they-would-like-to-admit",
+      "thesmokingcuban.com/mavericks-3-point-shooting-struggles-make-tarik-biberovic-absence-even-worse",
+      "thesmokingcuban.com/mavericks-brutal-three-game-losing-streak-exposes-uncomfortable-truth",
+      "thesmokingcuban.com/mavericks-may-need-to-take-step-back-with-morez-johnson-jr"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1296,7 +1299,8 @@
       "anthropic.com/research/teaching-ai-to-build-scientific-models",
       "anthropic.com/research/components-of-agent-memory",
       "anthropic.com/research/claude-electronics-design",
-      "anthropic.com/research/building-strong-safety-evaluations"
+      "anthropic.com/research/building-strong-safety-evaluations",
+      "anthropic.com/research/coordinated-vulnerability-disclosure-timelines"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1940,7 +1944,8 @@
       "mavsmoneyball.com/mavericks-analysis/63845/by-the-numbers-what-cooper-flagg-is-doing-isnt-normal-dallas-mavericks",
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63858/dallas-mavericks-at-minnesota-timberwolves-november-12-game-preview-cooper-flagg-anthony-edwards",
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63895/mavericks-133-94-blowout-loss-timberwolves-cooper-flagg-kyrie-irving-lamelo-ball",
-      "mavsmoneyball.com/general/63837/thank-goodness-hes-on-our-team-cooper-flagg-makes-history-dallas-mavericks-keep-stacking-wins"
+      "mavsmoneyball.com/general/63837/thank-goodness-hes-on-our-team-cooper-flagg-makes-history-dallas-mavericks-keep-stacking-wins",
+      "mavsmoneyball.com/dallas-mavericks-game-coverage/63927/kyrie-irving-was-recognized-in-cleveland-in-honor-of-his-game-7-shot-to-secure-the-2016-nba-finals"
     ]
   }
 }
