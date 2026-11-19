@@ -180,10 +180,6 @@
       "x.com/TheSteinLine/status/2113439196442705933"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/advantage-smaller-guards-draymond-green-093900827.html",
-      "sports.yahoo.com/articles/mavs-coach-dusty-may-wants-163007536.html",
-      "sports.yahoo.com/articles/kyrie-irving-love-admission-asked-093000498.html",
-      "sports.yahoo.com/articles/cooper-flagg-9-other-first-212331558.html",
       "sports.yahoo.com/articles/building-perfect-mavericks-starting-five-185310370.html",
       "sports.yahoo.com/articles/mavericks-coach-dusty-may-challenging-165828442.html",
       "sports.yahoo.com/articles/mavericks-news-cooper-flagg-provides-224158647.html",
@@ -379,7 +375,11 @@
       "sports.yahoo.com/articles/lakers-star-luka-doncic-off-065332829.html",
       "sports.yahoo.com/articles/nba-latest-shows-just-far-023153624.html",
       "sports.yahoo.com/articles/mavericks-crushed-celtics-historic-blowout-230508760.html",
-      "sports.yahoo.com/articles/celtics-accomplish-something-never-done-113444042.html"
+      "sports.yahoo.com/articles/celtics-accomplish-something-never-done-113444042.html",
+      "sports.yahoo.com/articles/warriors-bad-injury-news-ahead-115442578.html",
+      "sports.yahoo.com/articles/injury-status-kyrie-irving-steph-201722131.html",
+      "sports.yahoo.com/articles/3-thoughts-mavericks-look-against-005300336.html",
+      "sports.yahoo.com/articles/learned-warriors-3-point-struggles-194136627.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -500,7 +500,8 @@
       "bleacherreport.com/articles/25533498-cooper-flagg-passes-kobe-bryant-nba-history-rare-stat-mavs-loss-vs-cavs",
       "bleacherreport.com/articles/25533296-power-ranking-every-nba-teams-starting-lineup-so-far",
       "bleacherreport.com/articles/25534246-kyrie-irving-talks-criticism-playing-lebron-james-cavs-2016-championship-vs-warriors",
-      "bleacherreport.com/articles/25534075-new-2027-nba-mock-draft-full-2-round-predictions-pro-comps"
+      "bleacherreport.com/articles/25534075-new-2027-nba-mock-draft-full-2-round-predictions-pro-comps",
+      "bleacherreport.com/articles/25533652-every-nba-teams-top-3-trade-targets-after-1-month"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -691,13 +692,11 @@
       "si.com/nba/mavericks/onsi/dallas-mavericks-starter-exits-cleveland-cavaliers-game-shoulder-injury-daniel-gafford-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-went-from-fun-frustrating-record-time-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-cooper-flagg-gives-hint-what-could-causing-recent-slump-",
-      "si.com/nba/mavericks/onsi/2-starting-lineup-changes-dallas-mavericks-should-consider-making-"
+      "si.com/nba/mavericks/onsi/2-starting-lineup-changes-dallas-mavericks-should-consider-making-",
+      "si.com/nba/mavericks/onsi/3-overreactions-cooper-flagg-dallas-mavericks-back-win-column-against-golden-state-warriors-",
+      "si.com/nba/mavericks/onsi/injury-status-kyrie-irving-steph-curry-dallas-mavericks-golden-state-warriors-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/kyrie-irving-return-will-ease-mavericks-fit-concerns-on-wing",
-      "thesmokingcuban.com/dereck-lively-ii-potential-with-mavericks-hinges-on-something-he-cant-control",
-      "thesmokingcuban.com/caleb-martin-must-be-playable-to-prevent-mavericks-contract-disaster",
-      "thesmokingcuban.com/igor-kokoskov-jason-kidd-comments-vindicate-mavericks-decision-to-move-on",
       "thesmokingcuban.com/mavericks-3-point-shooting-additions-get-another-boost-with-rob-fodor-hire",
       "thesmokingcuban.com/igor-kokoskov-jason-kidd-comments-add-another-layer-to-mavericks-luka-doncic-saga",
       "thesmokingcuban.com/mavericks-need-pj-washington-enforcer-mentality-to-protect-their-new-era",
@@ -893,7 +892,11 @@
       "thesmokingcuban.com/mavericks-poor-shooting-making-cooper-flagg-life-harder-than-it-needs-to-be",
       "thesmokingcuban.com/mavericks-have-obvious-way-to-ease-their-scoring-woes",
       "thesmokingcuban.com/mavericks-shooting-struggles-make-their-klay-thompson-decision-look-disastrous",
-      "thesmokingcuban.com/keep-up-with-latest-mavericks-and-cooper-flagg-news-in-new-fansided-app"
+      "thesmokingcuban.com/keep-up-with-latest-mavericks-and-cooper-flagg-news-in-new-fansided-app",
+      "thesmokingcuban.com/sergio-de-larrea-is-ideal-fix-to-mavericks-guard-problems-but-dallas-must-wait",
+      "thesmokingcuban.com/mavericks-need-zaccharie-risacher-to-turn-his-recent-flashes-into-something-more",
+      "thesmokingcuban.com/mavericks-quentin-grimes-trade-looks-even-uglier-after-47-point-lakers-performance",
+      "thesmokingcuban.com/max-christie-cant-catch-break-as-another-injury-complicates-his-mavericks-season"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1264,7 +1267,8 @@
       "anthropic.com/news/expanding-partnership-gsa",
       "anthropic.com/news/ai-for-science-expands-foundations-research-institutions",
       "anthropic.com/claude-fable-and-mythos-5-2",
-      "anthropic.com/news/roadshow-launch"
+      "anthropic.com/news/roadshow-launch",
+      "anthropic.com/news/anthropic-prices-initial-public-offering"
     ],
     "anthropic-research": [
       "anthropic.com/research/Claude-accelerates-protein-design",
@@ -1304,7 +1308,8 @@
       "anthropic.com/research/components-of-agent-memory",
       "anthropic.com/research/claude-electronics-design",
       "anthropic.com/research/building-strong-safety-evaluations",
-      "anthropic.com/research/coordinated-vulnerability-disclosure-timelines"
+      "anthropic.com/research/coordinated-vulnerability-disclosure-timelines",
+      "anthropic.com/research/claude-black-hole-physics"
     ],
     "claude-blog": [
       "claude.com/blog/self-service-data-analytics-in-slack-how-anthropic-deploys-claude-tag-for-ad-hoc-questions",
@@ -1462,7 +1467,8 @@
       "wired.com/story/ai-made-decades-of-computer-science-research-irrelevant",
       "wired.com/story/wired-world-fair-2026-alexis-ohanian",
       "wired.com/story/free-chinese-ai-models-are-getting-scary-good-at-hacking",
-      "wired.com/story/security-flaws-across-uk-government-sites-exposed-god-tier-information"
+      "wired.com/story/security-flaws-across-uk-government-sites-exposed-god-tier-information",
+      "wired.com/story/just-ridiculous-a-famed-philosopher-takes-on-ai-consciousness"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1550,7 +1556,8 @@
       "techcrunch.com/2026/11/10/anthropic-sets-ipo-price-range-of-70-to-78-per-share-to-reach-an-implied-valuation-of-1-404-trillion",
       "techcrunch.com/2026/11/11/openais-quarterly-revenue-reportedly-crosses-10b-for-the-first-time",
       "techcrunch.com/2026/11/17/amazon-and-google-will-together-own-nearly-30-of-anthropic-after-its-ipo",
-      "techcrunch.com/2026/11/17/ai-models-can-be-tricked-into-identifying-civilians-as-military-targets-by-telling-them-its-a-game"
+      "techcrunch.com/2026/11/17/ai-models-can-be-tricked-into-identifying-civilians-as-military-targets-by-telling-them-its-a-game",
+      "techcrunch.com/2026/11/18/anthropic-reportedly-prices-ipo-at-83-a-share-above-projected-range"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1741,7 +1748,12 @@
       "skysports.com/football/news/13610882/mauricio-pochettino-appointed-as-manchester-united-head-coach-after-michael-carricks-sacking-at-old-trafford",
       "skysports.com/football/news/13611886/gary-neville-mauricio-pochettino-needs-control-of-manchester-united-recruitment",
       "skysports.com/football/news/13611443/mauricio-pochettino-to-man-utd-what-does-a-pochettino-team-look-like-and-how-will-he-set-up-struggling-red-devils",
-      "skysports.com/football/transfer-paper-talk/13612415/x-paper-talk"
+      "skysports.com/football/transfer-paper-talk/13612415/x-paper-talk",
+      "skysports.com/football/news/13613260/man-utd-transfer-news-calvin-bassey-and-jarrad-branthwaite-among-targets-with-mauricio-pochettino-set-to-be-backed-in-january",
+      "skysports.com/football/news/13613499/mauricio-pochettino-incoming-manchester-united-head-coach-calls-for-time-to-topple-manchester-city-ahead-of-old-trafford-arrival",
+      "skysports.com/transfer/news/13613290/transfer-news-your-premier-league-clubs-unfinished-business-ahead-of-january-window",
+      "skysports.com/football/news/13613361/jj-gabriel-transfer-news-manchester-united-teenager-announces-departure-from-club-amid-real-madrid-agreement",
+      "skysports.com/football/transfer-paper-talk/13613427/man-utd-boss-mauricio-pochettino-to-appoint-clubs-first-ever-female-coach-paper-talk"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
@@ -1957,7 +1969,11 @@
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63858/dallas-mavericks-at-minnesota-timberwolves-november-12-game-preview-cooper-flagg-anthony-edwards",
       "mavsmoneyball.com/dallas-mavericks-game-coverage/63895/mavericks-133-94-blowout-loss-timberwolves-cooper-flagg-kyrie-irving-lamelo-ball",
       "mavsmoneyball.com/general/63837/thank-goodness-hes-on-our-team-cooper-flagg-makes-history-dallas-mavericks-keep-stacking-wins",
-      "mavsmoneyball.com/dallas-mavericks-game-coverage/63927/kyrie-irving-was-recognized-in-cleveland-in-honor-of-his-game-7-shot-to-secure-the-2016-nba-finals"
+      "mavsmoneyball.com/dallas-mavericks-game-coverage/63927/kyrie-irving-was-recognized-in-cleveland-in-honor-of-his-game-7-shot-to-secure-the-2016-nba-finals",
+      "mavsmoneyball.com/dallas-mavericks-game-coverage/64008/mavericks-vs-warriors-preview-dallas-needs-to-get-right-against-golden-state",
+      "mavsmoneyball.com/dallas-mavericks-game-coverage/64028/mavericks-vs-warriors-recap-cooper-flagg-leads-dallas-to-dominant-116-94-win-over-golden-state-steph-curry",
+      "mavsmoneyball.com/dallas-mavericks-game-coverage/64013/dallas-mavericks-vs-golden-state-warriors-nba-game-preview-2026-27-fanduel-sportsbook",
+      "mavsmoneyball.com/mavericks-features-profiles/63969/under-new-chief-marketing-officer-james-ruth-the-dallas-mavericks-are-telling-a-fresh-story"
     ]
   }
 }
