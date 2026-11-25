@@ -116,7 +116,8 @@
       "nba.com/mavs/news/mavericks-nuggets-preview-as-nba-cup-play-continues-supporting-cast-is-learning-how-to-mesh",
       "nba.com/mavs/news/willie-green-and-dusty-may-developed-a-very-close-bond-from-the-very-first-time-they-met",
       "nba.com/mavs/news/mavs-fall-classic-recap-champions-crowned-and-valuable-life-lessons-learned",
-      "nba.com/mavs/news/jazz-coach-not-surprised-by-self-made-guy-claytons-journey-to-mavericks"
+      "nba.com/mavs/news/jazz-coach-not-surprised-by-self-made-guy-claytons-journey-to-mavericks",
+      "nba.com/mavs/news/mavericks-knock-out-nuggets-for-fourth-consecutive-win"
     ],
     "tim-macmahon-(x)": [
       "x.com/espn_macmahon/status/2068769971896017090",
@@ -205,11 +206,6 @@
       "x.com/TheSteinLine/status/2124693934878458203"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/moneyball-mailbag-media-day-edition-130000947.html",
-      "sports.yahoo.com/articles/mavericks-p-j-washington-provides-215717112.html",
-      "sports.yahoo.com/articles/mavericks-forward-gets-future-dallas-123559994.html",
-      "sports.yahoo.com/articles/mavericks-rumors-masai-ujiri-loves-153803206.html",
-      "sports.yahoo.com/articles/jason-kidd-next-venture-mavericks-234140131.html",
       "sports.yahoo.com/articles/jason-kidd-talks-join-espns-204151295.html",
       "sports.yahoo.com/articles/nba-teams-still-monitoring-mavericks-194920144.html",
       "sports.yahoo.com/articles/rockets-predicted-trade-fred-vanvleet-133243333.html",
@@ -404,7 +400,12 @@
       "sports.yahoo.com/articles/one-obvious-candidate-mavericks-move-180603631.html",
       "sports.yahoo.com/articles/good-bad-ugly-mavericks-nearly-023517238.html",
       "sports.yahoo.com/articles/lebron-durant-dwyane-wade-ranks-134457145.html",
-      "sports.yahoo.com/articles/nba-power-rankings-lakers-challenge-191411867.html"
+      "sports.yahoo.com/articles/nba-power-rankings-lakers-challenge-191411867.html",
+      "sports.yahoo.com/nba/articles/celtics-survive-scare-nba-cup-034252604.html",
+      "sports.yahoo.com/nba/articles/comeback-falls-short-wizards-nba-040235198.html",
+      "sports.yahoo.com/nba/articles/boston-celtics-seven-takeaways-win-042956740.html",
+      "sports.yahoo.com/articles/mavericks-vs-nuggets-preview-nba-023138412.html",
+      "sports.yahoo.com/nba/articles/5-things-learned-mavericks-stun-054620474.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -532,7 +533,8 @@
       "bleacherreport.com/articles/25532712-2026-nba-re-draft-after-1-month-major-lottery-shakeups",
       "bleacherreport.com/articles/25535270-new-nba-power-rankings-heat-finally-rising-warriors-badly-sliding",
       "bleacherreport.com/articles/25536543-amare-stoudemire-sworn-miami-dade-schools-pd-nba-hall-famer-proud-serve-community",
-      "bleacherreport.com/articles/25536449-power-ranking-every-nba-teams-defense-so-far"
+      "bleacherreport.com/articles/25536449-power-ranking-every-nba-teams-defense-so-far",
+      "bleacherreport.com/articles/25537053-5-nba-teams-already-regretting-their-2026-draft-picks"
     ],
     "si-mavs": [
       "si.com/nba/mavericks/onsi/when-will-dallas-mavericks-play-games-against-anthony-davis-luka-doncic-",
@@ -731,13 +733,11 @@
       "si.com/nba/mavericks/onsi/dusty-may-provides-much-needed-injury-update-dallas-mavericks-center-dereck-lively-ii-",
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-separate-late-la-clippers-",
       "si.com/nba/mavericks/onsi/good-bad-ugly-dallas-mavericks-nearly-blow-against-utah-jazz-",
-      "si.com/nba/mavericks/onsi/one-obvious-candidate-dallas-mavericks-can-move-clear-spot-walter-clayton-jr-"
+      "si.com/nba/mavericks/onsi/one-obvious-candidate-dallas-mavericks-can-move-clear-spot-walter-clayton-jr-",
+      "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-big-win-nba-cup-action-against-denver-nuggets-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-could-missing-starter-important-matchup-denver-nuggets-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/mavericks-next-dominant-frontcourt-trio-rests-on-dereck-lively-ii-health",
-      "thesmokingcuban.com/mavericks-chance-to-bring-ryan-nembhard-home-faces-two-major-obstacles",
-      "thesmokingcuban.com/mavericks-ryan-nembhard-homecoming-isnt-as-easy-as-it-seems",
-      "thesmokingcuban.com/ryan-nembhard-release-makes-mavericks-decision-to-move-on-easier-to-understand",
       "thesmokingcuban.com/hornets-waiving-ryan-nembhard-opens-door-to-unexpected-mavericks-reunion",
       "thesmokingcuban.com/exclusive-monta-ellis-reveals-why-his-time-with-mavericks-was-so-special",
       "thesmokingcuban.com/mavericks-moussa-cisse-dwight-powell-battle-shouldnt-even-happen",
@@ -933,7 +933,11 @@
       "thesmokingcuban.com/mavericks-could-explore-trading-moussa-cisse-to-fix-walter-clayton-jr-problem",
       "thesmokingcuban.com/mavericks-pick-and-roll-shortcomings-reinforce-their-major-backcourt-flaw",
       "thesmokingcuban.com/lakers-center-hunt-creates-intriguing-daniel-gafford-trade-opportunity-for-mavericks",
-      "thesmokingcuban.com/luka-doncic-quentin-grimes-endorsement-reopens-mavericks-old-trade-wounds"
+      "thesmokingcuban.com/luka-doncic-quentin-grimes-endorsement-reopens-mavericks-old-trade-wounds",
+      "thesmokingcuban.com/caleb-martin-unexpected-bounce-back-season-is-exactly-what-mavericks-needed",
+      "thesmokingcuban.com/dereck-lively-ii-long-mavericks-injury-recovery-finally-gets-positive-update",
+      "thesmokingcuban.com/walter-clayton-jr-confidence-turning-him-into-mavericks-staple",
+      "thesmokingcuban.com/pj-washington-lakers-trade-idea-is-proposal-mavericks-would-laugh-at"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -971,7 +975,8 @@
       "hoopshype.com/story/sports/nba/2026/11/11/yaxel-lendeborg-could-make-strange-history-in-the-rookie-of-the-year-vote-this-season/92727618007",
       "hoopshype.com/story/sports/nba/2026/11/23/dan-issel-qa-this-load-management-garbage-would-absolutely-drive-me-crazy/92928555007",
       "hoopshype.com/story/sports/nba/2026/11/22/artis-gilmore-opens-up-about-nba-75-snub-political-ambitions-at-77/92912014007",
-      "hoopshype.com/story/sports/nba/2026/11/22/excerpt-new-kings-africas-hoop-dreams-and-the-future-of-the-nba/92912572007"
+      "hoopshype.com/story/sports/nba/2026/11/22/excerpt-new-kings-africas-hoop-dreams-and-the-future-of-the-nba/92912572007",
+      "hoopshype.com/story/sports/nba/2026/11/24/2026-27-nba-award-tracker-who-leads-every-race-from-mvp-to-hustle-award/92941667007"
     ],
     "simon-stone-(x)": [
       "x.com/sistoney67/status/2087975113228427420",
@@ -1484,7 +1489,9 @@
       "claude.com/resources/articles/kpmg-todd-lohr-on-ai-when-your-data-is-also-your-clients-data",
       "claude.com/resources/articles/zero-data-retention-with-enterprise-frontier-safeguards",
       "claude.com/resources/articles/enterprise-guide-to-securing-coding-agents",
-      "claude.com/resources/articles/introducing-claude-ship"
+      "claude.com/resources/articles/introducing-claude-ship",
+      "claude.com/resources/articles/install-as-app",
+      "claude.com/resources/articles/skills-over-mcp-tasks-and-more"
     ],
     "wired": [
       "wired.com/story/a-new-trick-reveals-ai-models-inner-thoughts",
@@ -1551,7 +1558,9 @@
       "wired.com/story/free-chinese-ai-models-are-getting-scary-good-at-hacking",
       "wired.com/story/security-flaws-across-uk-government-sites-exposed-god-tier-information",
       "wired.com/story/just-ridiculous-a-famed-philosopher-takes-on-ai-consciousness",
-      "wired.com/story/anthropics-record-breaking-ipo-highlights-the-ai-giants-worst-enemy-itself"
+      "wired.com/story/anthropics-record-breaking-ipo-highlights-the-ai-giants-worst-enemy-itself",
+      "wired.com/story/ai-agents-can-get-honeypotted-too-aw",
+      "wired.com/story/ai-solved-maths-most-famous-problem"
     ],
     "techcrunch": [
       "techcrunch.com/2026/08/13/openai-introduces-ultrafast-a-new-mode-that-makes-gpt-5-6-sol-work-at-14x-the-speed",
@@ -1648,7 +1657,9 @@
       "techcrunch.com/2026/11/19/anthropics-ipo-puts-ais-circular-financing-boom-to-the-test",
       "techcrunch.com/2026/11/20/ai-claimed-a-solution-to-the-167-year-old-riemann-hypothesis-and-a-human-did-too",
       "techcrunch.com/2026/11/22/how-notable-capital-gic-and-baillie-gifford-bet-big-on-anthropic-before-its-ipo",
-      "techcrunch.com/2026/11/23/anthropic-launches-claude-ship-letting-ai-agents-review-fix-and-approve-code-changes"
+      "techcrunch.com/2026/11/23/anthropic-launches-claude-ship-letting-ai-agents-review-fix-and-approve-code-changes",
+      "techcrunch.com/2026/11/24/even-the-best-ai-agents-struggle-with-everyday-life",
+      "techcrunch.com/2026/11/24/anthropic-shares-fall-below-ipo-price-a-worrying-sign-for-ai-startups"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1866,7 +1877,11 @@
       "skysports.com/football/news/13615552/are-manchester-united-in-a-relegation-battle-gary-neville-and-jamie-carragher-assess-their-survival-chances",
       "skysports.com/football/news/13615837/man-utd-transfer-news-brentford-defender-nathan-collins-emerges-as-january-target-paper-talk",
       "skysports.com/football/news/13615539/manchester-united-to-appeal-leny-yoros-red-card-as-ex-pl-referee-dermot-gallagehr-casts-his-verdict",
-      "skysports.com/football/transfer-paper-talk/13615514/man-utd-transfer-news-fulham-defender-calvin-bassey-is-in-talks-over-new-contract-amid-man-utd-links-paper-talk"
+      "skysports.com/football/transfer-paper-talk/13615514/man-utd-transfer-news-fulham-defender-calvin-bassey-is-in-talks-over-new-contract-amid-man-utd-links-paper-talk",
+      "skysports.com/football/news/13616134/mauricio-pochettino-man-utd-boss-fumes-at-var-in-liverpool-loss-over-leny-yoro-and-dominik-szoboszlai-calls",
+      "skysports.com/football/news/13616021/leny-yoros-red-card-for-manchester-united-against-liverpool-overturned-following-successful-appeal",
+      "skysports.com/football/news/13616033/leny-yoro-red-card-ref-chief-howard-webb-backs-process-that-saw-man-utd-defender-sent-off-at-liverpool",
+      "skysports.com/football/news/13615995/man-utd-transfer-spending-to-be-limited-by-new-stadium-plans-in-the-short-term-according-to-chief-executive-omar-berrada"
     ],
     "90min": [
       "si.com/soccer/ranking-best-league-phase-matches-2026-27-champions-league",
