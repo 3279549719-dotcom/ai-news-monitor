@@ -209,11 +209,6 @@
       "x.com/TheSteinLine/status/2124693934878458203"
     ],
     "yahoo-sports": [
-      "sports.yahoo.com/articles/rockets-predicted-trade-fred-vanvleet-133243333.html",
-      "sports.yahoo.com/articles/p-j-washington-reveals-2-221109645.html",
-      "sports.yahoo.com/articles/kyrie-irving-handed-major-mavericks-221102350.html",
-      "sports.yahoo.com/articles/kyrie-irvings-injury-status-mavericks-235949541.html",
-      "sports.yahoo.com/articles/dusty-mays-mavs-seek-fact-204216780.html",
       "sports.yahoo.com/articles/rockets-plenty-gain-two-preseason-190004664.html",
       "sports.yahoo.com/articles/kyrie-irving-injury-calf-strain-094958207.html",
       "sports.yahoo.com/articles/kyrie-irving-reveals-calf-strain-061942586.html",
@@ -408,7 +403,12 @@
       "sports.yahoo.com/articles/mavericks-vs-nuggets-preview-nba-023138412.html",
       "sports.yahoo.com/nba/articles/5-things-learned-mavericks-stun-054620474.html",
       "sports.yahoo.com/nba/articles/kyrie-irving-embraces-supporting-role-131414351.html",
-      "sports.yahoo.com/nba/articles/mavericks-kyrie-irving-perfect-reaction-061840096.html"
+      "sports.yahoo.com/nba/articles/mavericks-kyrie-irving-perfect-reaction-061840096.html",
+      "sports.yahoo.com/nba/articles/p-j-washington-return-shows-182629902.html",
+      "sports.yahoo.com/nba/articles/amid-lakers-trade-rumors-p-071447171.html",
+      "sports.yahoo.com/nba/articles/3-mavs-takeaways-cooper-flagg-222306843.html",
+      "sports.yahoo.com/nba/articles/mavericks-cooper-flagg-passes-kevin-092323817.html",
+      "sports.yahoo.com/nba/articles/cooper-flagg-joins-lebron-james-202048622.html"
     ],
     "bleacher-report": [
       "bleacherreport.com/articles/25470702-dusty-may-says-nothings-getting-fixed-cbb-opens-decision-leave-michigan-nba",
@@ -542,7 +542,6 @@
       "bleacherreport.com/articles/25529714-2023-nba-re-draft-major-shakeups-after-victor-wembanyama"
     ],
     "si-mavs": [
-      "si.com/nba/mavericks/onsi/nothings-getting-fixed-dusty-may-details-reason-leave-michigan-wolverines-dallas-mavericks-",
       "si.com/nba/mavericks/onsi/update-mark-cuban-court-filing-against-dallas-mavericks-new-ownership-",
       "si.com/nba/mavericks/onsi/miami-heat-hesitant-trade-young-player-top-target-dallas-mavericks-klay-thompson-",
       "si.com/nba/mavericks/onsi/klay-thompson-admits-lucky-dallas-mavericks-draft-cooper-flagg-",
@@ -741,11 +740,10 @@
       "si.com/nba/mavericks/onsi/3-overreactions-dallas-mavericks-big-win-nba-cup-action-against-denver-nuggets-",
       "si.com/nba/mavericks/onsi/dallas-mavericks-could-missing-starter-important-matchup-denver-nuggets-",
       "si.com/nba/mavericks/onsi/should-dallas-mavericks-continue-starting-zaccharie-risacher-over-pj-washington-",
-      "si.com/nba/mavericks/onsi/how-dallas-mavericks-can-clinch-nba-cup-group-first-time-"
+      "si.com/nba/mavericks/onsi/how-dallas-mavericks-can-clinch-nba-cup-group-first-time-",
+      "si.com/nba/mavericks/onsi/dallas-mavericks-clinch-nba-cup-group-first-time-franchise-history-"
     ],
     "the-smoking-cuban": [
-      "thesmokingcuban.com/dereck-lively-ii-injury-update-puts-mavericks-starting-center-spot-in-limbo",
-      "thesmokingcuban.com/henri-veesaar-acl-tear-could-reignite-mavericks-hawks-trade-talks-for-daniel-gafford",
       "thesmokingcuban.com/espn-nba-rankings-give-mavericks-reason-to-think-twice-before-trading-kyrie-irving",
       "thesmokingcuban.com/kyrie-irving-will-prove-why-mavericks-made-right-decision-to-shut-him-down",
       "thesmokingcuban.com/mavericks-giving-zaccharie-risacher-priority-is-needed-180-after-rough-hawks-exit",
@@ -943,7 +941,9 @@
       "thesmokingcuban.com/mavericks-finally-getting-version-of-morez-johnson-jr-they-drafted",
       "thesmokingcuban.com/zaccharie-risacher-bringing-different-kind-of-chaos-to-mavericks",
       "thesmokingcuban.com/pj-washington-return-reveals-how-much-mavericks-offense-needs-him",
-      "thesmokingcuban.com/caleb-martin-quietly-becoming-one-of-mavericks-most-reliable-starters"
+      "thesmokingcuban.com/caleb-martin-quietly-becoming-one-of-mavericks-most-reliable-starters",
+      "thesmokingcuban.com/mavericks-should-trade-naji-marshall-for-shooter-they-desperately-need",
+      "thesmokingcuban.com/mavericks-stalling-moussa-cisse-development-by-keeping-him-glued-to-bench"
     ],
     "hoopshype": [
       "hoopshype.com/story/sports/nba/2026/08/13/player-movement-tracker-the-2026-nba-offseason-cheat-sheets/90616849007",
@@ -1668,7 +1668,8 @@
       "techcrunch.com/2026/11/23/anthropic-launches-claude-ship-letting-ai-agents-review-fix-and-approve-code-changes",
       "techcrunch.com/2026/11/24/even-the-best-ai-agents-struggle-with-everyday-life",
       "techcrunch.com/2026/11/24/anthropic-shares-fall-below-ipo-price-a-worrying-sign-for-ai-startups",
-      "techcrunch.com/2026/11/25/anthropics-dario-amodei-calls-accusations-of-surrendering-human-control-to-ai-absurd"
+      "techcrunch.com/2026/11/25/anthropics-dario-amodei-calls-accusations-of-surrendering-human-control-to-ai-absurd",
+      "techcrunch.com/2026/11/26/as-anthropic-ipos-grand-theft-auto-vi-proves-why-efficiency-isnt-a-virtue"
     ],
     "the-guardian": [
       "theguardian.com/football/2026/aug/10/are-manchester-united-returning-to-relevance",
@@ -1721,7 +1722,10 @@
       "theguardian.com/football/2026/nov/12/michael-carrick-sacked-manchester-united-mauricio-pochettino",
       "theguardian.com/football/2026/nov/22/liverpool-manchester-united-premier-league-match-report",
       "theguardian.com/football/live/2026/nov/22/liverpool-v-manchester-united-buildup-and-more-premier-league-news-matchday-live",
-      "theguardian.com/football/2026/nov/22/bruno-fernandes-reveals-talks-over-new-manchester-united-contract-are-on-hold"
+      "theguardian.com/football/2026/nov/22/bruno-fernandes-reveals-talks-over-new-manchester-united-contract-are-on-hold",
+      "theguardian.com/football/2026/nov/26/manchester-united-liverpool-tottenham-arsenal-city-legal-claim-financial-breaches-damages",
+      "theguardian.com/football/2026/nov/26/gary-neville-jamie-carragher-podcast-manchester-united-michael-carrick",
+      "theguardian.com/football/2026/nov/25/mauricio-pochettino-officials-punished-manchester-united-sporting"
     ],
     "sky-sports": [
       "skysports.com/football/live-blog/11667/13025492/man-utd-transfer-news-rumours-and-gossip-live-updates-and-latest-on-deals-signings-loans-and-contracts",
